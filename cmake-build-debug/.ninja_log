@@ -1,0 +1,18 @@
+# ninja log v5
+3	4683	7588953302192701	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	57067d99f027dff2
+4683	7450	7588953329949946	vkRenderingEngine.exe	1b39bea5e4777d34
+10	378	7588993645664683	CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj	64436d603c6b30d0
+3	3764	7588993679384578	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	3e829e1aed7fb332
+3764	6231	7588993704114741	vkRenderingEngine.exe	a109fa91e2a7b01b
+2	585	7588995772385591	CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj	64436d603c6b30d0
+24	4265	7588995809022691	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	3e829e1aed7fb332
+4265	7054	7588995836738162	vkRenderingEngine.exe	a109fa91e2a7b01b
+3	4633	7588996107842587	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	3e829e1aed7fb332
+4634	7151	7588996133078276	vkRenderingEngine.exe	a109fa91e2a7b01b
+3	3684	7588998549162612	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	3e829e1aed7fb332
+3684	6072	7588998573117368	vkRenderingEngine.exe	a109fa91e2a7b01b
+3	4609	7588999091300758	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	3e829e1aed7fb332
+4610	7091	7588999116225722	vkRenderingEngine.exe	a109fa91e2a7b01b
+2	548	7589001525189918	CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj	64436d603c6b30d0
+24	3790	7589001557436603	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	3e829e1aed7fb332
+3790	6214	7589001581769782	vkRenderingEngine.exe	a109fa91e2a7b01b
