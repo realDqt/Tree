@@ -26,6 +26,9 @@ add_executable(vkRenderingEngine
         camera.h
         utils.h
         utils.cpp
+        PCSSApplication/PCSSApplication.h
+        HelloBoxApplication/HelloBoxApplication.h
+        Light.h
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1)
