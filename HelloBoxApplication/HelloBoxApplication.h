@@ -12,7 +12,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-const std::string MODEL_PATH = "E:/clion_proj/Tree/models/viking_room.obj";
+const std::string MARRY_PATH = "E:/clion_proj/Tree/models/viking_room.obj";
 const std::string TEXTURE_PATH = "E:/clion_proj/Tree/textures/viking_room.png";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;

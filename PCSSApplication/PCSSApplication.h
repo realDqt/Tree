@@ -10,8 +10,10 @@
 #include <stb_image.h>
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+#include "../Light.h"
 
-const std::string MODEL_PATH = "E:/clion_proj/Tree/models/Marry.obj";
+const std::string MARRY_PATH = "E:/clion_proj/Tree/models/Marry.obj";
+const std::string FLOOR_PATH = "E:/clion_proj/Tree/models/floor.obj";
 const std::string TEXTURE_PATH = "E:/clion_proj/Tree/textures/MarryTexture.png";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -66,6 +68,12 @@ struct UniformBufferObject {
     alignas(16) glm::mat4 model;
     alignas(16) glm::mat4 view;
     alignas(16) glm::mat4 proj;
+    alignas(16) glm::mat4 modelInvTrans;
+};
+
+struct PushConstants {
+    alignas(4) glm::vec3 cameraPos;
+    alignas(1) bool isFloor;
 };
 
 class PCSSApplication {
@@ -119,6 +127,7 @@ private:
     VkImageView textureImageView;
     VkSampler textureSampler;
 
+    // vb and ib for marry
     std::vector<VertexMarry> vertices;
     std::vector<uint32_t> indices;
     VkBuffer vertexBuffer;
@@ -126,9 +135,21 @@ private:
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
 
+    // vb and ib for floor
+    std::vector<VertexMarry> vertices2;
+    std::vector<uint32_t> indices2;
+    VkBuffer vertexBuffer2;
+    VkDeviceMemory vertexBufferMemory2;
+    VkBuffer indexBuffer2;
+    VkDeviceMemory indexBufferMemory2;
+
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
     std::vector<void*> uniformBuffersMapped;
+
+    std::vector<VkBuffer> lightBuffers;
+    std::vector<VkDeviceMemory> lightBuffersMemory;
+    std::vector<void*> lightBuffersMapped;
 
     VkDescriptorPool descriptorPool;
     std::vector<VkDescriptorSet> descriptorSets;
@@ -186,6 +207,7 @@ private:
         createVertexBuffer();
         createIndexBuffer();
         createUniformBuffers();
+        createLightBuffers();
         createDescriptorPool();
         createDescriptorSets();
         createCommandBuffers();
@@ -235,6 +257,9 @@ private:
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroyBuffer(device, uniformBuffers[i], nullptr);
             vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+
+            vkDestroyBuffer(device, lightBuffers[i], nullptr);
+            vkFreeMemory(device, lightBuffersMemory[i], nullptr);
         }
 
         vkDestroySampler(device, textureSampler, nullptr);
@@ -252,6 +277,13 @@ private:
 
         vkDestroyBuffer(device, vertexBuffer, nullptr);
         vkFreeMemory(device, vertexBufferMemory, nullptr);
+
+
+        vkDestroyBuffer(device, indexBuffer2, nullptr);
+        vkFreeMemory(device, indexBufferMemory2, nullptr);
+
+        vkDestroyBuffer(device, vertexBuffer2, nullptr);
+        vkFreeMemory(device, vertexBufferMemory2, nullptr);
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -574,7 +606,14 @@ private:
         samplerLayoutBinding.pImmutableSamplers = nullptr;
         samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-        std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, samplerLayoutBinding};
+        VkDescriptorSetLayoutBinding lightLayoutBinding{};
+        lightLayoutBinding.binding = 2;
+        lightLayoutBinding.descriptorCount = 1;
+        lightLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        lightLayoutBinding.pImmutableSamplers = nullptr;
+        lightLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        std::array<VkDescriptorSetLayoutBinding, 3> bindings = {uboLayoutBinding, samplerLayoutBinding, lightLayoutBinding};
         VkDescriptorSetLayoutCreateInfo layoutInfo{};
         layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
         layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -678,6 +717,15 @@ private:
         pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
         pipelineLayoutInfo.setLayoutCount = 1;
         pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+
+        VkPushConstantRange pushConstant{};
+        pushConstant.offset = 0;
+        pushConstant.size = sizeof(PushConstants) ;
+        pushConstant.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+        pipelineLayoutInfo.pPushConstantRanges = &pushConstant;
+        pipelineLayoutInfo.pushConstantRangeCount = 1;
+
 
         if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
             throw std::runtime_error("failed to create pipeline layout!");
@@ -1081,12 +1129,18 @@ private:
     }
 
     void loadModel() {
+        loadMarry();
+        loadFloor();
+    }
+
+    void loadMarry()
+    {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
         std::vector<tinyobj::material_t> materials;
         std::string warn, err;
 
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MARRY_PATH.c_str())) {
             throw std::runtime_error(warn + err);
         }
 
@@ -1107,6 +1161,12 @@ private:
                         1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
                 };
 
+                vertex.normal = {
+                        attrib.normals[3 * index.normal_index + 0],
+                        attrib.normals[3 * index.normal_index + 1],
+                        attrib.normals[3 * index.normal_index + 2]
+                };
+
                 if (uniqueVertices.count(vertex) == 0) {
                     uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
                     vertices.push_back(vertex);
@@ -1123,7 +1183,63 @@ private:
         }
     }
 
+    void loadFloor()
+    {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, FLOOR_PATH.c_str())) {
+            throw std::runtime_error(warn + err);
+        }
+
+        std::unordered_map<VertexMarry, uint32_t> uniqueVertices{};
+
+        for (const auto& shape : shapes) {
+            for (const auto& index : shape.mesh.indices) {
+                VertexMarry vertex{};
+
+                vertex.pos = {
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]
+                };
+
+                vertex.texCoord = {
+                        attrib.texcoords[2 * index.texcoord_index + 0],
+                        1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                };
+
+                vertex.normal = {
+                        attrib.normals[3 * index.normal_index + 0],
+                        attrib.normals[3 * index.normal_index + 1],
+                        attrib.normals[3 * index.normal_index + 2]
+                };
+
+                if (uniqueVertices.count(vertex) == 0) {
+                    uniqueVertices[vertex] = static_cast<uint32_t>(vertices2.size());
+                    vertices2.push_back(vertex);
+                }
+
+                indices2.push_back(uniqueVertices[vertex]);
+
+
+                /*
+                vertices.push_back(vertex);
+                indices.push_back(vertices.size() - 1);
+                 */
+            }
+        }
+    }
+
     void createVertexBuffer() {
+        createMarryVertexBuffer();
+        createFloorVertexBuffer();
+    }
+
+    void createMarryVertexBuffer()
+    {
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
         VkBuffer stagingBuffer;
@@ -1143,7 +1259,34 @@ private:
         vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
+    void createFloorVertexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(vertices2[0]) * vertices2.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices2.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer2, vertexBufferMemory2);
+
+        copyBuffer(stagingBuffer, vertexBuffer2, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
     void createIndexBuffer() {
+        createMarryIndexBuffer();
+        createFloorIndexBuffer();
+    }
+
+    void createMarryIndexBuffer()
+    {
         VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
         VkBuffer stagingBuffer;
@@ -1163,6 +1306,27 @@ private:
         vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
+    void createFloorIndexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(indices2[0]) * indices2.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices2.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer2, indexBufferMemory2);
+
+        copyBuffer(stagingBuffer, indexBuffer2, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
     void createUniformBuffers() {
         VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
@@ -1177,12 +1341,28 @@ private:
         }
     }
 
+    void createLightBuffers(){
+        VkDeviceSize bufferSize = sizeof(DirectionalLight);
+
+        lightBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+        lightBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
+        lightBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            createBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, lightBuffers[i], lightBuffersMemory[i]);
+
+            vkMapMemory(device, lightBuffersMemory[i], 0, bufferSize, 0, &lightBuffersMapped[i]);
+        }
+    }
+
     void createDescriptorPool() {
-        std::array<VkDescriptorPoolSize, 2> poolSizes{};
+        std::array<VkDescriptorPoolSize, 3> poolSizes{};
         poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
         poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+        poolSizes[2].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        poolSizes[2].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
         VkDescriptorPoolCreateInfo poolInfo{};
         poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -1219,7 +1399,12 @@ private:
             imageInfo.imageView = textureImageView;
             imageInfo.sampler = textureSampler;
 
-            std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
+            VkDescriptorBufferInfo lightInfo{};
+            lightInfo.buffer = lightBuffers[i];
+            lightInfo.offset = 0;
+            lightInfo.range = sizeof(DirectionalLight);
+
+            std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
 
             descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[0].dstSet = descriptorSets[i];
@@ -1236,6 +1421,14 @@ private:
             descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             descriptorWrites[1].descriptorCount = 1;
             descriptorWrites[1].pImageInfo = &imageInfo;
+
+            descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[2].dstSet = descriptorSets[i];
+            descriptorWrites[2].dstBinding = 2;
+            descriptorWrites[2].dstArrayElement = 0;
+            descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[2].descriptorCount = 1;
+            descriptorWrites[2].pBufferInfo = &lightInfo;
             vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
         }
     }
@@ -1362,6 +1555,7 @@ private:
 
         vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
+
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
@@ -1376,6 +1570,14 @@ private:
         scissor.extent = swapChainExtent;
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
+        // draw marry
+        updateUniformBuffer(currentFrame);
+        PushConstants pc{};
+        pc.cameraPos = camera.Position;
+        pc.isFloor = false;
+
+        vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &pc);
+
         VkBuffer vertexBuffers[] = {vertexBuffer};
         VkDeviceSize offsets[] = {0};
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
@@ -1385,6 +1587,22 @@ private:
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
+
+
+        // draw floor
+        updateUniformBuffer(currentFrame, true);
+        pc.isFloor = true;
+        vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &pc);
+
+        VkBuffer vertexBuffers2[] = {vertexBuffer2};
+        VkDeviceSize offsets2[] = {0};
+        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers2, offsets2);
+
+        vkCmdBindIndexBuffer(commandBuffer, indexBuffer2, 0, VK_INDEX_TYPE_UINT32);
+
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+
+        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices2.size()), 1, 0, 0, 0);
 
         vkCmdEndRenderPass(commandBuffer);
 
@@ -1415,19 +1633,32 @@ private:
     }
 
 
-    void updateUniformBuffer(uint32_t currentImage) {
+    void updateUniformBuffer(uint32_t currentImage, bool isFloor=false) {
+
+        UniformBufferObject ubo{};
+        ubo.model = glm::mat4(1.f);
+        if(isFloor){
+            ubo.model = glm::scale(ubo.model, glm::vec3(0.2f));
+        }
+        ubo.modelInvTrans = glm::transpose(glm::inverse(ubo.model));
+        ubo.view = camera.GetViewMatrix();
+        ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 30.0f);
+        ubo.proj[1][1] *= -1;
+
+        memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+    }
+
+    void updateLightBuffer(uint32_t currentImage){
         static auto startTime = std::chrono::high_resolution_clock::now();
 
         auto currentTime = std::chrono::high_resolution_clock::now();
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-        UniformBufferObject ubo{};
-        ubo.model = glm::mat4(1.f);
-        ubo.view = camera.GetViewMatrix();
-        ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 10.0f);
-        ubo.proj[1][1] *= -1;
-
-        memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+        DirectionalLight light{};
+        light.lightDir = glm::vec3(-1.0f, -1.0f, -1.0f);
+        light.lightDir = glm::normalize(-light.lightDir);
+        light.lightIntensity = glm::vec3(0.2f);
+        memcpy(lightBuffersMapped[currentImage], &light, sizeof(light));
     }
 
     void drawFrame() {
@@ -1443,7 +1674,8 @@ private:
             throw std::runtime_error("failed to acquire swap chain image!");
         }
 
-        updateUniformBuffer(currentFrame);
+
+        updateLightBuffer(currentFrame);
 
         vkResetFences(device, 1, &inFlightFences[currentFrame]);
 

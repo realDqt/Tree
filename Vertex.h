@@ -55,6 +55,7 @@ namespace std {
 struct VertexMarry {
     glm::vec3 pos;
     glm::vec2 texCoord;
+    glm::vec3 normal;
 
     static VkVertexInputBindingDescription getBindingDescription() {
         VkVertexInputBindingDescription bindingDescription{};
@@ -65,8 +66,8 @@ struct VertexMarry {
         return bindingDescription;
     }
 
-    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+        std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
 
         attributeDescriptions[0].binding = 0;
         attributeDescriptions[0].location = 0;
@@ -78,23 +79,36 @@ struct VertexMarry {
         attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
         attributeDescriptions[1].offset = offsetof(VertexMarry, texCoord);
 
+        attributeDescriptions[2].binding = 0;
+        attributeDescriptions[2].location = 2;
+        attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[2].offset = offsetof(VertexMarry, normal);
+
         return attributeDescriptions;
     }
 
     bool operator==(const VertexMarry& other) const {
-        return pos == other.pos && texCoord == other.texCoord;
+        return pos == other.pos && texCoord == other.texCoord && normal == other.normal;
     }
 };
 
 namespace std {
     template<> struct hash<VertexMarry> {
         size_t operator()(VertexMarry const& vertex) const {
-            // 使用 std::hash 结合 glm::vec3 和 glm::vec2 的哈希值
-            std::size_t h1 = std::hash<float>()(vertex.pos.x) ^ (std::hash<float>()(vertex.pos.y) << 1) ^ (std::hash<float>()(vertex.pos.z) << 2);
-            std::size_t h2 = std::hash<float>()(vertex.texCoord.x) ^ (std::hash<float>()(vertex.texCoord.y) << 1);
+            // 使用 std::hash 组合 pos、texCoord 和 normal 的哈希值
+            std::size_t hashPos = std::hash<float>()(vertex.pos.x) ^
+                                  (std::hash<float>()(vertex.pos.y) << 1) ^
+                                  (std::hash<float>()(vertex.pos.z) << 2);
 
-            // 合并两个哈希值
-            return h1 ^ (h2 << 1);
+            std::size_t hashTexCoord = std::hash<float>()(vertex.texCoord.x) ^
+                                       (std::hash<float>()(vertex.texCoord.y) << 1);
+
+            std::size_t hashNormal = std::hash<float>()(vertex.normal.x) ^
+                                     (std::hash<float>()(vertex.normal.y) << 1) ^
+                                     (std::hash<float>()(vertex.normal.z) << 2);
+
+            // 组合所有哈希值
+            return hashPos ^ (hashTexCoord << 1) ^ (hashNormal << 2);
         }
     };
 }
