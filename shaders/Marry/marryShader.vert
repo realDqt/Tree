@@ -7,12 +7,14 @@ layout(location = 2) in vec3 inNormal;
 layout(location = 0) out vec2 fragTexCoord;
 layout(location = 1) out vec3 fragPos;
 layout(location = 2) out vec3 worldNormal;
+layout(location = 3) out vec4 lightSpaceCoord;
 
 layout(binding = 0, std140) uniform UniformBufferObject{
     mat4 model;
     mat4 view;
     mat4 proj;
     mat4 modelInvTrans;
+    mat4 lightMVP;
 } ubo;
 
 void main()
@@ -21,4 +23,5 @@ void main()
     fragTexCoord = inTexCoord;
     fragPos = (ubo.model * vec4(inPosition, 1.0)).xyz;
     worldNormal = (ubo.modelInvTrans * vec4(inNormal, 0.0)).xyz;
+    lightSpaceCoord = ubo.lightMVP * vec4(inPosition, 1.0);
 }
