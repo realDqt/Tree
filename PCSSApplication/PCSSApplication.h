@@ -16,13 +16,16 @@ const std::string MARRY_PATH = "E:/clion_proj/Tree/models/Marry.obj";
 const std::string FLOOR_PATH = "E:/clion_proj/Tree/models/floor.obj";
 const std::string TEXTURE_PATH = "E:/clion_proj/Tree/textures/MarryTexture.png";
 constexpr int SMResolution = 2048;
-constexpr float OrthoRange = 5.0f;
+constexpr float OrthoRange = 10.0f;
 
+// light's info
 DirectionalLight light{
     .lightDir = glm::vec3(0.0f, -1.0f, -1.0f),
-    .lightIntensity = glm::vec3(1.2f)
+    .lightIntensity = glm::vec3(0.8f)
 };
-glm::vec3 lightPos = glm::vec3(5.0f);
+glm::vec3 lightPos = glm::vec3(0.0f + 3.0f + 5.0f, 3.0f - 3.0f, 3.0f + 3.0f + 3.0f);
+//glm::vec3 lightUp = glm::vec3(-0.531192, 0.544641, -0.649);
+glm::vec3 lightUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -233,6 +236,8 @@ private:
     }
 
     void initVulkan() {
+        //camera.Position = lightPos;
+
         createInstance();
         setupDebugMessenger();
         createSurface();
@@ -695,7 +700,7 @@ private:
         colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_GENERAL;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
         VkAttachmentDescription depthAttachment{};
         depthAttachment.format = findDepthFormat();
@@ -709,7 +714,7 @@ private:
 
         VkAttachmentReference colorAttachmentRef{};
         colorAttachmentRef.attachment = 0;
-        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_GENERAL;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
         VkAttachmentReference depthAttachmentRef{};
         depthAttachmentRef.attachment = 1;
@@ -1365,8 +1370,8 @@ private:
         samplerInfo.anisotropyEnable = VK_FALSE;  // 关闭各向异性过滤
         samplerInfo.maxAnisotropy = 1.0f;  // 设置为 1.0（无效，但需要初始化）
         samplerInfo.unnormalizedCoordinates = VK_FALSE;  // 使用标准化坐标
-        samplerInfo.compareEnable = VK_FALSE;  // 启用深度比较
-        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;  // 深度比较操作
+        samplerInfo.compareEnable = VK_TRUE;  // 启用深度比较
+        samplerInfo.compareOp = VK_COMPARE_OP_LESS;  // 深度比较操作
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;  // 禁用 Mipmap
         samplerInfo.minLod = 0.0f;
         samplerInfo.maxLod = 0.0f;  // 禁用 Mipmap
@@ -1824,7 +1829,7 @@ private:
             lightInfo.range = sizeof(DirectionalLight);
 
             VkDescriptorImageInfo SMimageInfo{};
-            SMimageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+            SMimageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
             SMimageInfo.imageView = SMImageView;
             SMimageInfo.sampler = SMSampler;
 
@@ -2062,7 +2067,6 @@ private:
         vkCmdEndRenderPass(commandBuffer);
 
         // blin-phong pass
-        //transitionImageLayout(SMcolorImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
         renderPassInfo = VkRenderPassBeginInfo {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = renderPass;
@@ -2133,7 +2137,6 @@ private:
             throw std::runtime_error("failed to record command buffer!");
         }
 
-        //transitionImageLayout(SMcolorImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1);
     }
 
     void createSyncObjects() {
@@ -2162,7 +2165,7 @@ private:
     void updateSMUniformBuffer(uint32_t currentImage){
         SMUniformBufferObject ubo{};
         glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::lookAt(lightPos, lightPos + light.lightDir, camera.Up);
+        glm::mat4 view = glm::lookAt(lightPos, lightPos + light.lightDir, lightUp);
         glm::mat4 proj = glm::ortho(-OrthoRange, OrthoRange, -OrthoRange, OrthoRange, 1e-2f, 100.f);
         proj[1][1] *= -1;
         ubo.lightMVP = proj * view * model;
@@ -2171,7 +2174,7 @@ private:
     }
 
     void updateUniformBuffer(uint32_t currentImage) {
-
+        //std::cout << camera.Up.x << " " << camera.Up.y << " " << camera.Up.z << std::endl;
         UniformBufferObject ubo{};
         ubo.model = glm::mat4(1.f);
         ubo.modelInvTrans = glm::transpose(glm::inverse(ubo.model));
@@ -2180,7 +2183,7 @@ private:
         ubo.proj[1][1] *= -1;
 
         auto model = glm::mat4(1.0f);
-        glm::mat4 view = glm::lookAt(lightPos, lightPos + light.lightDir, camera.Up);
+        glm::mat4 view = glm::lookAt(lightPos, lightPos + light.lightDir, lightUp);
         glm::mat4 proj = glm::ortho(-OrthoRange, OrthoRange, -OrthoRange, OrthoRange, 1e-2f, 100.f);
         proj[1][1] *= -1;
         ubo.lightMVP = proj * view * model;

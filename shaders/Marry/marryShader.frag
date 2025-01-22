@@ -68,6 +68,13 @@ void poissonDiskSamples( const in vec2 randomSeed ) {
     }
 }
 
+float getBias(float ctrl)
+{
+    float m = 10.0 / 2048.0 / 2.0;
+    float bias = max(m, m * (1.0 - dot(worldNormal, light.lightDir))) * ctrl;
+    return bias;
+}
+
 void uniformDiskSamples( const in vec2 randomSeed ) {
 
     float randNum = rand_2to1(randomSeed);
@@ -119,7 +126,7 @@ float PCF(vec4 coords) {
     float dReceiver = coords.z;
     float wPenmbra = wLight * (dReceiver - dBlocker) / dBlocker;
 
-    const float stride = 10.0;
+    const float stride = 5.0;
     const int shadowmapSize = 2048;
     float visbility = 0.0;
     float curDepth = coords.z;
@@ -127,7 +134,7 @@ float PCF(vec4 coords) {
     for(int i = 0; i < NUM_SAMPLES; ++i){
         vec4 shadowColor = texture(smSampler, coords.xy + poissonDisk[i] * stride / float(shadowmapSize) * wPenmbra);
         float shadowDepth = unpack(shadowColor);
-        float res = curDepth <= shadowDepth + EPS ? 1.0 : 0.0;
+        float res = curDepth <= shadowDepth + getBias(1.4) ? 1.0 : 0.0;
         visbility += res;
     }
 
@@ -145,20 +152,12 @@ float PCSS(vec4 coords){
     return PCF(coords);
 
 }
+vec3 albedo = vec3(0.0);
+vec3 uKs = vec3(0.0);
 
 vec3 PhongColor()
 {
-    vec3 albedo = vec3(0.0);
-    vec3 uKs = vec3(0.0);
-
-    if(constants.isFloor){
-        albedo = vec3(0.8);
-    }else{
-        albedo = texture(texSampler, fragTexCoord).rgb;
-    }
-
-
-    vec3 ambient = 0.05 * albedo;
+    //vec3 ambient = 0.05 * albedo;
 
     float diff = max(0, dot(light.lightDir, worldNormal));
     vec3 diffuse = diff * albedo * light.lightIntensity;
@@ -168,7 +167,7 @@ vec3 PhongColor()
     float spec = pow(max(0, dot(halfVec, worldNormal)), 32.f);
     vec3 specular = uKs * spec * light.lightIntensity;
 
-    return pow(ambient + diffuse + specular, vec3(1.0/2.2));
+    return diffuse + specular;
 }
 
 
@@ -182,9 +181,23 @@ float GetVisbility()
 
 void main()
 {
+    if(constants.isFloor){
+        albedo = vec3(0.8);
+    }else{
+        albedo = texture(texSampler, fragTexCoord).rgb;
+    }
+
+
     vec3 phongColor = PhongColor();
 
     float visbility = GetVisbility();
 
-    outColor = vec4(visbility * phongColor, 1.0);
+    outColor = vec4(pow(visbility * phongColor + 0.05 * albedo, vec3(1.0/2.2)), 1.0);
+
+
+    /*
+    vec3 phongColor = PhongColor() + 0.05 * albedo;
+    float visbility = GetVisbility();
+    outColor = vec4(pow(visbility * phongColor, vec3(1.0/2.2)), 1.0);
+    */
 }
