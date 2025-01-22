@@ -15,8 +15,14 @@
 const std::string MARRY_PATH = "E:/clion_proj/Tree/models/Marry.obj";
 const std::string FLOOR_PATH = "E:/clion_proj/Tree/models/floor.obj";
 const std::string TEXTURE_PATH = "E:/clion_proj/Tree/textures/MarryTexture.png";
-constexpr int SMResolution = 1024;
-constexpr float OrthoRange = 30.0f;
+constexpr int SMResolution = 2048;
+constexpr float OrthoRange = 5.0f;
+
+DirectionalLight light{
+    .lightDir = glm::vec3(0.0f, -1.0f, -1.0f),
+    .lightIntensity = glm::vec3(1.2f)
+};
+glm::vec3 lightPos = glm::vec3(5.0f);
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -1359,8 +1365,8 @@ private:
         samplerInfo.anisotropyEnable = VK_FALSE;  // 关闭各向异性过滤
         samplerInfo.maxAnisotropy = 1.0f;  // 设置为 1.0（无效，但需要初始化）
         samplerInfo.unnormalizedCoordinates = VK_FALSE;  // 使用标准化坐标
-        samplerInfo.compareEnable = VK_TRUE;  // 启用深度比较
-        samplerInfo.compareOp = VK_COMPARE_OP_LESS;  // 深度比较操作
+        samplerInfo.compareEnable = VK_FALSE;  // 启用深度比较
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;  // 深度比较操作
         samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;  // 禁用 Mipmap
         samplerInfo.minLod = 0.0f;
         samplerInfo.maxLod = 0.0f;  // 禁用 Mipmap
@@ -2156,9 +2162,7 @@ private:
     void updateSMUniformBuffer(uint32_t currentImage){
         SMUniformBufferObject ubo{};
         glm::mat4 model = glm::mat4(1.0f);
-        glm::vec3 lightPos = glm::vec3(5.0f);
-        glm::vec3 lightDir = glm::vec3(0.0f, -1.0f, -1.0f);
-        glm::mat4 view = glm::lookAt(lightPos, lightPos + lightDir, camera.Up);
+        glm::mat4 view = glm::lookAt(lightPos, lightPos + light.lightDir, camera.Up);
         glm::mat4 proj = glm::ortho(-OrthoRange, OrthoRange, -OrthoRange, OrthoRange, 1e-2f, 100.f);
         proj[1][1] *= -1;
         ubo.lightMVP = proj * view * model;
@@ -2176,9 +2180,7 @@ private:
         ubo.proj[1][1] *= -1;
 
         auto model = glm::mat4(1.0f);
-        auto lightPos = glm::vec3(5.0f);
-        auto lightDir = glm::vec3(0.0, -1.0f, -1.0f);
-        glm::mat4 view = glm::lookAt(lightPos, lightPos + lightDir, camera.Up);
+        glm::mat4 view = glm::lookAt(lightPos, lightPos + light.lightDir, camera.Up);
         glm::mat4 proj = glm::ortho(-OrthoRange, OrthoRange, -OrthoRange, OrthoRange, 1e-2f, 100.f);
         proj[1][1] *= -1;
         ubo.lightMVP = proj * view * model;
@@ -2191,12 +2193,9 @@ private:
 
         auto currentTime = std::chrono::high_resolution_clock::now();
         float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-        DirectionalLight light{};
-        light.lightDir = glm::vec3(0.0f, -1.0f, -1.0f);
-        light.lightDir = glm::normalize(-light.lightDir);
-        light.lightIntensity = glm::vec3(0.2f);
-        memcpy(lightBuffersMapped[currentImage], &light, sizeof(light));
+        DirectionalLight temLight = light;
+        temLight.lightDir = -glm::normalize(temLight.lightDir);
+        memcpy(lightBuffersMapped[currentImage], &temLight, sizeof(temLight));
     }
 
     void drawFrame() {
