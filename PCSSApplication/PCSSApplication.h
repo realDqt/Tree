@@ -15,6 +15,8 @@
 const std::string MARRY_PATH = "E:/clion_proj/Tree/models/Marry.obj";
 const std::string FLOOR_PATH = "E:/clion_proj/Tree/models/floor.obj";
 const std::string TEXTURE_PATH = "E:/clion_proj/Tree/textures/MarryTexture.png";
+constexpr int SMResolution = 1024;
+constexpr float OrthoRange = 30.0f;
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -687,7 +689,7 @@ private:
         colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
         colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_GENERAL;
 
         VkAttachmentDescription depthAttachment{};
         depthAttachment.format = findDepthFormat();
@@ -701,7 +703,7 @@ private:
 
         VkAttachmentReference colorAttachmentRef{};
         colorAttachmentRef.attachment = 0;
-        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_GENERAL;
 
         VkAttachmentReference depthAttachmentRef{};
         depthAttachmentRef.attachment = 1;
@@ -1092,8 +1094,8 @@ private:
             framebufferInfo.renderPass = SMrenderPass;
             framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
             framebufferInfo.pAttachments = attachments.data();
-            framebufferInfo.width = swapChainExtent.width;
-            framebufferInfo.height = swapChainExtent.height;
+            framebufferInfo.width = SMResolution;
+            framebufferInfo.height = SMResolution;
             framebufferInfo.layers = 1;
 
             if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &SMframebuffers[i]) != VK_SUCCESS) {
@@ -1125,7 +1127,7 @@ private:
     void createSMColorResources(){
         VkFormat colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
 
-        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, SMcolorImage, SMcolorImageMemory);
+        createImage(SMResolution, SMResolution, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, SMcolorImage, SMcolorImageMemory);
         SMcolorImageView = createImageView(SMcolorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
@@ -1139,7 +1141,7 @@ private:
     void createSMDepthResources() {
         VkFormat depthFormat = findDepthFormat();
 
-        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, SMdepthImage, SMdepthImageMemory);
+        createImage(SMResolution, SMResolution, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, SMdepthImage, SMdepthImageMemory);
         SMdepthImageView = createImageView(SMdepthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
     }
 
@@ -1455,7 +1457,20 @@ private:
 
             sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
             destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        } else {
+        } else if(oldLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL){
+            barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+            sourceStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        } else if(oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL){
+            barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+            barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+            sourceStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+            destinationStage =VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        }
+        else {
             throw std::invalid_argument("unsupported layout transition!");
         }
 
@@ -1803,7 +1818,7 @@ private:
             lightInfo.range = sizeof(DirectionalLight);
 
             VkDescriptorImageInfo SMimageInfo{};
-            SMimageInfo.imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+            SMimageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
             SMimageInfo.imageView = SMImageView;
             SMimageInfo.sampler = SMSampler;
 
@@ -1988,7 +2003,7 @@ private:
         renderPassInfo.renderPass = SMrenderPass;
         renderPassInfo.framebuffer = SMframebuffers[imageIndex];
         renderPassInfo.renderArea.offset = {0, 0};
-        renderPassInfo.renderArea.extent = swapChainExtent;
+        renderPassInfo.renderArea.extent = VkExtent2D(SMResolution, SMResolution);
 
         std::array<VkClearValue, 2> clearValues{};
         clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
@@ -2003,8 +2018,8 @@ private:
         VkViewport viewport{};
         viewport.x = 0.0f;
         viewport.y = 0.0f;
-        viewport.width = (float) swapChainExtent.width;
-        viewport.height = (float) swapChainExtent.height;
+        viewport.width = (float) SMResolution;
+        viewport.height = (float) SMResolution;
         viewport.minDepth = 0.0f;
         viewport.maxDepth = 1.0f;
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
@@ -2041,6 +2056,7 @@ private:
         vkCmdEndRenderPass(commandBuffer);
 
         // blin-phong pass
+        //transitionImageLayout(SMcolorImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
         renderPassInfo = VkRenderPassBeginInfo {};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
         renderPassInfo.renderPass = renderPass;
@@ -2092,7 +2108,6 @@ private:
 
 
         // draw floor
-        updateUniformBuffer(currentFrame, true);
         pc.isFloor = true;
         vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &pc);
 
@@ -2111,6 +2126,8 @@ private:
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
         }
+
+        //transitionImageLayout(SMcolorImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, 1);
     }
 
     void createSyncObjects() {
@@ -2142,21 +2159,17 @@ private:
         glm::vec3 lightPos = glm::vec3(5.0f);
         glm::vec3 lightDir = glm::vec3(0.0f, -1.0f, -1.0f);
         glm::mat4 view = glm::lookAt(lightPos, lightPos + lightDir, camera.Up);
-        constexpr float range = 20.0f;
-        glm::mat4 proj = glm::ortho(-range, range, -range, range, 1e-2f, 400.f);
+        glm::mat4 proj = glm::ortho(-OrthoRange, OrthoRange, -OrthoRange, OrthoRange, 1e-2f, 100.f);
         proj[1][1] *= -1;
         ubo.lightMVP = proj * view * model;
 
         memcpy(SMuniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
     }
 
-    void updateUniformBuffer(uint32_t currentImage, bool isFloor=false) {
+    void updateUniformBuffer(uint32_t currentImage) {
 
         UniformBufferObject ubo{};
         ubo.model = glm::mat4(1.f);
-        if(isFloor){
-            ubo.model = glm::scale(ubo.model, glm::vec3(0.1f));
-        }
         ubo.modelInvTrans = glm::transpose(glm::inverse(ubo.model));
         ubo.view = camera.GetViewMatrix();
         ubo.proj = glm::perspective(glm::radians(45.0f), swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 30.0f);
@@ -2166,8 +2179,7 @@ private:
         auto lightPos = glm::vec3(5.0f);
         auto lightDir = glm::vec3(0.0, -1.0f, -1.0f);
         glm::mat4 view = glm::lookAt(lightPos, lightPos + lightDir, camera.Up);
-        constexpr float range = 20.0f;
-        glm::mat4 proj = glm::ortho(-range, range, -range, range, 1e-2f, 400.f);
+        glm::mat4 proj = glm::ortho(-OrthoRange, OrthoRange, -OrthoRange, OrthoRange, 1e-2f, 100.f);
         proj[1][1] *= -1;
         ubo.lightMVP = proj * view * model;
 
