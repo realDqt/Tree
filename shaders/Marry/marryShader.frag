@@ -174,7 +174,7 @@ vec3 PhongColor()
 float GetVisbility()
 {
     // calculate visbility
-    vec3 NDC = lightSpaceCoord.xyz;
+    vec3 NDC = lightSpaceCoord.xyz / lightSpaceCoord.w;
     NDC.xy = (NDC.xy + 1.0f) * .5f;
     return PCSS(vec4(NDC, 1.0));
 }
@@ -188,16 +188,17 @@ void main()
     }
 
 
+    /*
     vec3 phongColor = PhongColor();
 
     float visbility = GetVisbility();
 
     outColor = vec4(pow(visbility * phongColor + 0.05 * albedo, vec3(1.0/2.2)), 1.0);
+    */
 
 
-    /*
     vec3 phongColor = PhongColor() + 0.05 * albedo;
     float visbility = GetVisbility();
     outColor = vec4(pow(visbility * phongColor, vec3(1.0/2.2)), 1.0);
-    */
+
 }
