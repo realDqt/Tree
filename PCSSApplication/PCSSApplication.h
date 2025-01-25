@@ -11,6 +11,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include "../Light.h"
+#include "../BaseApplication/BaseApplication.h"
 
 const std::string MARRY_PATH = "E:/clion_proj/Tree/models/Marry.obj";
 const std::string FLOOR_PATH = "E:/clion_proj/Tree/models/floor.obj";
@@ -23,7 +24,7 @@ DirectionalLight light{
         .lightDir = glm::vec3(0.0f, -1.0f, -1.0f),
         .lightIntensity = glm::vec3(0.8f)
 };
-glm::vec3 lightPos = glm::vec3(0.0f + 3.0f, 3.0f - 3.0f + 3.0f, 3.0f + 3.0f + 3.0f);
+glm::vec3 lightPos = glm::vec3(0.0f, 8.0f, 9.0f);
 //glm::vec3 lightUp = glm::vec3(-0.531192, 0.544641, -0.649);
 glm::vec3 lightUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -97,7 +98,7 @@ struct PushConstants {
     alignas(1) bool isFloor;
 };
 
-class PCSSApplication {
+class PCSSApplication{
 public:
     void run() {
         initWindow();
@@ -165,7 +166,6 @@ private:
     VkImage SMcolorImage;
     VkDeviceMemory SMcolorImageMemory;
     VkImageView SMcolorImageView;
-    VkImageView SMImageView;
     VkSampler SMSampler;
 
     VkImage SMdepthImage;
@@ -302,7 +302,6 @@ private:
         createTextureImageView();
         createTextureSampler();
 
-        createSMImageView();
         createSMSampler();
 
         loadModel();
@@ -331,6 +330,7 @@ private:
             lastFrameTime = currentFrameTime;
             processInput(window);
             glfwPollEvents();
+            //lightPos = glm::vec3(5.0f * sin(currentFrameTime), 5.0f * cos(currentFrameTime), 9.0f);
             drawFrame();
         }
 
@@ -409,7 +409,6 @@ private:
         vkFreeMemory(device, textureImageMemory, nullptr);
 
         vkDestroySampler(device, SMSampler, nullptr);
-        vkDestroyImageView(device, SMImageView, nullptr);
 
         vkDestroyDescriptorPool(device, descriptorPool, nullptr);
         vkDestroyDescriptorPool(device, SMdescriptorPool, nullptr);
@@ -691,7 +690,7 @@ private:
         depthAttachment.format = findDepthFormat();
         depthAttachment.samples = msaaSamples;
         depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
         depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
         depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_STORE;
         depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -1269,7 +1268,7 @@ private:
         rasterizer.rasterizerDiscardEnable = VK_FALSE;
         rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
         rasterizer.lineWidth = 1.0f;
-        rasterizer.cullMode = VK_CULL_MODE_FRONT_BIT;
+        rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
         rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -1626,10 +1625,6 @@ private:
 
     void createTextureImageView() {
         textureImageView = createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
-    }
-
-    void createSMImageView(){
-        SMImageView = createImageView(SMcolorImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
     void createTextureSampler() {
@@ -2262,7 +2257,7 @@ private:
 
             VkDescriptorImageInfo SMimageInfo{};
             SMimageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            SMimageInfo.imageView = SMImageView;
+            SMimageInfo.imageView = SMcolorImageView;
             SMimageInfo.sampler = SMSampler;
 
             std::array<VkWriteDescriptorSet, 4> descriptorWrites{};
@@ -2500,10 +2495,13 @@ private:
         viewport.maxDepth = 1.0f;
         vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
+
+
         VkRect2D scissor{};
         scissor.offset = {0, 0};
-        scissor.extent = swapChainExtent;
+        scissor.extent = VkExtent2D(SMResolution, SMResolution);
         vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
 
         updateSMUniformBuffer(currentFrame);
         // marry's shadow map

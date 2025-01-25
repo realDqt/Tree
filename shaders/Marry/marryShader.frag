@@ -134,7 +134,7 @@ float PCF(vec4 coords) {
     for(int i = 0; i < NUM_SAMPLES; ++i){
         vec4 shadowColor = texture(smSampler, coords.xy + poissonDisk[i] * stride / float(shadowmapSize) * wPenmbra);
         float shadowDepth = unpack(shadowColor);
-        float res = curDepth <= shadowDepth + getBias(1.4) ? 1.0 : 0.0;
+        float res = curDepth <= shadowDepth + getBias(5.8) ? 1.0 : 0.0;
         visbility += res;
     }
 
