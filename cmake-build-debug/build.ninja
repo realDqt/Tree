@@ -63,6 +63,27 @@ build CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj: CXX_COMPILER__vkRenderingE
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir
 
+build CMakeFiles/vkRenderingEngine.dir/BaseApplication/BaseApplication.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/BaseApplication/BaseApplication.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\BaseApplication
+
+build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/ShadowmapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/ShadowmapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
+
+build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/PCSSutils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/PCSSutils.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\PCSSutils.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target vkRenderingEngine
@@ -71,7 +92,7 @@ build CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj: CXX_COMPILER__vkRenderingE
 #############################################
 # Link the executable vkRenderingEngine.exe
 
-build vkRenderingEngine.exe: CXX_EXECUTABLE_LINKER__vkRenderingEngine_Debug CMakeFiles/vkRenderingEngine.dir/main.cpp.obj CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj
+build vkRenderingEngine.exe: CXX_EXECUTABLE_LINKER__vkRenderingEngine_Debug CMakeFiles/vkRenderingEngine.dir/main.cpp.obj CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj CMakeFiles/vkRenderingEngine.dir/BaseApplication/BaseApplication.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/ShadowmapPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/PCSSutils.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lglfw3  -lvulkan-1  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   LINK_PATH = -LE:/glfw/glfw-3.4.bin.WIN64/lib-mingw-w64   -LE:/Vulkan/VulkanSDK/Lib

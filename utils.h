@@ -30,10 +30,16 @@
 #include <unordered_map>
 
 #include "camera.h"
+#include "BaseApplication/BaseApplication.h"
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+std::vector<char> readFile(const std::string& filename);
+
+VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);
+uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
+void createBuffer(VkPhysicalDevice physicalDevice, VkDevice device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
 
 extern Camera camera;
 extern float deltaTime;

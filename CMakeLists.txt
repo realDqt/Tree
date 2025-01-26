@@ -27,9 +27,14 @@ add_executable(vkRenderingEngine
         utils.h
         utils.cpp
         PCSSApplication/PCSSApplication.h
-        HelloBoxApplication/HelloBoxApplication.h
         Light.h
         BaseApplication/BaseApplication.h
+        BaseApplication/BaseApplication.cpp
+        HelloBoxApplication/HelloBoxApplication.h
+        PCSSApplication/ShadowmapPass.h
+        PCSSApplication/ShadowmapPass.cpp
+        PCSSApplication/PCSSutils.h
+        PCSSApplication/PCSSutils.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1)
