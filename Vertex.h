@@ -44,8 +44,14 @@ struct VertexBox {
 namespace std {
     template<> struct hash<VertexBox> {
         size_t operator()(VertexBox const& vertex) const {
-            //return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
-            return 0;
+            std::size_t hashPos = std::hash<float>()(vertex.pos.x) ^
+                                  (std::hash<float>()(vertex.pos.y) << 1) ^
+                                  (std::hash<float>()(vertex.pos.z) << 2);
+
+            std::size_t hashColor= std::hash<float>()(vertex.color.x) ^
+                                     (std::hash<float>()(vertex.color.y) << 1) ^
+                                     (std::hash<float>()(vertex.color.z) << 2);
+            return hashPos ^ (hashColor << 1);
         }
     };
 }
@@ -142,5 +148,46 @@ struct VertexLight {
         return pos == other.pos;
     }
 };
+
+// Box4IBL
+struct VertexBoxIBL {
+    glm::vec3 pos;
+
+    static VkVertexInputBindingDescription getBindingDescription() {
+        VkVertexInputBindingDescription bindingDescription{};
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(VertexBoxIBL);
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        return bindingDescription;
+    }
+
+    static std::array<VkVertexInputAttributeDescription, 1> getAttributeDescriptions() {
+        std::array<VkVertexInputAttributeDescription, 1> attributeDescriptions{};
+
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(VertexBoxIBL, pos);
+
+        return attributeDescriptions;
+    }
+
+    bool operator==(const VertexBox& other) const {
+        return pos == other.pos;
+    }
+};
+
+namespace std {
+    template<> struct hash<VertexBoxIBL> {
+        size_t operator()(VertexBoxIBL const& vertex) const {
+            std::size_t hashPos = std::hash<float>()(vertex.pos.x) ^
+                                  (std::hash<float>()(vertex.pos.y) << 1) ^
+                                  (std::hash<float>()(vertex.pos.z) << 2);
+            return hashPos;
+        }
+    };
+}
+
 
 #endif //VKRENDERINGENGINE_VERTEX_H

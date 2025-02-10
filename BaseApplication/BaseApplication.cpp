@@ -551,11 +551,9 @@ void BaseApplication::mainLoop() {
 
 void BaseApplication::drawFrame() {}
 
-void BaseApplication::cleanupSwapChain() {
-    for (auto framebuffer : swapChainFramebuffers) {
-        vkDestroyFramebuffer(device, framebuffer, nullptr);
-    }
+void BaseApplication::prepareResources() {}
 
+void BaseApplication::cleanupSwapChain() {
     for (auto imageView : swapChainImageViews) {
         vkDestroyImageView(device, imageView, nullptr);
     }

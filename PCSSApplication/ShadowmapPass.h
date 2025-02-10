@@ -15,11 +15,11 @@ public:
 
     /*
      * device, physicalDevice
-     * colorImage, colorImageMemory, colorImageView
-     * depthImage, depthImageMemory, depthImageView
+     * colorImageView
+     * depthImageView
      * vertexBufferMarry, indexBufferMarry, indicesCountMarry
      * vertexBufferFloor, indexBufferFloor, indicesCountFloor
-     * currentFrame
+     * currentFrame, swapChainImagesCount
      */
 
     VkDevice device;
@@ -42,12 +42,8 @@ public:
 
     uint32_t swapChainImagesCount;
 
-    VkImage colorImage;
-    VkDeviceMemory colorImageMemory;
-    VkImageView colorImageView;
 
-    VkImage depthImage;
-    VkDeviceMemory depthImageMemory;
+    VkImageView colorImageView;
     VkImageView depthImageView;
 
     VkBuffer vertexBufferMarry;
@@ -74,7 +70,9 @@ public:
 
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
 
-    VkShaderModule createShaderModule(const std::vector<char>& code)const;
+    [[nodiscard]] VkShaderModule createShaderModule(const std::vector<char>& code)const;
+
+    void cleanup();
 
     void updateUniformBuffer(uint32_t currentImage);
 

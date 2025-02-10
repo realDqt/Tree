@@ -294,13 +294,6 @@ void ShadowmapPass::createDescriptorSets() {
 }
 
 void ShadowmapPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-        throw std::runtime_error("failed to begin recording command buffer!");
-    }
-
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
@@ -360,10 +353,6 @@ void ShadowmapPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t 
     vkCmdDrawIndexed(commandBuffer, indicesCountFloor, 1, 0, 0, 0);
 
     vkCmdEndRenderPass(commandBuffer);
-
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to record command buffer!");
-    }
 }
 
 void ShadowmapPass::updateUniformBuffer(uint32_t currentImage){
@@ -399,7 +388,22 @@ void ShadowmapPass::init()
     createDescriptorSetLayout();
     createGraphicsPipeline();
     createDescriptorPool();
-    createDescriptorSets();
     createUniformBuffers();
+    createDescriptorSets();
+}
+
+void ShadowmapPass::cleanup() {
+    vkDestroyPipeline(device, graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+    vkDestroyRenderPass(device, renderPass, nullptr);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroyBuffer(device, uniformBuffers[i], nullptr);
+        vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
+    }
+
+
+    vkDestroyDescriptorPool(device, descriptorPool, nullptr);
+    vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 }
 

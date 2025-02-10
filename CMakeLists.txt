@@ -35,6 +35,15 @@ add_executable(vkRenderingEngine
         PCSSApplication/ShadowmapPass.cpp
         PCSSApplication/PCSSutils.h
         PCSSApplication/PCSSutils.cpp
+        PCSSApplication/BlinPhongPass.h
+        PCSSApplication/BlinPhongPass.cpp
+        PCSSApplication/LightVisualizationPass.h
+        PCSSApplication/LightVisualization.cpp
+        IBLApplication/IBLApplication.h
+        IBLApplication/HDRVisualizationPass.h
+        IBLApplication/IBLutils.h
+        IBLApplication/IBLutils.cpp
+        IBLApplication/HDRVisualization.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1)
