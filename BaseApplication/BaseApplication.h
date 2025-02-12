@@ -97,6 +97,8 @@ public:
     std::vector<const char*> getRequiredExtensions();
     void createImageViews();
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const;
+    VkImageView createCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const;
+    VkImageView createKthCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, uint32_t faceIndex) const;
     void createCommandPool();
     void createCommandBuffers();
     void createSyncObjects();
@@ -106,6 +108,8 @@ public:
     void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
     void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+
+    void createCubemapImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& cubeImage, VkDeviceMemory& cubeImageMemory) const;
 
     void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
 

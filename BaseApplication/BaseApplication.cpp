@@ -508,6 +508,51 @@ VkImageView BaseApplication::createImageView(VkImage image, VkFormat format, VkI
     return imageView;
 }
 
+VkImageView BaseApplication::createCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const {
+
+    VkImageViewCreateInfo viewCreateInfo = {};
+    viewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    viewCreateInfo.image = cubeImage;
+    viewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_CUBE;
+    viewCreateInfo.format = format;
+    viewCreateInfo.subresourceRange.aspectMask = aspectFlags;
+    viewCreateInfo.subresourceRange.baseMipLevel = 0;
+    viewCreateInfo.subresourceRange.levelCount = mipLevels;
+    viewCreateInfo.subresourceRange.baseArrayLayer = 0;
+    viewCreateInfo.subresourceRange.layerCount = 6;
+
+    VkImageView cubeImageView;
+    if (vkCreateImageView(device, &viewCreateInfo, nullptr, &cubeImageView) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create cube image view!");
+    }
+
+    return cubeImageView;
+}
+
+VkImageView BaseApplication::createKthCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags,
+                                                uint32_t mipLevels, uint32_t faceIndex) const {
+    VkImageView imageView;
+
+    // 创建图像视图
+    VkImageViewCreateInfo viewCreateInfo = {};
+    viewCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    viewCreateInfo.image = cubeImage;
+    viewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    viewCreateInfo.format = format;
+    viewCreateInfo.subresourceRange.aspectMask = aspectFlags;
+    viewCreateInfo.subresourceRange.baseMipLevel = 0;
+    viewCreateInfo.subresourceRange.levelCount = mipLevels;
+    viewCreateInfo.subresourceRange.baseArrayLayer = faceIndex;  // 指定面索引
+    viewCreateInfo.subresourceRange.layerCount = 1;
+
+    if (vkCreateImageView(device, &viewCreateInfo, nullptr, &imageView) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create image view for cube face!");
+    }
+
+    return imageView;
+}
+
+
 void BaseApplication::createSyncObjects() {
     imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
@@ -706,6 +751,48 @@ void BaseApplication::createImage(uint32_t width, uint32_t height, uint32_t mipL
     }
 
     vkBindImageMemory(device, image, imageMemory, 0);
+}
+
+void BaseApplication::createCubemapImage(uint32_t width, uint32_t height, uint32_t mipLevels,
+                                         VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling,
+                                         VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage &cubeImage,
+                                         VkDeviceMemory &cubeImageMemory) const {
+    VkImageCreateInfo imageCreateInfo = {};
+    imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+    imageCreateInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;
+    imageCreateInfo.imageType = VK_IMAGE_TYPE_2D;
+    imageCreateInfo.extent.width = width;  // 示例宽度
+    imageCreateInfo.extent.height = height; // 示例高度
+    imageCreateInfo.extent.depth = 1;
+    imageCreateInfo.mipLevels = mipLevels;
+    imageCreateInfo.arrayLayers = 6;  // 六个面
+    imageCreateInfo.format = format;
+    imageCreateInfo.tiling = tiling;
+    imageCreateInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    imageCreateInfo.usage = usage;
+    imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    imageCreateInfo.samples = numSamples;
+
+    if (vkCreateImage(device, &imageCreateInfo, nullptr, &cubeImage) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create cube image!");
+    }
+
+    // 获取图像内存要求
+    VkMemoryRequirements memRequirements;
+    vkGetImageMemoryRequirements(device, cubeImage, &memRequirements);
+
+    // 分配内存
+    VkMemoryAllocateInfo allocInfo = {};
+    allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    allocInfo.allocationSize = memRequirements.size;
+    allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+    if (vkAllocateMemory(device, &allocInfo, nullptr, &cubeImageMemory) != VK_SUCCESS) {
+        throw std::runtime_error("failed to allocate image memory!");
+    }
+
+    // 绑定内存
+    vkBindImageMemory(device, cubeImage, cubeImageMemory, 0);
 }
 
 void BaseApplication::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels) {

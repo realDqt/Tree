@@ -43,7 +43,11 @@ add_executable(vkRenderingEngine
         IBLApplication/HDRVisualizationPass.h
         IBLApplication/IBLutils.h
         IBLApplication/IBLutils.cpp
-        IBLApplication/HDRVisualization.cpp
+        IBLApplication/HDRVisualizationPass.cpp
+        IBLApplication/CubemapPass.h
+        IBLApplication/CubemapPass.cpp
+        IBLApplication/SkyboxPass.h
+        IBLApplication/SkyboxPass.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1)

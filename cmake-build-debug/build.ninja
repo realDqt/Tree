@@ -105,8 +105,22 @@ build CMakeFiles/vkRenderingEngine.dir/IBLApplication/IBLutils.cpp.obj: CXX_COMP
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualization.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/HDRVisualization.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualization.cpp.obj.d
+build CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualizationPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/HDRVisualizationPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+
+build CMakeFiles/vkRenderingEngine.dir/IBLApplication/CubemapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/CubemapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj.d
+  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+
+build CMakeFiles/vkRenderingEngine.dir/IBLApplication/SkyboxPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/SkyboxPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
   INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
@@ -120,7 +134,7 @@ build CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualization.cpp.obj: 
 #############################################
 # Link the executable vkRenderingEngine.exe
 
-build vkRenderingEngine.exe: CXX_EXECUTABLE_LINKER__vkRenderingEngine_Debug CMakeFiles/vkRenderingEngine.dir/main.cpp.obj CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj CMakeFiles/vkRenderingEngine.dir/BaseApplication/BaseApplication.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/ShadowmapPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/PCSSutils.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/BlinPhongPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/LightVisualization.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/IBLutils.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualization.cpp.obj
+build vkRenderingEngine.exe: CXX_EXECUTABLE_LINKER__vkRenderingEngine_Debug CMakeFiles/vkRenderingEngine.dir/main.cpp.obj CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj CMakeFiles/vkRenderingEngine.dir/BaseApplication/BaseApplication.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/ShadowmapPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/PCSSutils.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/BlinPhongPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/LightVisualization.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/IBLutils.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualizationPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/CubemapPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/SkyboxPass.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lglfw3  -lvulkan-1  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   LINK_PATH = -LE:/glfw/glfw-3.4.bin.WIN64/lib-mingw-w64   -LE:/Vulkan/VulkanSDK/Lib

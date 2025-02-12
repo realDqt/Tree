@@ -11,10 +11,14 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 #include "HDRVisualizationPass.h"
+#include "CubemapPass.h"
+#include "SkyboxPass.h"
 
 class IBLApplication : public BaseApplication{
 public:
     HDRVisualizationPass hdrVisualizationPass;
+    CubemapPass cubemapPasses[6];
+    SkyboxPass skyboxPass;
 
     VkImage colorImage;
     VkDeviceMemory colorImageMemory;
@@ -24,12 +28,17 @@ public:
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
 
+    // for situation without msaa
+    VkImage depthImage2;
+    VkDeviceMemory depthImageMemory2;
+    VkImageView depthImageView2;
+
     VkImage hdrImage;
     VkDeviceMemory hdrImageMemory;
     VkImageView hdrImageView;
     VkSampler hdrSampler;
 
-    // vb and ib for hdr visualization
+    // vb and ib for box
     std::vector<VertexBoxIBL> vertices;
     std::vector<uint32_t> indices;
     VkBuffer vertexBuffer;
@@ -37,6 +46,11 @@ public:
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
 
+    VkImage envCubemap;
+    VkDeviceMemory envCubemapMemory;
+    VkImageView envCubemapView;
+    VkImageView envPerFaceViews[6];
+    VkSampler envSampler;
 
 
     void prepareResources() override
@@ -64,6 +78,55 @@ public:
             hdrVisualizationPass.swapChainImageViews[i] = swapChainImageViews[i];
 
 
+        // cubemap passes
+        glm::mat4 captureViews[6] =
+                {
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+                };
+        for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
+            cubemapPasses[faceIndex].device = device;
+            cubemapPasses[faceIndex].physicalDevice = physicalDevice;
+
+            cubemapPasses[faceIndex].hdrImageView = hdrImageView;
+            cubemapPasses[faceIndex].hdrSampler = hdrSampler;
+
+            cubemapPasses[faceIndex].colorImageView = envPerFaceViews[faceIndex];
+            cubemapPasses[faceIndex].depthImageView = depthImageView2;
+
+            cubemapPasses[faceIndex].vertexBuffer = vertexBuffer;
+            cubemapPasses[faceIndex].indexBuffer = indexBuffer;
+            cubemapPasses[faceIndex].indicesCount = indices.size();
+
+            cubemapPasses[faceIndex].swapChainImageViewsCount = swapChainImageViews.size();
+            cubemapPasses[faceIndex].viewMat = captureViews[faceIndex];
+        }
+
+        // skybox pass
+        skyboxPass.device = device;
+        skyboxPass.physicalDevice = physicalDevice;
+
+        skyboxPass.envCubemapView = envCubemapView;
+        skyboxPass.envSampler = envSampler;
+
+        skyboxPass.colorImageView = colorImageView;
+        skyboxPass.depthImageView = depthImageView;
+
+        skyboxPass.vertexBuffer = vertexBuffer;
+        skyboxPass.indexBuffer = indexBuffer;
+        skyboxPass.indicesCount = indices.size();
+
+        skyboxPass.swapChainExtent = swapChainExtent;
+        skyboxPass.swapChainImageFormat = swapChainImageFormat;
+        skyboxPass.msaaSamples = msaaSamples;
+
+        skyboxPass.swapChainImageViews.resize(swapChainImageViews.size());
+        for(size_t i = 0; i < swapChainImageViews.size(); ++i)
+            skyboxPass.swapChainImageViews[i] = swapChainImageViews[i];
 
     }
 
@@ -72,9 +135,13 @@ public:
         BaseApplication::initVulkan();
         createColorResources();
         createDepthResources();
+        createEnvResources();
+        createEnvSampler();
+
         createHdrImage();
         createHdrSampler();
         createHdrImageView();
+
         loadModel();
         createVertexBuffer();
         createIndexBuffer();
@@ -82,6 +149,23 @@ public:
 
         prepareResources();
         hdrVisualizationPass.init();
+        for(auto & cubemapPass : cubemapPasses){
+            cubemapPass.init();
+        }
+        skyboxPass.init();
+
+        executePrePass();
+    }
+
+    void executePrePass(){
+        VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+        // cubemap passes
+        for(auto & cubemapPass : cubemapPasses){
+            cubemapPass.recordCommandBuffer(commandBuffer);
+        }
+
+        endSingleTimeCommands(commandBuffer);
+
     }
 
 
@@ -96,6 +180,9 @@ public:
 
         // Light visualization pass
         hdrVisualizationPass.recordCommandBuffer(commandBuffer, imageIndex);
+
+        // skybox pass
+        skyboxPass.recordCommandBuffer(commandBuffer, imageIndex);
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
@@ -182,6 +269,7 @@ public:
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
         hdrVisualizationPass.currentFrame = currentFrame;
+        skyboxPass.currentFrame = currentFrame;
     }
 
     void createColorResources() {
@@ -196,6 +284,20 @@ public:
 
         createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
         depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+
+        createImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage2, depthImageMemory2);
+        depthImageView2 = createImageView(depthImage2, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+    }
+
+    void createEnvResources() {
+        VkFormat colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+
+        createCubemapImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, envCubemap, envCubemapMemory);
+        envCubemapView = createCubemapImageView(envCubemap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+        for(uint32_t faceIndex = 0; faceIndex < 6; ++ faceIndex){
+            envPerFaceViews[faceIndex] = createKthCubemapImageView(envCubemap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, faceIndex);
+        }
     }
 
     void createHdrImage() {
@@ -231,6 +333,7 @@ public:
         generateMipmaps(hdrImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, 1);
     }
 
+
     void createHdrSampler() {
         VkPhysicalDeviceProperties properties{};
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
@@ -254,6 +357,30 @@ public:
         samplerInfo.mipLodBias = 0.0f;
 
         if (vkCreateSampler(device, &samplerInfo, nullptr, &hdrSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+    }
+
+    void createEnvSampler() {
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.anisotropyEnable = VK_TRUE;
+        samplerInfo.anisotropyEnable = VK_FALSE;  // 是否启用各向异性过滤
+        samplerInfo.maxAnisotropy = 1.0f;  // 各向异性过滤最大值
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &envSampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create texture sampler!");
         }
     }
@@ -383,11 +510,25 @@ public:
         vkDestroyImage(device, depthImage, nullptr);
         vkFreeMemory(device, depthImageMemory, nullptr);
 
+        vkDestroyImageView(device, depthImageView2, nullptr);
+        vkDestroyImage(device, depthImage2, nullptr);
+        vkFreeMemory(device, depthImageMemory2, nullptr);
+
         vkDestroyImageView(device, colorImageView, nullptr);
         vkDestroyImage(device, colorImage, nullptr);
         vkFreeMemory(device, colorImageMemory, nullptr);
 
         for (auto framebuffer : hdrVisualizationPass.framebuffers) {
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
+        for(auto & cubemapPasse : cubemapPasses){
+            for (auto framebuffer : cubemapPasse.framebuffers) {
+                vkDestroyFramebuffer(device, framebuffer, nullptr);
+            }
+        }
+
+        for (auto framebuffer : skyboxPass.framebuffers) {
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
@@ -402,12 +543,24 @@ public:
         cleanupSwapChain();
 
         hdrVisualizationPass.cleanup();
+        for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
+            cubemapPasses[faceIndex].cleanup();
+            vkDestroyImageView(device, envPerFaceViews[faceIndex], nullptr);
+        }
+        skyboxPass.cleanup();
+
+
+        vkDestroyImageView(device, envCubemapView, nullptr);
+        vkDestroyImage(device, envCubemap, nullptr);
+        vkFreeMemory(device, envCubemapMemory, nullptr);
 
         vkDestroySampler(device, hdrSampler, nullptr);
         vkDestroyImageView(device, hdrImageView, nullptr);
 
         vkDestroyImage(device, hdrImage, nullptr);
         vkFreeMemory(device, hdrImageMemory, nullptr);
+
+        vkDestroySampler(device, envSampler, nullptr);
 
 
 

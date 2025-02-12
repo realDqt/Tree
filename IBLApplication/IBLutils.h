@@ -5,5 +5,6 @@
 #ifndef VKRENDERINGENGINE_IBLUTILS_H
 #define VKRENDERINGENGINE_IBLUTILS_H
 #include "../utils.h"
+constexpr int CUBEMAP_RESOLUTION = 512;
 extern const std::string HDR_TEXTURE_PATH;
 #endif //VKRENDERINGENGINE_IBLUTILS_H
