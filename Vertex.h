@@ -190,4 +190,69 @@ namespace std {
 }
 
 
+// sphere
+struct VertexSphere {
+    glm::vec3 pos;
+    glm::vec3 normal;
+    glm::vec2 texCoord;
+
+
+    static VkVertexInputBindingDescription getBindingDescription() {
+        VkVertexInputBindingDescription bindingDescription{};
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(VertexSphere);
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        return bindingDescription;
+    }
+
+    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+        std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(VertexSphere, pos);
+
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 1;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(VertexSphere, normal);
+
+        attributeDescriptions[2].binding = 0;
+        attributeDescriptions[2].location = 2;
+        attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[2].offset = offsetof(VertexSphere, texCoord);
+
+
+        return attributeDescriptions;
+    }
+
+    bool operator==(const VertexSphere& other) const {
+        return pos == other.pos && texCoord == other.texCoord && normal == other.normal;
+    }
+};
+
+namespace std {
+    template<> struct hash<VertexSphere> {
+        size_t operator()(VertexSphere const& vertex) const {
+            // 使用 std::hash 组合 pos、texCoord 和 normal 的哈希值
+            std::size_t hashPos = std::hash<float>()(vertex.pos.x) ^
+                                  (std::hash<float>()(vertex.pos.y) << 1) ^
+                                  (std::hash<float>()(vertex.pos.z) << 2);
+
+            std::size_t hashTexCoord = std::hash<float>()(vertex.texCoord.x) ^
+                                       (std::hash<float>()(vertex.texCoord.y) << 1);
+
+            std::size_t hashNormal = std::hash<float>()(vertex.normal.x) ^
+                                     (std::hash<float>()(vertex.normal.y) << 1) ^
+                                     (std::hash<float>()(vertex.normal.z) << 2);
+
+            // 组合所有哈希值
+            return hashPos ^ (hashNormal << 1) ^ (hashTexCoord << 2);
+        }
+    };
+}
+
+
 #endif //VKRENDERINGENGINE_VERTEX_H

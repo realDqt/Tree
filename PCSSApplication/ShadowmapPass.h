@@ -9,7 +9,7 @@
 
 class ShadowmapPass{
 public:
-    struct UniformBufferObject{
+    struct alignas(16) UniformBufferObject{
         alignas(16) glm::mat4 lightMVP;
     };
 

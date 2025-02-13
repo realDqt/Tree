@@ -8,9 +8,9 @@
 #include "../Vertex.h"
 class LightVisualizationPass{
 public:
-    struct UniformBufferObject{
+    struct alignas(16) UniformBufferObject{
         alignas(16) glm::mat4 MVP;
-        alignas(4) glm::vec3 lightIntensity;
+        alignas(16) glm::vec3 lightIntensity;
     };
 
     /*

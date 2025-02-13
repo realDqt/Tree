@@ -51,6 +51,8 @@ add_executable(vkRenderingEngine
         VulkanInitializers.hpp
         VulkanTools.h
         VulkanTools.cpp
+        IBLApplication/SpherePass.h
+        IBLApplication/SpherePass.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1)

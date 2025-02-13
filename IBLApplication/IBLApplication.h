@@ -13,12 +13,14 @@
 #include "HDRVisualizationPass.h"
 #include "CubemapPass.h"
 #include "SkyboxPass.h"
+#include "SpherePass.h"
 
 class IBLApplication : public BaseApplication{
 public:
-    HDRVisualizationPass hdrVisualizationPass;
+    //HDRVisualizationPass hdrVisualizationPass;
     CubemapPass cubemapPasses[6];
     SkyboxPass skyboxPass;
+    SpherePass spherePasses[nrRows * nrColumns];
 
     VkImage colorImage;
     VkDeviceMemory colorImageMemory;
@@ -46,21 +48,25 @@ public:
     VkBuffer indexBuffer;
     VkDeviceMemory indexBufferMemory;
 
+    // vb and ib for sphere
+    std::vector<VertexSphere> vertices2;
+    std::vector<uint32_t> indices2;
+    VkBuffer vertexBuffer2;
+    VkDeviceMemory vertexBufferMemory2;
+    VkBuffer indexBuffer2;
+    VkDeviceMemory indexBufferMemory2;
+
     VkImage envCubemap;
     VkDeviceMemory envCubemapMemory;
     VkImageView envCubemapView;
     VkImageView envPerFaceViews[6];
     VkSampler envSampler;
 
-    // to construct cubemap
-    std::vector<VkImage> colorImages;
-    std::vector<VkDeviceMemory> colorImageMemories;
-    std::vector<VkImageView> colorImageViews;
-
 
 
     void prepareResources() override
     {
+        /*
         // hdr visualization pass
         hdrVisualizationPass.device = device;
         hdrVisualizationPass.physicalDevice = physicalDevice;
@@ -84,7 +90,7 @@ public:
 
         for(size_t i = 0; i < swapChainImageViews.size(); ++i)
             hdrVisualizationPass.swapChainImageViews[i] = swapChainImageViews[i];
-
+        */
 
         // cubemap passes
         glm::mat4 captureViews[6] =
@@ -104,7 +110,7 @@ public:
             cubemapPasses[faceIndex].hdrImageView = hdrImageView;
             cubemapPasses[faceIndex].hdrSampler = hdrSampler;
 
-            cubemapPasses[faceIndex].colorImageView = colorImageViews[faceIndex];
+            cubemapPasses[faceIndex].colorImageView = envPerFaceViews[faceIndex];
             cubemapPasses[faceIndex].depthImageView = depthImageView2;
 
             cubemapPasses[faceIndex].vertexBuffer = vertexBuffer;
@@ -113,6 +119,50 @@ public:
 
             cubemapPasses[faceIndex].swapChainImageViewsCount = swapChainImageViews.size();
             cubemapPasses[faceIndex].viewMat = captureViews[faceIndex];
+        }
+
+        // sphere passes
+        auto model = glm::mat4(1.0f);
+        for (int row = 0; row < nrRows; ++row)
+        {
+            SpherePass::ExternalInfo externalInfo{};
+            externalInfo.metallic = (float)row / (float)nrRows;
+            externalInfo.albedo = glm::vec3(0.5f, 0.0f, 0.0f);
+            externalInfo.ao = 1.0f;
+            for (int col = 0; col < nrColumns; ++col)
+            {
+                // we clamp the roughness to 0.025 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
+                // on direct lighting.
+                externalInfo.roughness = glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f);
+                model = glm::mat4(1.0f);
+                model = glm::translate(model, glm::vec3(
+                        (float)(col - (nrColumns / 2)) * spacing,
+                        (float)(row - (nrRows / 2)) * spacing,
+                        -2.0f
+                ));
+                externalInfo.model = model;
+                externalInfo.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
+                int idx = row * nrColumns + col;
+                spherePasses[idx].device = device;
+                spherePasses[idx].physicalDevice = physicalDevice;
+
+                spherePasses[idx].colorImageView = colorImageView;
+                spherePasses[idx].depthImageView = depthImageView;
+
+                spherePasses[idx].vertexBuffer = vertexBuffer2;
+                spherePasses[idx].indexBuffer = indexBuffer2;
+                spherePasses[idx].indicesCount = indices2.size();
+
+                spherePasses[idx].swapChainExtent = swapChainExtent;
+                spherePasses[idx].swapChainImageFormat = swapChainImageFormat;
+                spherePasses[idx].msaaSamples = msaaSamples;
+
+                spherePasses[idx].swapChainImageViews.resize(swapChainImageViews.size());
+
+                for(size_t i = 0; i < swapChainImageViews.size(); ++i)
+                    spherePasses[idx].swapChainImageViews[i] = swapChainImageViews[i];
+                spherePasses[idx].externalInfo = externalInfo;
+            }
         }
 
         // skybox pass
@@ -157,10 +207,15 @@ public:
 
 
         prepareResources();
-        hdrVisualizationPass.init();
+        //hdrVisualizationPass.init();
         for(auto & cubemapPass : cubemapPasses){
             cubemapPass.init();
         }
+
+        for(auto& spherePass : spherePasses){
+            spherePass.init();
+        }
+
         skyboxPass.init();
 
         executePrePass();
@@ -173,7 +228,7 @@ public:
             cubemapPass.recordCommandBuffer(commandBuffer);
         }
 
-        copyImage2DtoCubemap(commandBuffer, colorImages, envCubemap, CUBEMAP_RESOLUTION);
+        //copyImage2DtoCubemap(commandBuffer, colorImages, envCubemap, CUBEMAP_RESOLUTION);
 
         endSingleTimeCommands(commandBuffer);
 
@@ -250,7 +305,12 @@ public:
 
 
         // Light visualization pass
-        hdrVisualizationPass.recordCommandBuffer(commandBuffer, imageIndex);
+        //hdrVisualizationPass.recordCommandBuffer(commandBuffer, imageIndex);
+
+        // sphere passes
+        for(auto& spherePass : spherePasses){
+            spherePass.recordCommandBuffer(commandBuffer, imageIndex);
+        }
 
         // skybox pass
         skyboxPass.recordCommandBuffer(commandBuffer, imageIndex);
@@ -339,8 +399,10 @@ public:
         }
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-        hdrVisualizationPass.currentFrame = currentFrame;
+        //hdrVisualizationPass.currentFrame = currentFrame;
         skyboxPass.currentFrame = currentFrame;
+        for(auto& spherePass : spherePasses)
+            spherePass.currentFrame = currentFrame;
     }
 
     void createColorResources() {
@@ -348,14 +410,6 @@ public:
 
         createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
         colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-
-        colorImages.resize(6);
-        colorImageMemories.resize(6);
-        colorImageViews.resize(6);
-        for(uint32_t f = 0; f < 6; ++f){
-            createImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImages[f], colorImageMemories[f]);
-            colorImageViews[f] = createImageView(colorImages[f], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-        }
     }
 
     void createDepthResources() {
@@ -371,7 +425,7 @@ public:
     void createEnvResources() {
         VkFormat colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
 
-        createCubemapImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, envCubemap, envCubemapMemory);
+        createCubemapImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, envCubemap, envCubemapMemory);
         envCubemapView = createCubemapImageView(envCubemap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
         for(uint32_t faceIndex = 0; faceIndex < 6; ++ faceIndex){
@@ -470,6 +524,52 @@ public:
 
     void loadModel(){
         loadBoxModel();
+        loadSphereModel();
+    }
+
+    void loadSphereModel(){
+        const unsigned int X_SEGMENTS = 64;
+        const unsigned int Y_SEGMENTS = 64;
+        const float PI = 3.14159265359f;
+        for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+        {
+            for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
+            {
+                float xSegment = (float)x / (float)X_SEGMENTS;
+                float ySegment = (float)y / (float)Y_SEGMENTS;
+                float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+                float yPos = std::cos(ySegment * PI);
+                float zPos = std::sin(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
+
+                VertexSphere vertexSphere{};
+                vertexSphere.pos = glm::vec3(xPos, yPos, zPos);
+                vertexSphere.normal = glm::vec3(xPos, yPos, zPos);
+                vertexSphere.texCoord = glm::vec2(xSegment, ySegment);
+                vertices2.push_back(vertexSphere);
+            }
+        }
+
+        bool oddRow = false;
+        for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
+        {
+            if (!oddRow) // even rows: y == 0, y == 2; and so on
+            {
+                for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
+                {
+                    indices2.push_back(y * (X_SEGMENTS + 1) + x);
+                    indices2.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+                }
+            }
+            else
+            {
+                for (int x = X_SEGMENTS; x >= 0; --x)
+                {
+                    indices2.push_back((y + 1) * (X_SEGMENTS + 1) + x);
+                    indices2.push_back(y * (X_SEGMENTS + 1) + x);
+                }
+            }
+            oddRow = !oddRow;
+        }
     }
 
     void loadBoxModel() {
@@ -538,10 +638,12 @@ public:
 
     void createVertexBuffer(){
         createVertexBoxBuffer();
+        createVertexSphereBuffer();
     }
 
     void createIndexBuffer(){
         createIndexBoxBuffer();
+        createIndexSphereBuffer();
     }
 
     void createVertexBoxBuffer() {
@@ -559,6 +661,26 @@ public:
         createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
 
         copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void createVertexSphereBuffer() {
+        VkDeviceSize bufferSize = sizeof(vertices2[0]) * vertices2.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices2.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer2, vertexBufferMemory2);
+
+        copyBuffer(stagingBuffer, vertexBuffer2, bufferSize);
 
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
@@ -584,6 +706,26 @@ public:
         vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
+    void createIndexSphereBuffer() {
+        VkDeviceSize bufferSize = sizeof(indices2[0]) * indices2.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices2.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer2, indexBufferMemory2);
+
+        copyBuffer(stagingBuffer, indexBuffer2, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
     void cleanupSwapChain() override{
         vkDestroyImageView(device, depthImageView, nullptr);
         vkDestroyImage(device, depthImage, nullptr);
@@ -597,18 +739,19 @@ public:
         vkDestroyImage(device, colorImage, nullptr);
         vkFreeMemory(device, colorImageMemory, nullptr);
 
-        for(uint32_t f = 0; f < 6; ++f){
-            vkDestroyImageView(device, colorImageViews[f], nullptr);
-            vkDestroyImage(device, colorImages[f], nullptr);
-            vkFreeMemory(device, colorImageMemories[f], nullptr);
-        }
-
+        /*
         for (auto framebuffer : hdrVisualizationPass.framebuffers) {
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+        */
 
-        for(auto & cubemapPasse : cubemapPasses){
-            for (auto framebuffer : cubemapPasse.framebuffers) {
+        for(auto & cubemapPass : cubemapPasses){
+            for (auto framebuffer : cubemapPass.framebuffers) {
+                vkDestroyFramebuffer(device, framebuffer, nullptr);
+            }
+        }
+        for(auto & spherePass : spherePasses){
+            for (auto framebuffer : spherePass.framebuffers) {
                 vkDestroyFramebuffer(device, framebuffer, nullptr);
             }
         }
@@ -627,12 +770,15 @@ public:
     void cleanup() override{
         cleanupSwapChain();
 
-        hdrVisualizationPass.cleanup();
+        //hdrVisualizationPass.cleanup();
         for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
             cubemapPasses[faceIndex].cleanup();
             vkDestroyImageView(device, envPerFaceViews[faceIndex], nullptr);
         }
         skyboxPass.cleanup();
+        for(auto& spherePass: spherePasses){
+            spherePass.cleanup();
+        }
 
 
         vkDestroyImageView(device, envCubemapView, nullptr);
@@ -654,6 +800,12 @@ public:
 
         vkDestroyBuffer(device, vertexBuffer, nullptr);
         vkFreeMemory(device, vertexBufferMemory, nullptr);
+
+        vkDestroyBuffer(device, indexBuffer2, nullptr);
+        vkFreeMemory(device, indexBufferMemory2, nullptr);
+
+        vkDestroyBuffer(device, vertexBuffer2, nullptr);
+        vkFreeMemory(device, vertexBufferMemory2, nullptr);
 
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {

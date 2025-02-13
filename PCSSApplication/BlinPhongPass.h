@@ -9,7 +9,7 @@
 
 class BlinPhongPass{
 public:
-    struct UniformBufferObject {
+    struct alignas(16) UniformBufferObject {
         alignas(16) glm::mat4 model;
         alignas(16) glm::mat4 view;
         alignas(16) glm::mat4 proj;
@@ -17,9 +17,9 @@ public:
         alignas(16) glm::mat4 lightMVP;
     };
 
-    struct PushConstants {
-        alignas(4) glm::vec3 cameraPos;
-        alignas(1) bool isFloor;
+    struct alignas(16) PushConstants {
+        alignas(16) glm::vec3 cameraPos;
+        bool isFloor;
     };
 
     /*
