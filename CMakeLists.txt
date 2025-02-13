@@ -48,6 +48,9 @@ add_executable(vkRenderingEngine
         IBLApplication/CubemapPass.cpp
         IBLApplication/SkyboxPass.h
         IBLApplication/SkyboxPass.cpp
+        VulkanInitializers.hpp
+        VulkanTools.h
+        VulkanTools.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1)

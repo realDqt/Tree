@@ -52,6 +52,12 @@ public:
     VkImageView envPerFaceViews[6];
     VkSampler envSampler;
 
+    // to construct cubemap
+    std::vector<VkImage> colorImages;
+    std::vector<VkDeviceMemory> colorImageMemories;
+    std::vector<VkImageView> colorImageViews;
+
+
 
     void prepareResources() override
     {
@@ -74,6 +80,8 @@ public:
         hdrVisualizationPass.msaaSamples = msaaSamples;
 
         hdrVisualizationPass.swapChainImageViews.resize(swapChainImageViews.size());
+        hdrVisualizationPass.viewMatTest = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f));
+
         for(size_t i = 0; i < swapChainImageViews.size(); ++i)
             hdrVisualizationPass.swapChainImageViews[i] = swapChainImageViews[i];
 
@@ -81,13 +89,14 @@ public:
         // cubemap passes
         glm::mat4 captureViews[6] =
                 {
-                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
-                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
-                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
-                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),  // +X
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),  // -X
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),  // -Y
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f, 0.0f,  1.0f)),  // +Y
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),  // +Z
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))   // -Z
                 };
+
         for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
             cubemapPasses[faceIndex].device = device;
             cubemapPasses[faceIndex].physicalDevice = physicalDevice;
@@ -95,7 +104,7 @@ public:
             cubemapPasses[faceIndex].hdrImageView = hdrImageView;
             cubemapPasses[faceIndex].hdrSampler = hdrSampler;
 
-            cubemapPasses[faceIndex].colorImageView = envPerFaceViews[faceIndex];
+            cubemapPasses[faceIndex].colorImageView = colorImageViews[faceIndex];
             cubemapPasses[faceIndex].depthImageView = depthImageView2;
 
             cubemapPasses[faceIndex].vertexBuffer = vertexBuffer;
@@ -164,8 +173,70 @@ public:
             cubemapPass.recordCommandBuffer(commandBuffer);
         }
 
+        copyImage2DtoCubemap(commandBuffer, colorImages, envCubemap, CUBEMAP_RESOLUTION);
+
         endSingleTimeCommands(commandBuffer);
 
+    }
+
+    void copyImage2DtoCubemap(VkCommandBuffer cmdBuf, std::vector<VkImage>& images, VkImage& cubemap, uint32_t dim){
+        VkImageSubresourceRange subresourceRange = {};
+        subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        subresourceRange.baseMipLevel = 0;
+        subresourceRange.levelCount = 1;
+        subresourceRange.layerCount = 6;
+
+        // Change image layout for all cubemap faces to transfer destination
+        vks::tools::setImageLayout(
+                cmdBuf,
+                cubemap,
+                VK_IMAGE_LAYOUT_UNDEFINED,
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                subresourceRange);
+
+        for (uint32_t f = 0; f < 6; f++) {
+            vks::tools::setImageLayout(
+                    cmdBuf,
+                    images[f],
+                    VK_IMAGE_ASPECT_COLOR_BIT,
+                    VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+
+            // Copy region for transfer from framebuffer to cube face
+            VkImageCopy copyRegion = {};
+
+            copyRegion.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            copyRegion.srcSubresource.baseArrayLayer = 0;
+            copyRegion.srcSubresource.mipLevel = 0;
+            copyRegion.srcSubresource.layerCount = 1;
+            copyRegion.srcOffset = { 0, 0, 0 };
+
+            copyRegion.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            copyRegion.dstSubresource.baseArrayLayer = f;
+            copyRegion.dstSubresource.mipLevel = 0;
+            copyRegion.dstSubresource.layerCount = 1;
+            copyRegion.dstOffset = { 0, 0, 0 };
+
+            copyRegion.extent.width = static_cast<uint32_t>(dim);
+            copyRegion.extent.height = static_cast<uint32_t>(dim);
+            copyRegion.extent.depth = 1;
+
+            vkCmdCopyImage(
+                    cmdBuf,
+                    images[f],
+                    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                    cubemap,
+                    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                    1,
+                    &copyRegion);
+        }
+
+        vks::tools::setImageLayout(
+                cmdBuf,
+                cubemap,
+                VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                subresourceRange);
     }
 
 
@@ -277,6 +348,14 @@ public:
 
         createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
         colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+        colorImages.resize(6);
+        colorImageMemories.resize(6);
+        colorImageViews.resize(6);
+        for(uint32_t f = 0; f < 6; ++f){
+            createImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImages[f], colorImageMemories[f]);
+            colorImageViews[f] = createImageView(colorImages[f], VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+        }
     }
 
     void createDepthResources() {
@@ -292,7 +371,7 @@ public:
     void createEnvResources() {
         VkFormat colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
 
-        createCubemapImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, envCubemap, envCubemapMemory);
+        createCubemapImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, envCubemap, envCubemapMemory);
         envCubemapView = createCubemapImageView(envCubemap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
         for(uint32_t faceIndex = 0; faceIndex < 6; ++ faceIndex){
@@ -301,7 +380,7 @@ public:
     }
 
     void createHdrImage() {
-        stbi_set_flip_vertically_on_load(true);
+        //stbi_set_flip_vertically_on_load(true);
         int texWidth, texHeight, texChannels;
         stbi_uc* pixels = stbi_load(HDR_TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -517,6 +596,12 @@ public:
         vkDestroyImageView(device, colorImageView, nullptr);
         vkDestroyImage(device, colorImage, nullptr);
         vkFreeMemory(device, colorImageMemory, nullptr);
+
+        for(uint32_t f = 0; f < 6; ++f){
+            vkDestroyImageView(device, colorImageViews[f], nullptr);
+            vkDestroyImage(device, colorImages[f], nullptr);
+            vkFreeMemory(device, colorImageMemories[f], nullptr);
+        }
 
         for (auto framebuffer : hdrVisualizationPass.framebuffers) {
             vkDestroyFramebuffer(device, framebuffer, nullptr);

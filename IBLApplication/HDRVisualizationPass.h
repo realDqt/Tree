@@ -57,6 +57,8 @@ public:
 
     uint32_t  currentFrame;
 
+    glm::mat4 viewMatTest;
+
     void init();
 
     void createRenderPass();
