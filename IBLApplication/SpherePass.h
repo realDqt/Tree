@@ -9,26 +9,26 @@
 class SpherePass{
 public:
     struct alignas(16) UniformBufferObject{
-        alignas(16) glm::mat4 model;
-        alignas(16) glm::mat4 view;
-        alignas(16) glm::mat4 proj;
-        alignas(16) glm::mat4 normalMatrix;
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 proj;
+        glm::mat4 normalMatrix;
     };
 
     struct alignas(16) MaterialParameters {
-        alignas(16) glm::vec3 albedo;  // vec3 转为 vec4，16 字节对齐
+        glm::vec3 albedo;  // vec3 转为 vec4，16 字节对齐
         float metallic;
         float roughness;
         float ao;
     };
 
     struct alignas(16) LightParameters {
-        alignas(16) glm::vec3 lightPositions[4];  // vec3 转为 vec4，16 字节对齐
-        alignas(16) glm::vec3 lightColors[4];     // vec3 转为 vec4，16 字节对齐
+        glm::vec4 lightPositions[4];  // vec3 转为 vec4，16 字节对齐
+        glm::vec4 lightColors[4];     // vec3 转为 vec4，16 字节对齐
     };
 
     struct alignas(16) PushConstants{
-        alignas(16) glm::vec3 cameraPos;
+        glm::vec3 cameraPos;
     };
 
     struct ExternalInfo{

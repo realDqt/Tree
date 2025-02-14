@@ -527,14 +527,14 @@ public:
         loadSphereModel();
     }
 
-    void loadSphereModel(){
+    void loadSphereModel() {
         const unsigned int X_SEGMENTS = 64;
         const unsigned int Y_SEGMENTS = 64;
         const float PI = 3.14159265359f;
-        for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
-        {
-            for (unsigned int y = 0; y <= Y_SEGMENTS; ++y)
-            {
+
+        // 顶点生成
+        for (unsigned int x = 0; x <= X_SEGMENTS; ++x) {
+            for (unsigned int y = 0; y <= Y_SEGMENTS; ++y) {
                 float xSegment = (float)x / (float)X_SEGMENTS;
                 float ySegment = (float)y / (float)Y_SEGMENTS;
                 float xPos = std::cos(xSegment * 2.0f * PI) * std::sin(ySegment * PI);
@@ -549,28 +549,28 @@ public:
             }
         }
 
-        bool oddRow = false;
-        for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
-        {
-            if (!oddRow) // even rows: y == 0, y == 2; and so on
-            {
-                for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
-                {
-                    indices2.push_back(y * (X_SEGMENTS + 1) + x);
-                    indices2.push_back((y + 1) * (X_SEGMENTS + 1) + x);
-                }
+        // 索引生成
+        for (unsigned int y = 0; y < Y_SEGMENTS; ++y) {
+            for (unsigned int x = 0; x < X_SEGMENTS; ++x) {
+                // 生成两组三角形（每一对相邻的四个顶点形成两个三角形）
+                unsigned int topLeft = y * (X_SEGMENTS + 1) + x;
+                unsigned int topRight = y * (X_SEGMENTS + 1) + (x + 1);
+                unsigned int bottomLeft = (y + 1) * (X_SEGMENTS + 1) + x;
+                unsigned int bottomRight = (y + 1) * (X_SEGMENTS + 1) + (x + 1);
+
+                // 第一个三角形
+                indices2.push_back(topLeft);
+                indices2.push_back(bottomLeft);
+                indices2.push_back(topRight);
+
+                // 第二个三角形
+                indices2.push_back(topRight);
+                indices2.push_back(bottomLeft);
+                indices2.push_back(bottomRight);
             }
-            else
-            {
-                for (int x = X_SEGMENTS; x >= 0; --x)
-                {
-                    indices2.push_back((y + 1) * (X_SEGMENTS + 1) + x);
-                    indices2.push_back(y * (X_SEGMENTS + 1) + x);
-                }
-            }
-            oddRow = !oddRow;
         }
     }
+
 
     void loadBoxModel() {
         float positions[] = {

@@ -416,22 +416,23 @@ void SpherePass::updateMaterialParameters(uint32_t currentImage) {
 }
 
 void SpherePass::updateLightParameters(uint32_t currentImage) {
-    glm::vec3 lightPositions[] = {
-            glm::vec3(-10.0f,  10.0f, 10.0f),
-            glm::vec3( 10.0f,  10.0f, 10.0f),
-            glm::vec3(-10.0f, -10.0f, 10.0f),
-            glm::vec3( 10.0f, -10.0f, 10.0f),
+    float base = 10.0f;
+    glm::vec4 lightPositions[] = {
+            glm::vec4(-base,  base, 10.0f, 0.0f),
+            glm::vec4( base,  base, 10.0f, 0.0f),
+            glm::vec4(-base, -base, 10.0f, 0.0f),
+            glm::vec4( base, -base, 10.0f, 0.0f),
     };
-    glm::vec3 lightColors[] = {
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f),
-            glm::vec3(300.0f, 300.0f, 300.0f)
+    glm::vec4 lightColors[] = {
+            glm::vec4(300.0f, 300.0f, 300.0f, 0.0f),
+            glm::vec4(300.0f, 300.0f, 300.0f, 0.0f),
+            glm::vec4(300.0f, 300.0f, 300.0f, 0.0f),
+            glm::vec4(300.0f, 300.0f, 300.0f, 0.0f)
     };
     LightParameters lp{};
     for(uint32_t i = 0; i < 4; ++i){
         lp.lightPositions[i] = lightPositions[i];
-        lp.lightColors[i] = lp.lightColors[i];
+        lp.lightColors[i] = lightColors[i];
     }
     memcpy(lightParametersMapped[currentImage], &lp, sizeof(lp));
 }
