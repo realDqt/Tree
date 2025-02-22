@@ -175,7 +175,6 @@ public:
             irradianceMapPasses[faceIndex].envSampler = envSampler;
 
             irradianceMapPasses[faceIndex].colorImageView = irradiancePerFaceViews[faceIndex];
-            // TODO: use depthImageView3
             irradianceMapPasses[faceIndex].depthImageView = depthImageView3;
 
             irradianceMapPasses[faceIndex].vertexBuffer = vertexBuffer;
@@ -185,6 +184,16 @@ public:
             irradianceMapPasses[faceIndex].viewMat = captureViews[faceIndex];
         }
 
+        glm::mat4 prefilterCaptureViews[6] =
+                {
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),  // +X
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),  // -X
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  1.0f,  0.0f), glm::vec3(0.0f, 0.0f,  1.0f)),  // +Y
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f, -1.0f,  0.0f), glm::vec3(0.0f, 0.0f, -1.0f)),  // -Y
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),  // +Z
+                        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3( 0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))   // -Z
+
+                };
         // prefilter map passes
         uint32_t resolution = PREFILTER_MAP_RESOLUTION;
         for(uint32_t mipLevel = 0; mipLevel < MIPMAP_COUNT; ++mipLevel){
@@ -203,7 +212,7 @@ public:
                 prefilterMapPasses[idx].indexBuffer = indexBuffer;
                 prefilterMapPasses[idx].indicesCount = indices.size();
 
-                prefilterMapPasses[idx].viewMat = captureViews[faceIndex];
+                prefilterMapPasses[idx].viewMat = prefilterCaptureViews[faceIndex];
                 prefilterMapPasses[idx].colorImageExtent = VkExtent2D(resolution, resolution);
                 prefilterMapPasses[idx].roughness = (float)mipLevel / (float)(MIPMAP_COUNT - 1);
             }
@@ -276,6 +285,7 @@ public:
         // skybox pass
         skyboxPass.device = device;
         skyboxPass.physicalDevice = physicalDevice;
+
 
         skyboxPass.envCubemapView = envCubemapView;
         skyboxPass.envSampler = envSampler;

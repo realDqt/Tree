@@ -91,7 +91,7 @@ void PrefilterMapPass::createDescriptorSetLayout()
 }
 
 void PrefilterMapPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/renderBoxVert.spv");
+    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/prefilterEnvMapVert.spv");
     auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/prefilterEnvMapFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);

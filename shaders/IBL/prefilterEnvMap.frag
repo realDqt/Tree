@@ -41,7 +41,7 @@ vec3 importanceSample_GGX(vec2 Xi, float roughness, vec3 normal)
     float alpha = roughness * roughness;
     float phi = 2.0 * PI * Xi.x + random(normal.xz) * 0.1;
     float cosTheta = sqrt((1.0 - Xi.y) / (1.0 + (alpha*alpha - 1.0) * Xi.y));
-    float sinTheta = sqrt(1.0 - cosTheta * cosTheta);
+    float sinTheta = float(sqrt(1.0 - cosTheta * cosTheta));
     vec3 H = vec3(sinTheta * cos(phi), sinTheta * sin(phi), cosTheta);
 
     // Tangent space

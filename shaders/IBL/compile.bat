@@ -1,6 +1,7 @@
 E:/Vulkan/VulkanSDK/Bin/glslangValidator.exe -V -R renderBox.vert -o renderBoxVert.spv
 E:/Vulkan/VulkanSDK/Bin/glslangValidator.exe -V -R renderBox.frag -o renderBoxFrag.spv
 E:/Vulkan/VulkanSDK/Bin/glslangValidator.exe -V -R irradianceConvolution.frag -o irradianceConvolutionFrag.spv
+E:/Vulkan/VulkanSDK/Bin/glslangValidator.exe -V -R prefilterEnvMap.vert -o prefilterEnvMapVert.spv
 E:/Vulkan/VulkanSDK/Bin/glslangValidator.exe -V -R prefilterEnvMap.frag -o prefilterEnvMapFrag.spv
 E:/Vulkan/VulkanSDK/Bin/glslangValidator.exe -V -R skybox.vert -o skyboxVert.spv
 E:/Vulkan/VulkanSDK/Bin/glslangValidator.exe -V -R skybox.frag -o skyboxFrag.spv
