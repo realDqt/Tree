@@ -9,8 +9,8 @@ a rendering engine based on vulkan
 
 ### 1. PCSS
 
-![PCSS](.\demos\PCSS.png)
+![PCSS](./demos/PCSS.png)
 
 ### 2. PBR+IBL
 
-![IBL](.\demos\IBL.png)
+![IBL](./demos/IBL.png)
