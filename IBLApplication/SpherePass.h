@@ -93,6 +93,9 @@ public:
     uint32_t  currentFrame;
     ExternalInfo externalInfo;
 
+    VkSampler irradianceSampler;
+    VkImageView irradianceMapView;
+
 
     void init();
 

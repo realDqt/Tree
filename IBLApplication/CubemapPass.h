@@ -18,7 +18,6 @@ public:
      * colorImageView
      * depthImageView
      * vertexBuffer, indexBuffer, indicesCount
-     * currentFrame, swapChainImageViewsCount
      * hdrImageView, hdrSampler
      * viewMat
      */
@@ -40,7 +39,6 @@ public:
     std::vector<void*> uniformBuffersMapped;
 
     std::vector<VkFramebuffer> framebuffers;
-    uint32_t swapChainImageViewsCount;
 
 
     VkImageView hdrImageView;

@@ -18,6 +18,8 @@ layout(binding = 2, std140) uniform LightParameters{
     vec3 lightColors[4];
 } lp;
 
+layout(binding = 3) uniform samplerCube irradianceMap;
+
 layout(push_constant, std140) uniform PushConstants{
     vec3 cameraPos;
 } constants;
@@ -97,7 +99,13 @@ void main() {
         Lo += (Kd * mp.albedo / PI + specular) * radiance * NdotL;
     }
 
-    vec3 ambient = vec3(0.03) * mp.albedo * mp.ao;
+    // ambient lighting (we now use IBL as the ambient term)
+    vec3 kS = FresnelSchlick(max(dot(N, V), 0.0), F0);
+    vec3 kD = 1.0 - kS;
+    kD *= 1.0 - mp.metallic;
+    vec3 irradiance = texture(irradianceMap, N).rgb;
+    vec3 diffuse      = irradiance * mp.albedo;
+    vec3 ambient = (kD * diffuse) * mp.ao;
 
     vec3 color = ambient + Lo;
 

@@ -53,6 +53,10 @@ add_executable(vkRenderingEngine
         VulkanTools.cpp
         IBLApplication/SpherePass.h
         IBLApplication/SpherePass.cpp
+        IBLApplication/IrradianceMapPass.h
+        IBLApplication/IrradianceMapPass.cpp
+        IBLApplication/PrefilterMapPass.h
+        IBLApplication/PrefilterMapPass.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1)

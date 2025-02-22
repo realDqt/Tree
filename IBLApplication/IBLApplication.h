@@ -14,13 +14,19 @@
 #include "CubemapPass.h"
 #include "SkyboxPass.h"
 #include "SpherePass.h"
+#include "IrradianceMapPass.h"
+#include "PrefilterMapPass.h"
 
 class IBLApplication : public BaseApplication{
 public:
     //HDRVisualizationPass hdrVisualizationPass;
     CubemapPass cubemapPasses[6];
+    IrradianceMapPass irradianceMapPasses[6];
+    PrefilterMapPass prefilterMapPasses[6 * MIPMAP_COUNT];
+
+
     SkyboxPass skyboxPass;
-    SpherePass spherePasses[nrRows * nrColumns];
+    SpherePass spherePasses[NR_ROWS * NR_COLUMNS];
 
     VkImage colorImage;
     VkDeviceMemory colorImageMemory;
@@ -30,10 +36,20 @@ public:
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
 
-    // for situation without msaa
+    // for cubemap passes
     VkImage depthImage2;
     VkDeviceMemory depthImageMemory2;
     VkImageView depthImageView2;
+
+    // for irradiance map passes
+    VkImage depthImage3;
+    VkDeviceMemory depthImageMemory3;
+    VkImageView depthImageView3;
+
+    // for prefilter map passes
+    VkImage depthImages[6 * MIPMAP_COUNT];
+    VkDeviceMemory depthImageMemories[6 * MIPMAP_COUNT];
+    VkImageView depthImageViews[6 * MIPMAP_COUNT];
 
     VkImage hdrImage;
     VkDeviceMemory hdrImageMemory;
@@ -61,6 +77,18 @@ public:
     VkImageView envCubemapView;
     VkImageView envPerFaceViews[6];
     VkSampler envSampler;
+
+    VkImage irradianceMap;
+    VkDeviceMemory irradianceMapMemory;
+    VkImageView irradianceMapView;
+    VkImageView irradiancePerFaceViews[6];
+    VkSampler irradianceSampler;
+
+    VkImage prefilterMap;
+    VkDeviceMemory prefilterMapMemory;
+    VkImageView prefilterMapView;
+    VkImageView prefilterPerFacePerMipViews[6 * MIPMAP_COUNT];
+    VkSampler prefilterMapSampler;
 
 
 
@@ -117,32 +145,75 @@ public:
             cubemapPasses[faceIndex].indexBuffer = indexBuffer;
             cubemapPasses[faceIndex].indicesCount = indices.size();
 
-            cubemapPasses[faceIndex].swapChainImageViewsCount = swapChainImageViews.size();
             cubemapPasses[faceIndex].viewMat = captureViews[faceIndex];
+        }
+
+        // irradiance passes
+        for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
+            irradianceMapPasses[faceIndex].device = device;
+            irradianceMapPasses[faceIndex].physicalDevice = physicalDevice;
+
+            irradianceMapPasses[faceIndex].envImageView = envCubemapView;
+            irradianceMapPasses[faceIndex].envSampler = envSampler;
+
+            irradianceMapPasses[faceIndex].colorImageView = irradiancePerFaceViews[faceIndex];
+            // TODO: use depthImageView3
+            irradianceMapPasses[faceIndex].depthImageView = depthImageView3;
+
+            irradianceMapPasses[faceIndex].vertexBuffer = vertexBuffer;
+            irradianceMapPasses[faceIndex].indexBuffer = indexBuffer;
+            irradianceMapPasses[faceIndex].indicesCount = indices.size();
+
+            irradianceMapPasses[faceIndex].viewMat = captureViews[faceIndex];
+        }
+
+        // prefilter map passes
+        uint32_t resolution = PREFILTER_MAP_RESOLUTION;
+        for(uint32_t mipLevel = 0; mipLevel < MIPMAP_COUNT; ++mipLevel){
+            for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
+                uint32_t idx = mipLevel * 6 + faceIndex;
+                prefilterMapPasses[idx].device = device;
+                prefilterMapPasses[idx].physicalDevice = physicalDevice;
+
+                prefilterMapPasses[idx].envImageView = envCubemapView;
+                prefilterMapPasses[idx].envSampler = envSampler;
+
+                prefilterMapPasses[idx].colorImageView = prefilterPerFacePerMipViews[idx];
+                prefilterMapPasses[idx].depthImageView = depthImageViews[idx];
+
+                prefilterMapPasses[idx].vertexBuffer = vertexBuffer;
+                prefilterMapPasses[idx].indexBuffer = indexBuffer;
+                prefilterMapPasses[idx].indicesCount = indices.size();
+
+                prefilterMapPasses[idx].viewMat = captureViews[faceIndex];
+                prefilterMapPasses[idx].colorImageExtent = VkExtent2D(resolution, resolution);
+                prefilterMapPasses[idx].roughness = (float)mipLevel / (float)(MIPMAP_COUNT - 1);
+            }
+            resolution >>= 1;
         }
 
         // sphere passes
         auto model = glm::mat4(1.0f);
-        for (int row = 0; row < nrRows; ++row)
+        for (int row = 0; row < NR_ROWS; ++row)
         {
             SpherePass::ExternalInfo externalInfo{};
-            externalInfo.metallic = (float)row / (float)nrRows;
+            externalInfo.metallic = (float)row / (float)NR_ROWS;
             externalInfo.albedo = glm::vec3(0.5f, 0.0f, 0.0f);
             externalInfo.ao = 1.0f;
-            for (int col = 0; col < nrColumns; ++col)
+            for (int col = 0; col < NR_COLUMNS; ++col)
             {
                 // we clamp the roughness to 0.025 - 1.0 as perfectly smooth surfaces (roughness of 0.0) tend to look a bit off
                 // on direct lighting.
-                externalInfo.roughness = glm::clamp((float)col / (float)nrColumns, 0.05f, 1.0f);
+                externalInfo.roughness = glm::clamp((float)col / (float)NR_COLUMNS, 0.05f, 1.0f);
                 model = glm::mat4(1.0f);
                 model = glm::translate(model, glm::vec3(
-                        (float)(col - (nrColumns / 2)) * spacing,
-                        (float)(row - (nrRows / 2)) * spacing,
+                        (float)(col - (NR_COLUMNS / 2)) * SPACING,
+                        (float)(row - (NR_ROWS / 2)) * SPACING,
                         -2.0f
                 ));
                 externalInfo.model = model;
                 externalInfo.normalMatrix = glm::transpose(glm::inverse(glm::mat3(model)));
-                int idx = row * nrColumns + col;
+                int idx = row * NR_COLUMNS + col;
                 spherePasses[idx].device = device;
                 spherePasses[idx].physicalDevice = physicalDevice;
 
@@ -158,6 +229,9 @@ public:
                 spherePasses[idx].msaaSamples = msaaSamples;
 
                 spherePasses[idx].swapChainImageViews.resize(swapChainImageViews.size());
+
+                spherePasses[idx].irradianceMapView = irradianceMapView;
+                spherePasses[idx].irradianceSampler = irradianceSampler;
 
                 for(size_t i = 0; i < swapChainImageViews.size(); ++i)
                     spherePasses[idx].swapChainImageViews[i] = swapChainImageViews[i];
@@ -196,6 +270,11 @@ public:
         createDepthResources();
         createEnvResources();
         createEnvSampler();
+        createIrradianceResources();
+        createIrradianceSampler();
+        createPrefilterMapResources();
+        createPrefilterSampler();
+
 
         createHdrImage();
         createHdrSampler();
@@ -210,6 +289,14 @@ public:
         //hdrVisualizationPass.init();
         for(auto & cubemapPass : cubemapPasses){
             cubemapPass.init();
+        }
+
+        for(auto & irradianceMapPass : irradianceMapPasses){
+            irradianceMapPass.init();
+        }
+
+        for(auto & prefilterMapPass : prefilterMapPasses){
+            prefilterMapPass.init();
         }
 
         for(auto& spherePass : spherePasses){
@@ -228,8 +315,16 @@ public:
             cubemapPass.recordCommandBuffer(commandBuffer);
         }
 
+        generateCubemapMipmaps(commandBuffer, envCubemap, CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, log2(CUBEMAP_RESOLUTION) + 1, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
         //copyImage2DtoCubemap(commandBuffer, colorImages, envCubemap, CUBEMAP_RESOLUTION);
 
+        for(auto& irradianceMapPass : irradianceMapPasses){
+            irradianceMapPass.recordCommandBuffer(commandBuffer);
+        }
+
+        for(auto& prefilterMapPass : prefilterMapPasses){
+            prefilterMapPass.recordCommandBuffer(commandBuffer);
+        }
         endSingleTimeCommands(commandBuffer);
 
     }
@@ -420,16 +515,56 @@ public:
 
         createImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage2, depthImageMemory2);
         depthImageView2 = createImageView(depthImage2, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+
+        createImage(IRRADIANCE_MAP_RESOLUTION, IRRADIANCE_MAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage3, depthImageMemory3);
+        depthImageView3 = createImageView(depthImage3, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+
+        uint32_t resolution = PREFILTER_MAP_RESOLUTION;
+        for(uint32_t mipLevel = 0; mipLevel < MIPMAP_COUNT; ++mipLevel){
+            for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
+                uint32_t idx = mipLevel * 6 + faceIndex;
+                createImage(resolution, resolution, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImages[idx], depthImageMemories[idx]);
+                depthImageViews[idx] = createImageView(depthImages[idx], depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+            }
+            resolution >>= 1;
+        }
     }
 
     void createEnvResources() {
         VkFormat colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
 
-        createCubemapImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, envCubemap, envCubemapMemory);
+        createCubemapImage(CUBEMAP_RESOLUTION, CUBEMAP_RESOLUTION, log2(CUBEMAP_RESOLUTION) + 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, envCubemap, envCubemapMemory);
         envCubemapView = createCubemapImageView(envCubemap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
         for(uint32_t faceIndex = 0; faceIndex < 6; ++ faceIndex){
-            envPerFaceViews[faceIndex] = createKthCubemapImageView(envCubemap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, faceIndex);
+            envPerFaceViews[faceIndex] = createFthMthCubemapImageView(envCubemap, colorFormat,
+                                                                      VK_IMAGE_ASPECT_COLOR_BIT, faceIndex);
+        }
+    }
+
+    void createIrradianceResources() {
+        VkFormat colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+
+        createCubemapImage(IRRADIANCE_MAP_RESOLUTION, IRRADIANCE_MAP_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, irradianceMap, irradianceMapMemory);
+        irradianceMapView = createCubemapImageView(irradianceMap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+        for(uint32_t faceIndex = 0; faceIndex < 6; ++ faceIndex){
+            irradiancePerFaceViews[faceIndex] = createFthMthCubemapImageView(irradianceMap, colorFormat,
+                                                                             VK_IMAGE_ASPECT_COLOR_BIT, faceIndex);
+        }
+    }
+
+    void createPrefilterMapResources() {
+        VkFormat colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+
+        createCubemapImage(PREFILTER_MAP_RESOLUTION, PREFILTER_MAP_RESOLUTION, MIPMAP_COUNT, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, prefilterMap, prefilterMapMemory);
+        prefilterMapView = createCubemapImageView(prefilterMap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, MIPMAP_COUNT);
+
+        for(int mipLevel = 0; mipLevel < MIPMAP_COUNT; ++mipLevel){
+            for(uint32_t faceIndex = 0; faceIndex < 6; ++ faceIndex){
+                prefilterPerFacePerMipViews[mipLevel * 6 + faceIndex] = createFthMthCubemapImageView(prefilterMap, colorFormat,
+                                                                                 VK_IMAGE_ASPECT_COLOR_BIT, faceIndex, mipLevel);
+            }
         }
     }
 
@@ -514,6 +649,57 @@ public:
         samplerInfo.mipLodBias = 0.0f;
 
         if (vkCreateSampler(device, &samplerInfo, nullptr, &envSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+    }
+
+    void createIrradianceSampler() {
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.anisotropyEnable = VK_TRUE;
+        samplerInfo.anisotropyEnable = VK_FALSE;  // 是否启用各向异性过滤
+        samplerInfo.maxAnisotropy = 1.0f;  // 各向异性过滤最大值
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &irradianceSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+    }
+
+    void createPrefilterSampler() {
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(physicalDevice, &properties);
+
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.anisotropyEnable = VK_TRUE;
+        samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &prefilterMapSampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create texture sampler!");
         }
     }
@@ -735,6 +921,19 @@ public:
         vkDestroyImage(device, depthImage2, nullptr);
         vkFreeMemory(device, depthImageMemory2, nullptr);
 
+        vkDestroyImageView(device, depthImageView3, nullptr);
+        vkDestroyImage(device, depthImage3, nullptr);
+        vkFreeMemory(device, depthImageMemory3, nullptr);
+
+        for(uint32_t mipLevel = 0; mipLevel < MIPMAP_COUNT; ++mipLevel){
+            for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
+                uint32_t idx = mipLevel * 6 + faceIndex;
+                vkDestroyImageView(device, depthImageViews[idx], nullptr);
+                vkDestroyImage(device, depthImages[idx], nullptr);
+                vkFreeMemory(device, depthImageMemories[idx], nullptr);
+            }
+        }
+
         vkDestroyImageView(device, colorImageView, nullptr);
         vkDestroyImage(device, colorImage, nullptr);
         vkFreeMemory(device, colorImageMemory, nullptr);
@@ -750,6 +949,20 @@ public:
                 vkDestroyFramebuffer(device, framebuffer, nullptr);
             }
         }
+
+        for(auto & irradianceMapPass : irradianceMapPasses){
+            for (auto framebuffer : irradianceMapPass.framebuffers) {
+                vkDestroyFramebuffer(device, framebuffer, nullptr);
+            }
+        }
+
+        for(auto & prefilterMapPass : prefilterMapPasses){
+            for (auto framebuffer : prefilterMapPass.framebuffers) {
+                vkDestroyFramebuffer(device, framebuffer, nullptr);
+            }
+        }
+
+
         for(auto & spherePass : spherePasses){
             for (auto framebuffer : spherePass.framebuffers) {
                 vkDestroyFramebuffer(device, framebuffer, nullptr);
@@ -774,16 +987,35 @@ public:
         for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
             cubemapPasses[faceIndex].cleanup();
             vkDestroyImageView(device, envPerFaceViews[faceIndex], nullptr);
+
+            irradianceMapPasses[faceIndex].cleanup();
+            vkDestroyImageView(device, irradiancePerFaceViews[faceIndex], nullptr);
         }
         skyboxPass.cleanup();
         for(auto& spherePass: spherePasses){
             spherePass.cleanup();
         }
 
+        for(uint32_t mipLevel = 0; mipLevel < MIPMAP_COUNT; ++mipLevel){
+            for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
+                uint32_t idx = mipLevel * 6 + faceIndex;
+                prefilterMapPasses[idx].cleanup();
+                vkDestroyImageView(device, prefilterPerFacePerMipViews[idx], nullptr);
+            }
+        }
+
 
         vkDestroyImageView(device, envCubemapView, nullptr);
         vkDestroyImage(device, envCubemap, nullptr);
         vkFreeMemory(device, envCubemapMemory, nullptr);
+
+        vkDestroyImageView(device, irradianceMapView, nullptr);
+        vkDestroyImage(device, irradianceMap, nullptr);
+        vkFreeMemory(device, irradianceMapMemory, nullptr);
+
+        vkDestroyImageView(device, prefilterMapView, nullptr);
+        vkDestroyImage(device, prefilterMap, nullptr);
+        vkFreeMemory(device, prefilterMapMemory, nullptr);
 
         vkDestroySampler(device, hdrSampler, nullptr);
         vkDestroyImageView(device, hdrImageView, nullptr);
@@ -792,6 +1024,8 @@ public:
         vkFreeMemory(device, hdrImageMemory, nullptr);
 
         vkDestroySampler(device, envSampler, nullptr);
+        vkDestroySampler(device, irradianceSampler, nullptr);
+        vkDestroySampler(device, prefilterMapSampler, nullptr);
 
 
 

@@ -529,8 +529,8 @@ VkImageView BaseApplication::createCubemapImageView(VkImage cubeImage, VkFormat 
     return cubeImageView;
 }
 
-VkImageView BaseApplication::createKthCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags,
-                                                uint32_t mipLevels, uint32_t faceIndex) const {
+VkImageView BaseApplication::createFthMthCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags,
+                                                           uint32_t faceIndex, uint32_t mipLevel) const {
     VkImageView imageView;
 
     // 创建图像视图
@@ -540,8 +540,8 @@ VkImageView BaseApplication::createKthCubemapImageView(VkImage cubeImage, VkForm
     viewCreateInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
     viewCreateInfo.format = format;
     viewCreateInfo.subresourceRange.aspectMask = aspectFlags;
-    viewCreateInfo.subresourceRange.baseMipLevel = 0;
-    viewCreateInfo.subresourceRange.levelCount = mipLevels;
+    viewCreateInfo.subresourceRange.baseMipLevel = mipLevel;
+    viewCreateInfo.subresourceRange.levelCount = 1;
     viewCreateInfo.subresourceRange.baseArrayLayer = faceIndex;  // 指定面索引
     viewCreateInfo.subresourceRange.layerCount = 1;
 
@@ -572,6 +572,107 @@ void BaseApplication::createSyncObjects() {
             throw std::runtime_error("failed to create synchronization objects for a frame!");
         }
     }
+}
+
+// TODO: not only make sense when initial layout is VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL or VK_IMAGE_LAYOUT_UNDEFINED
+void BaseApplication::generateCubemapMipmaps(VkCommandBuffer cmd, VkImage image,
+                            int32_t width, int32_t height, uint32_t mipLevels, VkImageAspectFlags aspectFlags, VkImageLayout baseMipLevelImageLayout)
+{
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.image = image;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.subresourceRange.aspectMask = aspectFlags;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount = 6; // Cubemap的6个面
+    barrier.subresourceRange.levelCount = 1;
+
+    int32_t mipWidth = width;
+    int32_t mipHeight = height;
+
+
+    VkImageSubresourceRange subresourceRange = {};
+    subresourceRange.aspectMask = aspectFlags;
+    subresourceRange.baseMipLevel = 0;
+    subresourceRange.levelCount = 1;
+    subresourceRange.baseArrayLayer = 0;
+    subresourceRange.layerCount = 6;
+
+    VkPipelineStageFlags srcStageMask = baseMipLevelImageLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ? VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT : VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    vks::tools::setImageLayout(cmd, image, baseMipLevelImageLayout, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,subresourceRange, srcStageMask, VK_PIPELINE_STAGE_TRANSFER_BIT);
+
+    subresourceRange.baseMipLevel = 1;
+    subresourceRange.levelCount = mipLevels - 1;
+    vks::tools::setImageLayout(cmd, image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,subresourceRange, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT);
+    for (uint32_t i = 1; i < mipLevels; i++) {
+        // 准备当前mip层级作为传输源
+        barrier.subresourceRange.baseMipLevel = i - 1;
+        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+        barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+        vkCmdPipelineBarrier(cmd,
+                             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
+                             0, nullptr,
+                             0, nullptr,
+                             1, &barrier);
+
+        // 对每个立方体贴图面执行blit
+        for (uint32_t face = 0; face < 6; face++) {
+            VkImageBlit blit{};
+            blit.srcOffsets[0] = {0, 0, 0};
+            blit.srcOffsets[1] = {mipWidth, mipHeight, 1};
+            blit.srcSubresource.aspectMask = aspectFlags;
+            blit.srcSubresource.mipLevel = i - 1;
+            blit.srcSubresource.baseArrayLayer = face;
+            blit.srcSubresource.layerCount = 1;
+
+            blit.dstOffsets[0] = {0, 0, 0};
+            blit.dstOffsets[1] = {mipWidth > 1 ? mipWidth / 2 : 1,
+                        mipHeight > 1 ? mipHeight / 2 : 1, 1};
+            blit.dstSubresource.aspectMask = aspectFlags;
+            blit.dstSubresource.mipLevel = i;
+            blit.dstSubresource.baseArrayLayer = face;
+            blit.dstSubresource.layerCount = 1;
+
+            vkCmdBlitImage(cmd,
+                           image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+                           image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                           1, &blit,
+                           VK_FILTER_LINEAR);
+        }
+
+        // 准备当前mip层级作为后续读取
+        barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+        barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        vkCmdPipelineBarrier(cmd,
+                             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+                             0, nullptr,
+                             0, nullptr,
+                             1, &barrier);
+
+        // 更新下个mip层级的尺寸
+        if (mipWidth > 1) mipWidth /= 2;
+        if (mipHeight > 1) mipHeight /= 2;
+    }
+
+    // 处理最后一个mip层级的布局转换
+    barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+    barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+    barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+    vkCmdPipelineBarrier(cmd,
+                         VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+                         0, nullptr,
+                         0, nullptr,
+                         1, &barrier);
 }
 
 void BaseApplication::run() {

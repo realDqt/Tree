@@ -4,7 +4,7 @@
 
 #ifndef VKRENDERINGENGINE_BASEAPPLICATION_H
 #define VKRENDERINGENGINE_BASEAPPLICATION_H
-#include "../utils.h"
+#include "../VulkanTools.h"
 
 extern const std::vector<const char*> validationLayers;
 
@@ -98,12 +98,15 @@ public:
     void createImageViews();
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const;
     VkImageView createCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) const;
-    VkImageView createKthCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, uint32_t faceIndex) const;
+    VkImageView createFthMthCubemapImageView(VkImage cubeImage, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t faceIndex, uint32_t mipLevel = 0) const;
     void createCommandPool();
     void createCommandBuffers();
     void createSyncObjects();
 
     virtual void cleanupSwapChain();
+
+    void generateCubemapMipmaps(VkCommandBuffer cmd, VkImage image,
+                                                 int32_t width, int32_t height, uint32_t mipLevels, VkImageAspectFlags aspectFlags, VkImageLayout baseMipLevelImageLayout);
 
     void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels);
 
