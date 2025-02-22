@@ -45,3 +45,6 @@
 5298	7658	7619171136233497	vkRenderingEngine.exe	2b9aba5f4d95050
 5	4808	7619172836433435	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	3e829e1aed7fb332
 4809	7392	7619172862380524	vkRenderingEngine.exe	2b9aba5f4d95050
+28	3591	7619182221032904	CMakeFiles/vkRenderingEngine.dir/IBLApplication/SpherePass.cpp.obj	27ea9343dec2a4cc
+5	5520	7619182240216968	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	3e829e1aed7fb332
+5520	7965	7619182264685116	vkRenderingEngine.exe	2b9aba5f4d95050

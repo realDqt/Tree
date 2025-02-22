@@ -96,6 +96,12 @@ public:
     VkSampler irradianceSampler;
     VkImageView irradianceMapView;
 
+    VkSampler prefilterSampler;
+    VkImageView prefilterMapView;
+
+    VkSampler brdfLUTSampler;
+    VkImageView brdfLUTView;
+
 
     void init();
 

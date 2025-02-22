@@ -261,6 +261,12 @@ public:
                 spherePasses[idx].irradianceMapView = irradianceMapView;
                 spherePasses[idx].irradianceSampler = irradianceSampler;
 
+                spherePasses[idx].prefilterMapView = prefilterMapView;
+                spherePasses[idx].prefilterSampler = prefilterMapSampler;
+
+                spherePasses[idx].brdfLUTView = brdfLUTView;
+                spherePasses[idx].brdfLUTSampler = brdfLUTSampler;
+
                 for(size_t i = 0; i < swapChainImageViews.size(); ++i)
                     spherePasses[idx].swapChainImageViews[i] = swapChainImageViews[i];
                 spherePasses[idx].externalInfo = externalInfo;
