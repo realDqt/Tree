@@ -9,6 +9,7 @@ constexpr int CUBEMAP_RESOLUTION = 512;
 constexpr int IRRADIANCE_MAP_RESOLUTION = 32;
 constexpr int MIPMAP_COUNT = 5;
 constexpr int PREFILTER_MAP_RESOLUTION = 128;
+constexpr int LUT_RESOLUTION = 512;
 constexpr int NR_ROWS = 7;
 constexpr int NR_COLUMNS = 7;
 constexpr float SPACING = 2.5;

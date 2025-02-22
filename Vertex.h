@@ -254,5 +254,57 @@ namespace std {
     };
 }
 
+// quad
+struct VertexQuad{
+    glm::vec3 pos;
+    glm::vec2 texCoord;
+
+    static VkVertexInputBindingDescription getBindingDescription() {
+        VkVertexInputBindingDescription bindingDescription{};
+        bindingDescription.binding = 0;
+        bindingDescription.stride = sizeof(VertexQuad);
+        bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+        return bindingDescription;
+    }
+
+    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+        std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+        attributeDescriptions[0].binding = 0;
+        attributeDescriptions[0].location = 0;
+        attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+        attributeDescriptions[0].offset = offsetof(VertexQuad, pos);
+
+        attributeDescriptions[1].binding = 0;
+        attributeDescriptions[1].location = 1;
+        attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+        attributeDescriptions[1].offset = offsetof(VertexQuad, texCoord);
+
+
+        return attributeDescriptions;
+    }
+
+    bool operator==(const VertexQuad& other) const {
+        return pos == other.pos && texCoord == other.texCoord;
+    }
+};
+
+namespace std {
+    template<> struct hash<VertexQuad> {
+        size_t operator()(VertexQuad const& vertex) const {
+            // 使用 std::hash 组合 pos、texCoord 和 normal 的哈希值
+            std::size_t hashPos = std::hash<float>()(vertex.pos.x) ^
+                                  (std::hash<float>()(vertex.pos.y) << 1) ^
+                                  (std::hash<float>()(vertex.pos.z) << 2);
+
+            std::size_t hashTexCoord = std::hash<float>()(vertex.texCoord.x) ^
+                                       (std::hash<float>()(vertex.texCoord.y) << 1);
+
+            // 组合所有哈希值
+            return hashPos ^ (hashTexCoord << 1);
+        }
+    };
+}
 
 #endif //VKRENDERINGENGINE_VERTEX_H

@@ -16,6 +16,7 @@
 #include "SpherePass.h"
 #include "IrradianceMapPass.h"
 #include "PrefilterMapPass.h"
+#include "BrdfLUTPass.h"
 
 class IBLApplication : public BaseApplication{
 public:
@@ -23,6 +24,8 @@ public:
     CubemapPass cubemapPasses[6];
     IrradianceMapPass irradianceMapPasses[6];
     PrefilterMapPass prefilterMapPasses[6 * MIPMAP_COUNT];
+    BrdfLUTPass brdfLUTPass;
+
 
 
     SkyboxPass skyboxPass;
@@ -51,6 +54,11 @@ public:
     VkDeviceMemory depthImageMemories[6 * MIPMAP_COUNT];
     VkImageView depthImageViews[6 * MIPMAP_COUNT];
 
+    // for brdfLUT pass
+    VkImage depthImage4;
+    VkDeviceMemory depthImageMemory4;
+    VkImageView depthImageView4;
+
     VkImage hdrImage;
     VkDeviceMemory hdrImageMemory;
     VkImageView hdrImageView;
@@ -72,6 +80,11 @@ public:
     VkBuffer indexBuffer2;
     VkDeviceMemory indexBufferMemory2;
 
+    // vb and ib for quad
+    std::vector<VertexQuad> vertices3;
+    VkBuffer vertexBuffer3;
+    VkDeviceMemory vertexBufferMemory3;
+
     VkImage envCubemap;
     VkDeviceMemory envCubemapMemory;
     VkImageView envCubemapView;
@@ -89,6 +102,11 @@ public:
     VkImageView prefilterMapView;
     VkImageView prefilterPerFacePerMipViews[6 * MIPMAP_COUNT];
     VkSampler prefilterMapSampler;
+
+    VkImage brdfLUT;
+    VkDeviceMemory brdfLUTMemory;
+    VkImageView brdfLUTView;
+    VkSampler brdfLUTSampler;
 
 
 
@@ -192,6 +210,16 @@ public:
             resolution >>= 1;
         }
 
+        // brdfLUT pass
+        brdfLUTPass.device = device;
+        brdfLUTPass.physicalDevice = physicalDevice;
+
+        brdfLUTPass.colorImageView = brdfLUTView;
+        brdfLUTPass.depthImageView = depthImageView4;
+
+        brdfLUTPass.vertexBuffer = vertexBuffer3;
+
+
         // sphere passes
         auto model = glm::mat4(1.0f);
         for (int row = 0; row < NR_ROWS; ++row)
@@ -274,6 +302,8 @@ public:
         createIrradianceSampler();
         createPrefilterMapResources();
         createPrefilterSampler();
+        createBrdfLUTResources();
+        createBrdfLUTSampler();
 
 
         createHdrImage();
@@ -298,6 +328,8 @@ public:
         for(auto & prefilterMapPass : prefilterMapPasses){
             prefilterMapPass.init();
         }
+
+        brdfLUTPass.init();
 
         for(auto& spherePass : spherePasses){
             spherePass.init();
@@ -325,6 +357,9 @@ public:
         for(auto& prefilterMapPass : prefilterMapPasses){
             prefilterMapPass.recordCommandBuffer(commandBuffer);
         }
+
+        brdfLUTPass.recordCommandBuffer(commandBuffer);
+
         endSingleTimeCommands(commandBuffer);
 
     }
@@ -528,6 +563,9 @@ public:
             }
             resolution >>= 1;
         }
+
+        createImage(LUT_RESOLUTION, LUT_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage4, depthImageMemory4);
+        depthImageView4 = createImageView(depthImage4, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
     }
 
     void createEnvResources() {
@@ -566,6 +604,12 @@ public:
                                                                                  VK_IMAGE_ASPECT_COLOR_BIT, faceIndex, mipLevel);
             }
         }
+    }
+
+    void createBrdfLUTResources(){
+        VkFormat colorFormat = VK_FORMAT_R16G16_SFLOAT;
+        createImage(LUT_RESOLUTION, LUT_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, brdfLUT, brdfLUTMemory);
+        brdfLUTView = createImageView(brdfLUT, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
     void createHdrImage() {
@@ -653,6 +697,29 @@ public:
         }
     }
 
+    void createBrdfLUTSampler() {
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.anisotropyEnable = VK_TRUE;
+        samplerInfo.anisotropyEnable = VK_FALSE;  // 是否启用各向异性过滤
+        samplerInfo.maxAnisotropy = 1.0f;  // 各向异性过滤最大值
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &brdfLUTSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+    }
+
     void createIrradianceSampler() {
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -711,6 +778,32 @@ public:
     void loadModel(){
         loadBoxModel();
         loadSphereModel();
+        loadQuadModel();
+    }
+
+    void loadQuadModel(){
+        float positions[] = {
+                -1.f, 1.f, 0.f,
+                -1.f, -1.f, 0.f,
+                1.f, 1.f, 0.f,
+                1.f, -1.f, 0.f
+        };
+
+        float texCoords[] = {
+                0.f, 1.f,
+                0.f, 0.f,
+                1.f, 1.f,
+                1.f, 0.f
+        };
+
+        vertices3.clear();
+        for(uint32_t i = 0; i < 4; ++i){
+            VertexQuad vertexQuad{};
+            vertexQuad.pos = glm::vec3(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+            vertexQuad.texCoord = glm::vec2(texCoords[i * 2], texCoords[i * 2 + 1]);
+
+            vertices3.push_back(vertexQuad);
+        }
     }
 
     void loadSphereModel() {
@@ -825,6 +918,7 @@ public:
     void createVertexBuffer(){
         createVertexBoxBuffer();
         createVertexSphereBuffer();
+        createVertexQuadBuffer();
     }
 
     void createIndexBuffer(){
@@ -871,6 +965,27 @@ public:
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
+
+    void createVertexQuadBuffer(){
+        VkDeviceSize bufferSize = sizeof(vertices3[0]) * vertices3.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices3.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer3, vertexBufferMemory3);
+
+        copyBuffer(stagingBuffer, vertexBuffer3, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
 
     void createIndexBoxBuffer() {
         VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
@@ -925,6 +1040,10 @@ public:
         vkDestroyImage(device, depthImage3, nullptr);
         vkFreeMemory(device, depthImageMemory3, nullptr);
 
+        vkDestroyImageView(device, depthImageView4, nullptr);
+        vkDestroyImage(device, depthImage4, nullptr);
+        vkFreeMemory(device, depthImageMemory4, nullptr);
+
         for(uint32_t mipLevel = 0; mipLevel < MIPMAP_COUNT; ++mipLevel){
             for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
                 uint32_t idx = mipLevel * 6 + faceIndex;
@@ -937,6 +1056,7 @@ public:
         vkDestroyImageView(device, colorImageView, nullptr);
         vkDestroyImage(device, colorImage, nullptr);
         vkFreeMemory(device, colorImageMemory, nullptr);
+
 
         /*
         for (auto framebuffer : hdrVisualizationPass.framebuffers) {
@@ -960,6 +1080,10 @@ public:
             for (auto framebuffer : prefilterMapPass.framebuffers) {
                 vkDestroyFramebuffer(device, framebuffer, nullptr);
             }
+        }
+
+        for(auto frameBuffer : brdfLUTPass.framebuffers){
+            vkDestroyFramebuffer(device, frameBuffer, nullptr);
         }
 
 
@@ -991,6 +1115,8 @@ public:
             irradianceMapPasses[faceIndex].cleanup();
             vkDestroyImageView(device, irradiancePerFaceViews[faceIndex], nullptr);
         }
+
+        brdfLUTPass.cleanup();
         skyboxPass.cleanup();
         for(auto& spherePass: spherePasses){
             spherePass.cleanup();
@@ -1017,6 +1143,10 @@ public:
         vkDestroyImage(device, prefilterMap, nullptr);
         vkFreeMemory(device, prefilterMapMemory, nullptr);
 
+        vkDestroyImageView(device, brdfLUTView, nullptr);
+        vkDestroyImage(device, brdfLUT, nullptr);
+        vkFreeMemory(device, brdfLUTMemory, nullptr);
+
         vkDestroySampler(device, hdrSampler, nullptr);
         vkDestroyImageView(device, hdrImageView, nullptr);
 
@@ -1026,6 +1156,7 @@ public:
         vkDestroySampler(device, envSampler, nullptr);
         vkDestroySampler(device, irradianceSampler, nullptr);
         vkDestroySampler(device, prefilterMapSampler, nullptr);
+        vkDestroySampler(device, brdfLUTSampler, nullptr);
 
 
 
@@ -1040,6 +1171,9 @@ public:
 
         vkDestroyBuffer(device, vertexBuffer2, nullptr);
         vkFreeMemory(device, vertexBufferMemory2, nullptr);
+
+        vkDestroyBuffer(device, vertexBuffer3, nullptr);
+        vkFreeMemory(device, vertexBufferMemory3, nullptr);
 
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
