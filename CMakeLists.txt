@@ -8,11 +8,13 @@ set(VULKAN_PATH E:/Vulkan/VulkanSDK)
 set(STB_IMAGE_PATH E:/ImageProcess)
 set(TINY_OBJ_LOADER_PATH E:/ObjLoader)
 set(GLAD_PATH E:/glad)
+set(TINY_GLTF_LOADER_PATH E:/GLTFLoader)
 
 include_directories(${GLFW_PATH}/include)
 include_directories(${VULKAN_PATH}/include)
 include_directories(${STB_IMAGE_PATH})
 include_directories(${TINY_OBJ_LOADER_PATH})
+include_directories(${TINY_GLTF_LOADER_PATH})
 include_directories(${GLAD_PATH}/include)
 
 
@@ -59,6 +61,7 @@ add_executable(vkRenderingEngine
         IBLApplication/PrefilterMapPass.cpp
         IBLApplication/BrdfLUTPass.h
         IBLApplication/BrdfLUTPass.cpp
+        SSRApplication/SSRApplication.h
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1)

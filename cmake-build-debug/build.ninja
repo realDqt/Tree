@@ -52,112 +52,112 @@ build cmake_object_order_depends_target_vkRenderingEngine: phony || CMakeFiles/v
 build CMakeFiles/vkRenderingEngine.dir/main.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/main.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\main.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir
 
 build CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/utils.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir
 
 build CMakeFiles/vkRenderingEngine.dir/BaseApplication/BaseApplication.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/BaseApplication/BaseApplication.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\BaseApplication
 
 build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/ShadowmapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/ShadowmapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
 
 build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/PCSSutils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/PCSSutils.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\PCSSutils.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
 
 build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/BlinPhongPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/BlinPhongPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
 
 build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/LightVisualization.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/LightVisualization.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
 
 build CMakeFiles/vkRenderingEngine.dir/IBLApplication/IBLutils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/IBLutils.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 
 build CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualizationPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/HDRVisualizationPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 
 build CMakeFiles/vkRenderingEngine.dir/IBLApplication/CubemapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/CubemapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 
 build CMakeFiles/vkRenderingEngine.dir/IBLApplication/SkyboxPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/SkyboxPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 
 build CMakeFiles/vkRenderingEngine.dir/VulkanTools.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/VulkanTools.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\VulkanTools.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir
 
 build CMakeFiles/vkRenderingEngine.dir/IBLApplication/SpherePass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/SpherePass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 
 build CMakeFiles/vkRenderingEngine.dir/IBLApplication/IrradianceMapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/IrradianceMapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 
 build CMakeFiles/vkRenderingEngine.dir/IBLApplication/PrefilterMapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/PrefilterMapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 
 build CMakeFiles/vkRenderingEngine.dir/IBLApplication/BrdfLUTPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/BrdfLUTPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
   DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/glad/include
+  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
 

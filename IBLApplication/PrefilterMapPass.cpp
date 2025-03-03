@@ -329,7 +329,7 @@ void PrefilterMapPass::updateUniformBuffer(){
     UniformBufferObject ubo{};
     ubo.view = viewMat;
     ubo.proj = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
-    ubo.proj[1][1] *= -1;
+    //ubo.proj[1][1] *= -1;
     memcpy(uniformBuffersMapped[0], &ubo, sizeof(ubo));
 }
 

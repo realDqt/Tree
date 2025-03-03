@@ -1,8 +1,7 @@
 //
 // Created by 22473 on 2025-01-20.
 //
-
-#ifndef VKRENDERINGENGINE_IBLAPPLICATION_H
+#ifndef VKRENDERINGENGINE_PCSSAPPLICATION_H
 #define VKRENDERINGENGINE_PCSSAPPLICATION_H
 #include "../BaseApplication/BaseApplication.h"
 #include "ShadowmapPass.h"
@@ -785,4 +784,4 @@ public:
         lightVisualizationPass.currentFrame = blinPhongPass.currentFrame = shadowmapPass.currentFrame = currentFrame;
     }
 };
-#endif //VKRENDERINGENGINE_IBLAPPLICATION_H
+#endif //VKRENDERINGENGINE_PCSSAPPLICATION_H

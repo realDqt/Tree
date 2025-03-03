@@ -12,5 +12,5 @@ void main()
 {
     localPos = aPos;
     gl_Position =  ubo.proj * ubo.view * vec4(localPos, 1.0);
-    gl_Position.y = -gl_Position.y;
+    //gl_Position.y = -gl_Position.y;
 }
