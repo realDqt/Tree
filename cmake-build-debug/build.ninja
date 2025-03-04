@@ -32,14 +32,14 @@ CONFIGURATION = Debug
 #############################################
 # Include rules file.
 
-include CMakeFiles/rules.ninja
+include CMakeFiles\rules.ninja
 
 # =============================================================================
 
 #############################################
 # Logical path to working directory; prefix for absolute paths.
 
-cmake_ninja_workdir = E$:/clion_proj/Tree/cmake-build-debug/
+cmake_ninja_workdir = E$:\clion_proj\Tree\cmake-build-debug\
 # =============================================================================
 # Object build statements for EXECUTABLE target vkRenderingEngine
 
@@ -47,119 +47,160 @@ cmake_ninja_workdir = E$:/clion_proj/Tree/cmake-build-debug/
 #############################################
 # Order-only phony target for vkRenderingEngine
 
-build cmake_object_order_depends_target_vkRenderingEngine: phony || CMakeFiles/vkRenderingEngine.dir
+build cmake_object_order_depends_target_vkRenderingEngine: phony || CMakeFiles\vkRenderingEngine.dir
 
-build CMakeFiles/vkRenderingEngine.dir/main.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/main.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\main.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\main.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/utils.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\utils.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/BaseApplication/BaseApplication.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/BaseApplication/BaseApplication.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\BaseApplication\BaseApplication.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\BaseApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/ShadowmapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/ShadowmapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\PCSSApplication\ShadowmapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/PCSSutils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/PCSSutils.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\PCSSutils.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\PCSSApplication\PCSSutils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\PCSSApplication\PCSSutils.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/BlinPhongPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/BlinPhongPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\PCSSApplication\BlinPhongPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/PCSSApplication/LightVisualization.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/PCSSApplication/LightVisualization.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\PCSSApplication\LightVisualization.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\PCSSApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/IBLutils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/IBLutils.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\IBLApplication\IBLutils.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualizationPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/HDRVisualizationPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\IBLApplication\HDRVisualizationPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/CubemapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/CubemapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\IBLApplication\CubemapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/SkyboxPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/SkyboxPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\IBLApplication\SkyboxPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/VulkanTools.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/VulkanTools.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\VulkanTools.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\VulkanTools.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\VulkanTools.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/SpherePass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/SpherePass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\IBLApplication\SpherePass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/IrradianceMapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/IrradianceMapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\IBLApplication\IrradianceMapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/PrefilterMapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/PrefilterMapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\IBLApplication\PrefilterMapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
-build CMakeFiles/vkRenderingEngine.dir/IBLApplication/BrdfLUTPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:/clion_proj/Tree/IBLApplication/BrdfLUTPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
-  DEP_FILE = CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IE:/glfw/glfw-3.4.bin.WIN64/include -IE:/Vulkan/VulkanSDK/include -IE:/ImageProcess -IE:/ObjLoader -IE:/GLTFLoader -IE:/glad/include
+build CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\IBLApplication\BrdfLUTPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\IBLApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
+
+build CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\SSRApplication\SSRutils.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\SSRApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
 
 
 # =============================================================================
@@ -169,39 +210,41 @@ build CMakeFiles/vkRenderingEngine.dir/IBLApplication/BrdfLUTPass.cpp.obj: CXX_C
 #############################################
 # Link the executable vkRenderingEngine.exe
 
-build vkRenderingEngine.exe: CXX_EXECUTABLE_LINKER__vkRenderingEngine_Debug CMakeFiles/vkRenderingEngine.dir/main.cpp.obj CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj CMakeFiles/vkRenderingEngine.dir/BaseApplication/BaseApplication.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/ShadowmapPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/PCSSutils.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/BlinPhongPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/PCSSApplication/LightVisualization.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/IBLutils.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualizationPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/CubemapPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/SkyboxPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/VulkanTools.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/SpherePass.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/IrradianceMapPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/PrefilterMapPass.cpp.obj CMakeFiles/vkRenderingEngine.dir/IBLApplication/BrdfLUTPass.cpp.obj
-  FLAGS = -g
-  LINK_LIBRARIES = -lglfw3  -lvulkan-1  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
-  LINK_PATH = -LE:/glfw/glfw-3.4.bin.WIN64/lib-mingw-w64   -LE:/Vulkan/VulkanSDK/Lib
+build vkRenderingEngine.exe: CXX_EXECUTABLE_LINKER__vkRenderingEngine_Debug CMakeFiles\vkRenderingEngine.dir\main.cpp.obj CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\PCSSutils.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\VulkanTools.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MDd -Zi
+  LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
+  LINK_LIBRARIES = glfw3.lib  vulkan-1.lib  assimp-vc143-mtd.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib
+  LINK_PATH = -LIBPATH:E:\glfw\glfw-3.4.bin.WIN64\lib-vc2022   -LIBPATH:E:\Vulkan\VulkanSDK\Lib   -LIBPATH:E:\assimp\assimp-master\build\lib\Debug
   OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
   TARGET_FILE = vkRenderingEngine.exe
-  TARGET_IMPLIB = libvkRenderingEngine.dll.a
-  TARGET_PDB = vkRenderingEngine.exe.dbg
+  TARGET_IMPLIB = vkRenderingEngine.lib
+  TARGET_PDB = vkRenderingEngine.pdb
 
 
 #############################################
 # Utility command for edit_cache
 
-build CMakeFiles/edit_cache.util: CUSTOM_COMMAND
+build CMakeFiles\edit_cache.util: CUSTOM_COMMAND
   COMMAND = cmd.exe /C "cd /D E:\clion_proj\Tree\cmake-build-debug && "E:\CLion\CLion 2023.3.1\bin\cmake\win\x64\bin\cmake.exe" -E echo "No interactive CMake dialog available.""
   DESC = No interactive CMake dialog available...
   restat = 1
 
-build edit_cache: phony CMakeFiles/edit_cache.util
+build edit_cache: phony CMakeFiles\edit_cache.util
 
 
 #############################################
 # Utility command for rebuild_cache
 
-build CMakeFiles/rebuild_cache.util: CUSTOM_COMMAND
+build CMakeFiles\rebuild_cache.util: CUSTOM_COMMAND
   COMMAND = cmd.exe /C "cd /D E:\clion_proj\Tree\cmake-build-debug && "E:\CLion\CLion 2023.3.1\bin\cmake\win\x64\bin\cmake.exe" --regenerate-during-build -SE:\clion_proj\Tree -BE:\clion_proj\Tree\cmake-build-debug"
   DESC = Running CMake to regenerate build system...
   pool = console
   restat = 1
 
-build rebuild_cache: phony CMakeFiles/rebuild_cache.util
+build rebuild_cache: phony CMakeFiles\rebuild_cache.util
 
 # =============================================================================
 # Target aliases.
@@ -225,14 +268,14 @@ build all: phony vkRenderingEngine.exe
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | CMakeCache.txt CMakeFiles/3.27.0/CMakeCCompiler.cmake CMakeFiles/3.27.0/CMakeCXXCompiler.cmake CMakeFiles/3.27.0/CMakeRCCompiler.cmake CMakeFiles/3.27.0/CMakeSystem.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCXXInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeRCInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/GNU-C.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/GNU-CXX.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/GNU.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU-C-ABI.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU-C.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU-CXX-ABI.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU-CXX.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-Initialize.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-windres.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/WindowsPaths.cmake E$:/clion_proj/Tree/CMakeLists.txt
+build build.ninja: RERUN_CMAKE | CMakeCache.txt CMakeFiles\3.27.0\CMakeCCompiler.cmake CMakeFiles\3.27.0\CMakeCXXCompiler.cmake CMakeFiles\3.27.0\CMakeRCCompiler.cmake CMakeFiles\3.27.0\CMakeSystem.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeCInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeCXXInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeCommonLanguageInclude.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeGenericSystem.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeInitializeConfigs.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeLanguageInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeRCInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeSystemSpecificInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeSystemSpecificInitialize.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Compiler\CMakeCommonCompilerMacros.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Compiler\MSVC-C.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Compiler\MSVC-CXX.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Compiler\MSVC.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows-Initialize.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows-MSVC-C.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows-MSVC-CXX.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows-MSVC.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\WindowsPaths.cmake E$:\clion_proj\Tree\CMakeLists.txt
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build CMakeCache.txt CMakeFiles/3.27.0/CMakeCCompiler.cmake CMakeFiles/3.27.0/CMakeCXXCompiler.cmake CMakeFiles/3.27.0/CMakeRCCompiler.cmake CMakeFiles/3.27.0/CMakeSystem.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCXXInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeCommonLanguageInclude.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeGenericSystem.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeInitializeConfigs.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeLanguageInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeRCInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInformation.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/CMakeSystemSpecificInitialize.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/CMakeCommonCompilerMacros.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/GNU-C.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/GNU-CXX.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Compiler/GNU.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU-C-ABI.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU-C.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU-CXX-ABI.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU-CXX.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-GNU.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-Initialize.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows-windres.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/Windows.cmake E$:/CLion/CLion$ 2023.3.1/bin/cmake/win/x64/share/cmake-3.27/Modules/Platform/WindowsPaths.cmake E$:/clion_proj/Tree/CMakeLists.txt: phony
+build CMakeCache.txt CMakeFiles\3.27.0\CMakeCCompiler.cmake CMakeFiles\3.27.0\CMakeCXXCompiler.cmake CMakeFiles\3.27.0\CMakeRCCompiler.cmake CMakeFiles\3.27.0\CMakeSystem.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeCInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeCXXInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeCommonLanguageInclude.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeGenericSystem.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeInitializeConfigs.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeLanguageInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeRCInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeSystemSpecificInformation.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\CMakeSystemSpecificInitialize.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Compiler\CMakeCommonCompilerMacros.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Compiler\MSVC-C.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Compiler\MSVC-CXX.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Compiler\MSVC.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows-Initialize.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows-MSVC-C.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows-MSVC-CXX.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows-MSVC.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\Windows.cmake E$:\CLion\CLion$ 2023.3.1\bin\cmake\win\x64\share\cmake-3.27\Modules\Platform\WindowsPaths.cmake E$:\clion_proj\Tree\CMakeLists.txt: phony
 
 
 #############################################

@@ -1,4 +1,4 @@
-ToolSet: 11.0 w64 (local)@E:\CLion\CLion 2023.3.1\bin\mingw
+ToolSet: 17.0 (local)@C:\Program Files\Microsoft Visual Studio\2022\Community
 Options: 
 
 Options:-DCMAKE_MAKE_PROGRAM=E:/CLion/CLion 2023.3.1/bin/ninja/win/x64/ninja.exe

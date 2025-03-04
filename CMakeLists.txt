@@ -9,6 +9,7 @@ set(STB_IMAGE_PATH E:/ImageProcess)
 set(TINY_OBJ_LOADER_PATH E:/ObjLoader)
 set(GLAD_PATH E:/glad)
 set(TINY_GLTF_LOADER_PATH E:/GLTFLoader)
+set(ASSIMP_PATH E:/assimp/assimp-master)
 
 include_directories(${GLFW_PATH}/include)
 include_directories(${VULKAN_PATH}/include)
@@ -16,10 +17,15 @@ include_directories(${STB_IMAGE_PATH})
 include_directories(${TINY_OBJ_LOADER_PATH})
 include_directories(${TINY_GLTF_LOADER_PATH})
 include_directories(${GLAD_PATH}/include)
+include_directories(${ASSIMP_PATH}/include)
 
 
-link_directories(${GLFW_PATH}/lib-mingw-w64)
+link_directories(${GLFW_PATH}/lib-vc2022)
 link_directories(${VULKAN_PATH}/Lib)
+link_directories(${ASSIMP_PATH}/build/lib/Debug)
+
+add_definitions(-DNOMINMAX)
+
 
 
 add_executable(vkRenderingEngine
@@ -62,7 +68,9 @@ add_executable(vkRenderingEngine
         IBLApplication/BrdfLUTPass.h
         IBLApplication/BrdfLUTPass.cpp
         SSRApplication/SSRApplication.h
+        SSRApplication/SSRutils.h
+        SSRApplication/SSRutils.cpp
 )
 
-target_link_libraries(vkRenderingEngine glfw3 vulkan-1)
+target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)
 
