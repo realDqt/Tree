@@ -14,5 +14,5 @@ extern glm::vec3 ssrLightPos;
 extern glm::vec3 ssrLightUp;
 
 constexpr int SM_RESOLUTION = 2048;
-constexpr float SSROrthoRange = 20.0f;
+constexpr float SSROrthoRange = 10.0f;
 #endif //VKRENDERINGENGINE_SSRUTILS_H

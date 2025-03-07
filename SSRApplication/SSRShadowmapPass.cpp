@@ -327,8 +327,6 @@ void SSRShadowmapPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
 
-
-
     VkRect2D scissor{};
     scissor.offset = {0, 0};
     scissor.extent = VkExtent2D(SM_RESOLUTION, SM_RESOLUTION);

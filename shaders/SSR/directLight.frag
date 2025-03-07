@@ -34,7 +34,7 @@ float getVisibility()
     vec3 NDC = lightSpaceCoord.xyz / lightSpaceCoord.w;
     NDC.xy = (NDC.xy + 1.0) * .5;
     float depth = unpack(texture(smSampler, NDC.xy));
-    if(NDC.z <= depth + getBias(2.4))
+    if(NDC.z <= depth + getBias(6.4))
         return 1.0;
     else
         return 0.0;

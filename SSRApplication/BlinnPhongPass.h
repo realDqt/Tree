@@ -14,7 +14,7 @@ public:
         glm::mat4 view;
         glm::mat4 proj;
         glm::mat4 modelInvTrans;
-        glm::mat4 lightMVP;
+        glm::mat4 lightVP;
     };
 
     struct alignas(16) UniformBufferObject2{

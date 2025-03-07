@@ -154,9 +154,9 @@ public:
         createIndexBuffer();
 
         prepareResources();
+        shadowmapPass.init();
         blinnPhongPasses[0].init();
         blinnPhongPasses[1].init();
-        shadowmapPass.init();
     }
 
     void cleanupSwapChain() override{

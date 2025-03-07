@@ -20,5 +20,5 @@ void main(){
         worldPosition = ubo.floorModel * vec4(inPosition, 1.0);
     else
         worldPosition = ubo.cubeModel * vec4(inPosition, 1.0);
-    gl_Position = ubo.lightVP * vec4(inPosition, 1.0);
+    gl_Position = ubo.lightVP * worldPosition;
 }

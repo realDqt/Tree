@@ -13,13 +13,13 @@ layout(binding = 0, std140) uniform UniformBufferObject{
     mat4 view;
     mat4 proj;
     mat4 modelInvTrans;
-    mat4 lightMVP;
+    mat4 lightVP;
 } ubo;
 
 void main() {
     worldPosition = (ubo.model * vec4(aPosition, 1.0)).xyz;
-    worldNormal = (ubo.modelInvTrans * vec4(worldNormal, 0.0)).xyz;
+    worldNormal = (ubo.modelInvTrans * vec4(aNormal, 0.0)).xyz;
     texCoords = aTexCoords;
-    lightSpaceCoord = ubo.lightMVP * vec4(aPosition, 1.0);
+    lightSpaceCoord = ubo.lightVP * vec4(worldPosition, 1.0);
     gl_Position = ubo.proj * ubo.view * ubo.model * vec4(aPosition, 1.0);
 }
