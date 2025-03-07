@@ -8,5 +8,11 @@
 #include "../Light.h"
 extern const std::string CUBE_PATH;
 extern const std::string CUBE_TEXTURE_PATH;
+
 extern DirectionalLight ssrLight;
+extern glm::vec3 ssrLightPos;
+extern glm::vec3 ssrLightUp;
+
+constexpr int SM_RESOLUTION = 2048;
+constexpr float SSROrthoRange = 20.0f;
 #endif //VKRENDERINGENGINE_SSRUTILS_H

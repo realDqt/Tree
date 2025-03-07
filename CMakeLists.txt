@@ -72,6 +72,8 @@ add_executable(vkRenderingEngine
         SSRApplication/SSRutils.cpp
         SSRApplication/BlinnPhongPass.h
         SSRApplication/BlinnPhongPass.cpp
+        SSRApplication/SSRShadowmapPass.h
+        SSRApplication/SSRShadowmapPass.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)

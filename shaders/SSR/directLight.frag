@@ -2,6 +2,7 @@
 layout(location = 0) in vec3 worldPosition;
 layout(location = 1) in vec3 worldNormal;
 layout(location = 2) in vec2 texCoords;
+layout(location = 3) in vec4 lightSpaceCoord;
 
 layout(location = 0) out vec4 outColor;
 
@@ -13,6 +14,31 @@ layout(binding = 2, std140) uniform UniformBufferObject2{
     vec3 lightRadiance;
     bool isFloor;
 } ubo2;
+
+layout(binding = 3) uniform sampler2D smSampler;
+
+float getBias(float ctrl)
+{
+    float m = 10.0 / 2048.0 / 2.0;
+    float bias = max(m, m * (1.0 - dot(worldNormal, ubo2.lightDir))) * ctrl;
+    return bias;
+}
+
+float unpack(vec4 rgbaDepth) {
+    const vec4 bitShift = vec4(1.0, 1.0/256.0, 1.0/(256.0*256.0), 1.0/(256.0*256.0*256.0));
+    return dot(rgbaDepth, bitShift);
+}
+
+float getVisibility()
+{
+    vec3 NDC = lightSpaceCoord.xyz / lightSpaceCoord.w;
+    NDC.xy = (NDC.xy + 1.0) * .5;
+    float depth = unpack(texture(smSampler, NDC.xy));
+    if(NDC.z <= depth + getBias(2.4))
+        return 1.0;
+    else
+        return 0.0;
+}
 
 vec3 blinnPhong(){
     vec3 albedo = vec3(1.0);
@@ -40,6 +66,6 @@ vec3 blinnPhong(){
 }
 
 void main() {
-    outColor = vec4(blinnPhong(), 1.0);
+    outColor = vec4(getVisibility() * blinnPhong(), 1.0);
     //outColor = vec4(1.0, 1.0, 1.0, 1.0);
 }

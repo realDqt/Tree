@@ -14,6 +14,7 @@ public:
         glm::mat4 view;
         glm::mat4 proj;
         glm::mat4 modelInvTrans;
+        glm::mat4 lightMVP;
     };
 
     struct alignas(16) UniformBufferObject2{
@@ -70,6 +71,9 @@ public:
 
     VkImageView textureImageView;
     VkSampler textureSampler;
+
+    VkImageView shadowmapView;
+    VkSampler smSampler;
 
     glm::mat4 model;
     uint32_t currentFrame;

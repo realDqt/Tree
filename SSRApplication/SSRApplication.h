@@ -11,9 +11,11 @@
 
 #include "SSRutils.h"
 #include "BlinnPhongPass.h"
+#include "SSRShadowmapPass.h"
 
 class SSRApplication : public BaseApplication{
 public:
+    SSRShadowmapPass shadowmapPass;
     BlinnPhongPass blinnPhongPasses[2];
 
     // vb and ib for cube
@@ -47,6 +49,16 @@ public:
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
 
+    VkImage depthImage2;
+    VkDeviceMemory depthImageMemory2;
+    VkImageView depthImageView2;
+
+    VkImage shadowmap;
+    VkDeviceMemory shadowmapMemory;
+    VkImageView shadowmapView;
+    VkSampler shadowmapSampler;
+
+
     uint32_t mipLevels;
 
 
@@ -75,6 +87,8 @@ public:
 
         blinnPhongPasses[0].model = cubeModel;
         blinnPhongPasses[0].isFloor = false;
+        blinnPhongPasses[0].shadowmapView = shadowmapView;
+        blinnPhongPasses[0].smSampler = shadowmapSampler;
 
 
         // draw floor
@@ -98,9 +112,28 @@ public:
 
         blinnPhongPasses[1].model = floorModel;
         blinnPhongPasses[1].isFloor = true;
+        blinnPhongPasses[1].shadowmapView = shadowmapView;
+        blinnPhongPasses[1].smSampler = shadowmapSampler;
 
 
+        // shadowmap pass
+        shadowmapPass.device = device;
+        shadowmapPass.physicalDevice = physicalDevice;
 
+        shadowmapPass.colorImageView = shadowmapView;
+        shadowmapPass.depthImageView = depthImageView2;
+
+        shadowmapPass.vertexBufferMarry = vertexBuffer;
+        shadowmapPass.indexBufferMarry = indexBuffer;
+        shadowmapPass.indicesCountMarry = indices.size();
+
+        shadowmapPass.vertexBufferFloor = vertexBuffer2;
+        shadowmapPass.indexBufferFloor = indexBuffer2;
+        shadowmapPass.indicesCountFloor = indices2.size();
+
+        shadowmapPass.swapChainImagesCount = swapChainImageViews.size();
+        shadowmapPass.cubeModel = cubeModel;
+        shadowmapPass.floorModel = floorModel;
 
     }
 
@@ -114,6 +147,8 @@ public:
         createTextureImageView();
         createTextureSampler();
 
+        createShadowmapSampler();
+
         loadModel();
         createVertexBuffer();
         createIndexBuffer();
@@ -121,6 +156,7 @@ public:
         prepareResources();
         blinnPhongPasses[0].init();
         blinnPhongPasses[1].init();
+        shadowmapPass.init();
     }
 
     void cleanupSwapChain() override{
@@ -132,6 +168,14 @@ public:
         vkDestroyImageView(device, depthImageView, nullptr);
         vkFreeMemory(device, depthImageMemory, nullptr);
         vkDestroyImage(device, depthImage, nullptr);
+
+        vkDestroyImageView(device, depthImageView2, nullptr);
+        vkFreeMemory(device, depthImageMemory2, nullptr);
+        vkDestroyImage(device, depthImage2, nullptr);
+
+        for(auto& framebuffer : shadowmapPass.framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
 
         for(auto& framebuffer : blinnPhongPasses[0].framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
@@ -150,9 +194,14 @@ public:
 
     void cleanup() override{
         cleanupSwapChain();
-
+        shadowmapPass.cleanup();
         blinnPhongPasses[0].cleanup();
         blinnPhongPasses[1].cleanup();
+
+        vkDestroyImageView(device, shadowmapView, nullptr);
+        vkFreeMemory(device, shadowmapMemory, nullptr);
+        vkDestroyImage(device, shadowmap, nullptr);
+        vkDestroySampler(device, shadowmapSampler, nullptr);
 
         vkDestroyImageView(device, textureImageView, nullptr);
         vkFreeMemory(device, textureImageMemory, nullptr);
@@ -165,6 +214,12 @@ public:
 
         vkDestroyBuffer(device, indexBuffer, nullptr);
         vkFreeMemory(device, indexBufferMemory, nullptr);
+
+        vkDestroyBuffer(device, vertexBuffer2, nullptr);
+        vkFreeMemory(device, vertexBufferMemory2, nullptr);
+
+        vkDestroyBuffer(device, indexBuffer2, nullptr);
+        vkFreeMemory(device, indexBufferMemory2, nullptr);
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -282,6 +337,33 @@ public:
         vkFreeMemory(device, stagingBufferMemory, nullptr);
     }
 
+    void createShadowmapSampler() {
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(physicalDevice, &properties);
+
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;  // 使用线性过滤
+        samplerInfo.minFilter = VK_FILTER_LINEAR;  // 使用线性过滤
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;  // 边界模式
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;  // 边界颜色为白色
+        samplerInfo.anisotropyEnable = VK_FALSE;  // 关闭各向异性过滤
+        samplerInfo.maxAnisotropy = 1.0f;  // 设置为 1.0（无效，但需要初始化）
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;  // 使用标准化坐标
+        samplerInfo.compareEnable = VK_TRUE;  // 启用深度比较
+        samplerInfo.compareOp = VK_COMPARE_OP_LESS;  // 深度比较操作
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;  // 禁用 Mipmap
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = 0.0f;  // 禁用 Mipmap
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &shadowmapSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create shadow map sampler!");
+        }
+    }
+
 
 
     void recreateSwapChain() {
@@ -346,19 +428,11 @@ public:
                         VertexMarry vertex{};
 
                         // 位置
-                        vertex.pos = glm::vec3(
-                                mesh->mVertices[j].x,
-                                mesh->mVertices[j].y,
-                                mesh->mVertices[j].z
-                        );
+                        vertex.pos = aiVec2glmVec(mesh->mVertices[j]);
 
                         // 法向量
                         if (mesh->HasNormals()) {
-                            vertex.normal = glm::vec3(
-                                    mesh->mNormals[j].x,
-                                    mesh->mNormals[j].y,
-                                    mesh->mNormals[j].z
-                            );
+                            vertex.normal = aiVec2glmVec(mesh->mNormals[j]);
                         }
 
                         // 纹理坐标
@@ -422,19 +496,11 @@ public:
                         VertexMarry vertex{};
 
                         // 位置
-                        vertex.pos = glm::vec3(
-                                mesh->mVertices[j].x,
-                                mesh->mVertices[j].y,
-                                mesh->mVertices[j].z
-                        );
+                        vertex.pos = aiVec2glmVec(mesh->mVertices[j]);
 
                         // 法向量
                         if (mesh->HasNormals()) {
-                            vertex.normal = glm::vec3(
-                                    mesh->mNormals[j].x,
-                                    mesh->mNormals[j].y,
-                                    mesh->mNormals[j].z
-                            );
+                            vertex.normal = aiVec2glmVec(mesh->mNormals[j]);
                         }
 
                         // 纹理坐标
@@ -475,6 +541,10 @@ public:
 
         createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
         colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+        colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+        createImage(SM_RESOLUTION, SM_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,  shadowmap, shadowmapMemory);
+        shadowmapView = createImageView(shadowmap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
     void createDepthResources() {
@@ -482,6 +552,9 @@ public:
 
         createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
         depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+
+        createImage(SM_RESOLUTION, SM_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage2, depthImageMemory2);
+        depthImageView2 = createImageView(depthImage2, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
     }
 
     void createTextureImage() {
@@ -557,8 +630,11 @@ public:
             throw std::runtime_error("failed to begin recording command buffer!");
         }
 
+        shadowmapPass.recordCommandBuffer(commandBuffer, imageIndex);
+
         blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
+
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
@@ -631,6 +707,7 @@ public:
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
         blinnPhongPasses[0].currentFrame = currentFrame;
         blinnPhongPasses[1].currentFrame = currentFrame;
+        shadowmapPass.currentFrame = currentFrame;
     }
 };
 

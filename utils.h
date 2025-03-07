@@ -49,6 +49,8 @@ glm::mat4 aiMat2glmMat(const aiMatrix4x4& rhs);
 glm::vec3 aiVec2glmVec(const aiVector3D& rhs);
 glm::vec2 aiVec2glmVec(const aiVector2D& rhs);
 
+
+
 extern Camera camera;
 extern float deltaTime;
 extern float lastFrameTime;
