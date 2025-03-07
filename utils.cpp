@@ -138,6 +138,31 @@ VkFormat findDepthFormat(VkPhysicalDevice physicalDevice){
     );
 }
 
+glm::mat4 aiMat2glmMat(const aiMatrix4x4& rhs){
+    glm::mat4 res{};
+    for(uint32_t i = 0; i < 4; ++i){
+        for(uint32_t j = 0; j < 4; ++j)
+            res[i][j] = rhs[j][i];
+    }
+    return res;
+}
+
+glm::vec3 aiVec2glmVec(const aiVector3D& rhs){
+    glm::vec3 res{};
+    for(uint32_t i = 0; i < 3; ++i){
+        res[i] = rhs[i];
+    }
+    return res;
+}
+
+glm::vec2 aiVec2glmVec(const aiVector2D& rhs){
+    glm::vec2 res{};
+    for(uint32_t i = 0; i < 2; ++i){
+        res[i] = rhs[i];
+    }
+    return res;
+}
+
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 

@@ -9,28 +9,138 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
-
 #include "SSRutils.h"
+#include "BlinnPhongPass.h"
 
 class SSRApplication : public BaseApplication{
 public:
+    BlinnPhongPass blinnPhongPasses[2];
+
+    // vb and ib for cube
+    std::vector<VertexMarry> vertices;
+    std::vector<uint32_t> indices;
+    VkBuffer vertexBuffer;
+    VkDeviceMemory vertexBufferMemory;
+    VkBuffer indexBuffer;
+    VkDeviceMemory indexBufferMemory;
+    glm::mat4 cubeModel;
+
+    // vb and ib for floor
+    std::vector<VertexMarry> vertices2;
+    std::vector<uint32_t> indices2;
+    VkBuffer vertexBuffer2;
+    VkDeviceMemory vertexBufferMemory2;
+    VkBuffer indexBuffer2;
+    VkDeviceMemory indexBufferMemory2;
+    glm::mat4 floorModel;
+
+    VkImage textureImage;
+    VkDeviceMemory textureImageMemory;
+    VkImageView textureImageView;
+    VkSampler textureSampler;
+
+    VkImage colorImage;
+    VkDeviceMemory colorImageMemory;
+    VkImageView colorImageView;
+
+    VkImage depthImage;
+    VkDeviceMemory depthImageMemory;
+    VkImageView depthImageView;
+
+    uint32_t mipLevels;
+
 
 
     void prepareResources() override
     {
+        // blinn-phong pass
+        // draw cube
+        blinnPhongPasses[0].device = device;
+        blinnPhongPasses[0].physicalDevice = physicalDevice;
+
+        blinnPhongPasses[0].colorImageView = colorImageView;
+        blinnPhongPasses[0].depthImageView = depthImageView;
+
+        blinnPhongPasses[0].vertexBuffer = vertexBuffer;
+        blinnPhongPasses[0].indexBuffer = indexBuffer;
+        blinnPhongPasses[0].indicesCount = indices.size();
+
+        blinnPhongPasses[0].swapChainExtent = swapChainExtent;
+        blinnPhongPasses[0].swapChainImageFormat = swapChainImageFormat;
+        blinnPhongPasses[0].swapChainImageViews = swapChainImageViews;
+        blinnPhongPasses[0].msaaSamples = msaaSamples;
+
+        blinnPhongPasses[0].textureImageView = textureImageView;
+        blinnPhongPasses[0].textureSampler = textureSampler;
+
+        blinnPhongPasses[0].model = cubeModel;
+        blinnPhongPasses[0].isFloor = false;
+
+
+        // draw floor
+        blinnPhongPasses[1].device = device;
+        blinnPhongPasses[1].physicalDevice = physicalDevice;
+
+        blinnPhongPasses[1].colorImageView = colorImageView;
+        blinnPhongPasses[1].depthImageView = depthImageView;
+
+        blinnPhongPasses[1].vertexBuffer = vertexBuffer2;
+        blinnPhongPasses[1].indexBuffer = indexBuffer2;
+        blinnPhongPasses[1].indicesCount = indices2.size();
+
+        blinnPhongPasses[1].swapChainExtent = swapChainExtent;
+        blinnPhongPasses[1].swapChainImageFormat = swapChainImageFormat;
+        blinnPhongPasses[1].swapChainImageViews = swapChainImageViews;
+        blinnPhongPasses[1].msaaSamples = msaaSamples;
+
+        blinnPhongPasses[1].textureImageView = textureImageView;
+        blinnPhongPasses[1].textureSampler = textureSampler;
+
+        blinnPhongPasses[1].model = floorModel;
+        blinnPhongPasses[1].isFloor = true;
+
+
+
 
     }
 
     void initVulkan() override{
         //camera.Position = lightPos;
         BaseApplication::initVulkan();
+        createColorResources();
+        createDepthResources();
+
+        createTextureImage();
+        createTextureImageView();
+        createTextureSampler();
+
+        loadModel();
+        createVertexBuffer();
+        createIndexBuffer();
+
+        prepareResources();
+        blinnPhongPasses[0].init();
+        blinnPhongPasses[1].init();
     }
 
     void cleanupSwapChain() override{
+
+        vkDestroyImageView(device, colorImageView, nullptr);
+        vkFreeMemory(device, colorImageMemory, nullptr);
+        vkDestroyImage(device, colorImage, nullptr);
+
+        vkDestroyImageView(device, depthImageView, nullptr);
+        vkFreeMemory(device, depthImageMemory, nullptr);
+        vkDestroyImage(device, depthImage, nullptr);
+
+        for(auto& framebuffer : blinnPhongPasses[0].framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
+        for(auto& framebuffer : blinnPhongPasses[1].framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device, imageView, nullptr);
         }
@@ -41,6 +151,20 @@ public:
     void cleanup() override{
         cleanupSwapChain();
 
+        blinnPhongPasses[0].cleanup();
+        blinnPhongPasses[1].cleanup();
+
+        vkDestroyImageView(device, textureImageView, nullptr);
+        vkFreeMemory(device, textureImageMemory, nullptr);
+        vkDestroyImage(device, textureImage, nullptr);
+
+        vkDestroySampler(device, textureSampler, nullptr);
+
+        vkDestroyBuffer(device, vertexBuffer, nullptr);
+        vkFreeMemory(device, vertexBufferMemory, nullptr);
+
+        vkDestroyBuffer(device, indexBuffer, nullptr);
+        vkFreeMemory(device, indexBufferMemory, nullptr);
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -64,6 +188,102 @@ public:
         glfwTerminate();
     }
 
+    void createVertexBuffer(){
+        createCubeVertexBuffer();
+        createFloorVertexBuffer();
+    }
+
+    void createIndexBuffer(){
+        createCubeIndexBuffer();
+        createFloorIndexBuffer();
+    }
+
+    void createCubeVertexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer, vertexBufferMemory);
+
+        copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void createFloorVertexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(vertices2[0]) * vertices2.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices2.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer2, vertexBufferMemory2);
+
+        copyBuffer(stagingBuffer, vertexBuffer2, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void createCubeIndexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer, indexBufferMemory);
+
+        copyBuffer(stagingBuffer, indexBuffer, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void createFloorIndexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(indices2[0]) * indices2.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices2.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer2, indexBufferMemory2);
+
+        copyBuffer(stagingBuffer, indexBuffer2, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+
+
     void recreateSwapChain() {
         int width = 0, height = 0;
         glfwGetFramebufferSize(window, &width, &height);
@@ -80,60 +300,254 @@ public:
         createImageViews();
     }
 
-    // ------------------begin to test assimp------------------
-
-    // 递归遍历场景中的节点
-    void ProcessNode(aiNode* node, const aiScene* scene) {
-        std::cout << "Processing node: " << node->mName.C_Str() << std::endl;
-
-        // 遍历当前节点的所有网格
-        for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            std::cout << "  Mesh name: " << mesh->mName.C_Str() << std::endl;
-            std::cout << "  Number of vertices: " << mesh->mNumVertices << std::endl;
-
-            // 如果需要，可以在这里处理顶点、法线、纹理坐标等
-            for (unsigned int j = 0; j < mesh->mNumVertices; j++) {
-                aiVector3D vertex = mesh->mVertices[j];
-                std::cout << "    Vertex " << j << ": (" << vertex.x << ", " << vertex.y << ", " << vertex.z << ")" << std::endl;
-            }
+    void loadModel(){
+        loadCube();
+        /*
+        for(auto& vertex : vertices){
+            std::cout << "pos: (" << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z <<")"<< std::endl;
+            std::cout << "normal: (" << vertex.normal.x << ", " << vertex.normal.y << ", " << vertex.normal.z << std::endl;
+            std::cout << "texCoord: (" << vertex.texCoord.x << ", " << vertex.texCoord.y << std::endl;
+            std::cout << "-------------------------------------------------" << std::endl;
         }
 
-        // 递归处理子节点
-        for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            ProcessNode(node->mChildren[i], scene);
+        for(auto& index : indices){
+            std::cout << index << std::endl;
         }
+         */
+        loadFloor();
+
     }
 
-    void run()override{
-
-        // 设置要加载的 GLTF 文件路径
-        std::string filePath = CUBE_PATH;
-
+    void loadCube(){
         // 创建 Assimp 导入器
         Assimp::Importer importer;
-        // 加载 GLTF 文件
-        const aiScene* scene = importer.ReadFile(filePath,
-                                                 aiProcess_Triangulate |        // 将所有多边形转为三角形
-                                                 aiProcess_FlipUVs |           // 翻转纹理坐标（如果需要）
-                                                 aiProcess_JoinIdenticalVertices // 合并相同顶点
-        );
 
-        // 检查文件是否加载成功
+        // 加载 glTF 文件
+        const aiScene* scene = importer.ReadFile(CUBE_PATH, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-            std::cerr << "Error loading GLTF file: " << importer.GetErrorString() << std::endl;
+            throw std::runtime_error("Failed to load GLTF file: " + std::string(importer.GetErrorString()));
         }
 
-        // 输出场景信息
-        std::cout << "Scene loaded successfully!" << std::endl;
-        std::cout << "Number of meshes: " << scene->mNumMeshes << std::endl;
-        std::cout << "Number of materials: " << scene->mNumMaterials << std::endl;
+        // 遍历场景中的节点
+        std::function<void(aiNode*, const aiMatrix4x4&)> processNode = [&](aiNode* node, const aiMatrix4x4& parentTransform) {
+            aiMatrix4x4 currentTransform = parentTransform * node->mTransformation;
 
-        // 递归处理场景中的节点
-        ProcessNode(scene->mRootNode, scene);
+            // 检查节点名称是否为 "Cube"
+            if (std::string(node->mName.C_Str()) == "Cube") {
+                // 提取变换矩阵
+                cubeModel = aiMat2glmMat(currentTransform);
+
+                // 遍历该节点的所有网格
+                for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+                    aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+
+                    // 提取顶点数据
+                    for (unsigned int j = 0; j < mesh->mNumVertices; j++) {
+                        VertexMarry vertex{};
+
+                        // 位置
+                        vertex.pos = glm::vec3(
+                                mesh->mVertices[j].x,
+                                mesh->mVertices[j].y,
+                                mesh->mVertices[j].z
+                        );
+
+                        // 法向量
+                        if (mesh->HasNormals()) {
+                            vertex.normal = glm::vec3(
+                                    mesh->mNormals[j].x,
+                                    mesh->mNormals[j].y,
+                                    mesh->mNormals[j].z
+                            );
+                        }
+
+                        // 纹理坐标
+                        if (mesh->HasTextureCoords(0)) { // 检查是否有纹理坐标
+                            vertex.texCoord = glm::vec2(
+                                    mesh->mTextureCoords[0][j].x,
+                                    mesh->mTextureCoords[0][j].y
+                            );
+                        } else {
+                            vertex.texCoord = glm::vec2(0.0f, 0.0f); // 默认值
+                        }
+
+                        vertices.push_back(vertex);
+                    }
+
+                    for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
+                        const aiFace& face = mesh->mFaces[i];
+                        for (unsigned int j = 0; j < face.mNumIndices; ++j) {
+                            indices.push_back(face.mIndices[j]);
+                        }
+                    }
+                }
+
+            }
+
+            // 递归处理子节点
+            for (unsigned int i = 0; i < node->mNumChildren; i++) {
+                processNode(node->mChildren[i], currentTransform);
+            }
+        };
+
+        // 从根节点开始处理
+        processNode(scene->mRootNode, aiMatrix4x4());
     }
 
-    // ------------------end to test assimp------------------
+    void loadFloor(){
+        // 创建 Assimp 导入器
+        Assimp::Importer importer;
+
+        // 加载 glTF 文件
+        const aiScene* scene = importer.ReadFile(CUBE_PATH, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+            throw std::runtime_error("Failed to load GLTF file: " + std::string(importer.GetErrorString()));
+        }
+
+        // 遍历场景中的节点
+        std::function<void(aiNode*, const aiMatrix4x4&)> processNode = [&](aiNode* node, const aiMatrix4x4& parentTransform) {
+            aiMatrix4x4 currentTransform = parentTransform * node->mTransformation;
+
+            // 检查节点名称是否为 "Cube"
+            if (std::string(node->mName.C_Str()) == "Plane") {
+                // 提取变换矩阵
+                floorModel = aiMat2glmMat(currentTransform);
+
+                // 遍历该节点的所有网格
+                for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+                    aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+
+                    // 提取顶点数据
+                    for (unsigned int j = 0; j < mesh->mNumVertices; j++) {
+                        VertexMarry vertex{};
+
+                        // 位置
+                        vertex.pos = glm::vec3(
+                                mesh->mVertices[j].x,
+                                mesh->mVertices[j].y,
+                                mesh->mVertices[j].z
+                        );
+
+                        // 法向量
+                        if (mesh->HasNormals()) {
+                            vertex.normal = glm::vec3(
+                                    mesh->mNormals[j].x,
+                                    mesh->mNormals[j].y,
+                                    mesh->mNormals[j].z
+                            );
+                        }
+
+                        // 纹理坐标
+                        if (mesh->HasTextureCoords(0)) { // 检查是否有纹理坐标
+                            vertex.texCoord = glm::vec2(
+                                    mesh->mTextureCoords[0][j].x,
+                                    mesh->mTextureCoords[0][j].y
+                            );
+                        } else {
+                            vertex.texCoord = glm::vec2(0.0f, 0.0f); // 默认值
+                        }
+
+                        vertices2.push_back(vertex);
+                    }
+
+                    for (unsigned int i = 0; i < mesh->mNumFaces; ++i) {
+                        const aiFace& face = mesh->mFaces[i];
+                        for (unsigned int j = 0; j < face.mNumIndices; ++j) {
+                            indices2.push_back(face.mIndices[j]);
+                        }
+                    }
+                }
+
+            }
+
+            // 递归处理子节点
+            for (unsigned int i = 0; i < node->mNumChildren; i++) {
+                processNode(node->mChildren[i], currentTransform);
+            }
+        };
+
+        // 从根节点开始处理
+        processNode(scene->mRootNode, aiMatrix4x4());
+    }
+
+    void createColorResources() {
+        VkFormat colorFormat = swapChainImageFormat;
+
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
+        colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+    }
+
+    void createDepthResources() {
+        VkFormat depthFormat = findDepthFormat();
+
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+        depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+    }
+
+    void createTextureImage() {
+        int texWidth, texHeight, texChannels;
+        stbi_uc* pixels = stbi_load(CUBE_TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        VkDeviceSize imageSize = texWidth * texHeight * 4;
+        mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+
+        if (!pixels) {
+            throw std::runtime_error("failed to load texture image!");
+        }
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, imageSize, 0, &data);
+        memcpy(data, pixels, static_cast<size_t>(imageSize));
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        stbi_image_free(pixels);
+
+        createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImage, textureImageMemory);
+
+        transitionImageLayout(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+        copyBufferToImage(stagingBuffer, textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+        //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+
+        generateMipmaps(textureImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels);
+    }
+
+    void createTextureSampler() {
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(physicalDevice, &properties);
+
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.anisotropyEnable = VK_TRUE;
+        samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &textureSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create texture sampler!");
+        }
+    }
+
+    void createTextureImageView() {
+        textureImageView = createImageView(textureImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
+    }
+
 
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
         VkCommandBufferBeginInfo beginInfo{};
@@ -143,12 +557,16 @@ public:
             throw std::runtime_error("failed to begin recording command buffer!");
         }
 
+        blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
+        blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
         }
 
     }
+
+
 
     void drawFrame() override{
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
@@ -211,6 +629,8 @@ public:
         }
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+        blinnPhongPasses[0].currentFrame = currentFrame;
+        blinnPhongPasses[1].currentFrame = currentFrame;
     }
 };
 

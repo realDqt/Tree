@@ -7,4 +7,6 @@
 #include "../utils.h"
 #include "../Light.h"
 extern const std::string CUBE_PATH;
+extern const std::string CUBE_TEXTURE_PATH;
+extern DirectionalLight ssrLight;
 #endif //VKRENDERINGENGINE_SSRUTILS_H

@@ -32,6 +32,10 @@
 #include "camera.h"
 #include "BaseApplication/BaseApplication.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
@@ -40,6 +44,10 @@ std::vector<char> readFile(const std::string& filename);
 VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);
 uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);
 void createBuffer(VkPhysicalDevice physicalDevice, VkDevice device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+glm::mat4 aiMat2glmMat(const aiMatrix4x4& rhs);
+glm::vec3 aiVec2glmVec(const aiVector3D& rhs);
+glm::vec2 aiVec2glmVec(const aiVector2D& rhs);
 
 extern Camera camera;
 extern float deltaTime;
