@@ -408,11 +408,11 @@ void BlinnPhongPass::updateUniformBuffer(uint32_t currentImage) {
     ubo.proj = glm::perspective(glm::radians(45.0f), (float) swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 100.0f);
     ubo.proj[1][1] *= -1;
 
-    auto lightModel = glm::mat4(1.0f);
+
     glm::mat4 lightView = glm::lookAt(ssrLightPos, ssrLightPos + ssrLight.lightDir, ssrLightUp);
     glm::mat4 lightProj = glm::ortho(-SSROrthoRange, SSROrthoRange, -SSROrthoRange, SSROrthoRange, 1e-2f, 100.f);
     lightProj[1][1] *= -1;
-    ubo.lightVP = lightProj * lightView * lightModel;
+    ubo.lightVP = lightProj * lightView;
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 
     UniformBufferObject2 ubo2{};

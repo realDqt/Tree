@@ -19,6 +19,9 @@ layout(binding = 0, std140) uniform UniformBufferObject{
 void main() {
     worldPosition = (ubo.model * vec4(aPosition, 1.0)).xyz;
     worldNormal = (ubo.modelInvTrans * vec4(aNormal, 0.0)).xyz;
+    // avoid self-occlusion
+    float eps = 1e-2;
+    worldPosition += normalize(worldNormal) * eps;
     texCoords = aTexCoords;
     lightSpaceCoord = ubo.lightVP * vec4(worldPosition, 1.0);
     gl_Position = ubo.proj * ubo.view * ubo.model * vec4(aPosition, 1.0);
