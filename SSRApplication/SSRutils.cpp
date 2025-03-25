@@ -12,3 +12,8 @@ DirectionalLight ssrLight{
 };
 glm::vec3 ssrLightPos = glm::vec3(5.0f, 5.0f, -5.0f);
 glm::vec3 ssrLightUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+const VkFormat gAlbedoFormat = VK_FORMAT_R8G8B8A8_SRGB;
+const VkFormat gWorldPositionFormat = VK_FORMAT_R32G32B32A32_SFLOAT;
+const VkFormat gWorldNormalFormat = VK_FORMAT_R8G8B8A8_SNORM;
+const VkFormat gDepthFormat = VK_FORMAT_R32_SFLOAT;

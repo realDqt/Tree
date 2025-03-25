@@ -1,0 +1,11 @@
+//
+// Created by 22473 on 2025-03-25.
+//
+
+#ifndef VKRENDERINGENGINE_FFTBLOOMUTILS_H
+#define VKRENDERINGENGINE_FFTBLOOMUTILS_H
+#include "../VulkanTools.h"
+constexpr int FB_CUBEMAP_RESOLUTION = 512;
+
+extern const std::string FB_HDR_TEXTURE_PATH;
+#endif //VKRENDERINGENGINE_FFTBLOOMUTILS_H

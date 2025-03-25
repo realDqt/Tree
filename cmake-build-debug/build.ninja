@@ -220,6 +220,42 @@ build CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: 
   TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
   TARGET_PDB = vkRenderingEngine.pdb
 
+build CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\SSRApplication\GBufferPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\SSRApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
+
+build CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\FFTBloomApplication\FBSkyboxPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
+
+build CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\FFTBloomApplication\FBCubemapPass.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
+
+build CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: CXX_COMPILER__vkRenderingEngine_unscanned_Debug E$:\clion_proj\Tree\FFTBloomApplication\FFTBloomUtils.cpp || cmake_object_order_depends_target_vkRenderingEngine
+  DEFINES = -DNOMINMAX
+  FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -std:c++20 -MDd -Zi
+  INCLUDES = -IE:\glfw\glfw-3.4.bin.WIN64\include -IE:\Vulkan\VulkanSDK\include -IE:\ImageProcess -IE:\ObjLoader -IE:\GLTFLoader -IE:\glad\include -IE:\assimp\assimp-master\include
+  OBJECT_DIR = CMakeFiles\vkRenderingEngine.dir
+  OBJECT_FILE_DIR = CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication
+  TARGET_COMPILE_PDB = CMakeFiles\vkRenderingEngine.dir\
+  TARGET_PDB = vkRenderingEngine.pdb
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target vkRenderingEngine
@@ -228,7 +264,7 @@ build CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: 
 #############################################
 # Link the executable vkRenderingEngine.exe
 
-build vkRenderingEngine.exe: CXX_EXECUTABLE_LINKER__vkRenderingEngine_Debug CMakeFiles\vkRenderingEngine.dir\main.cpp.obj CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\PCSSutils.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\VulkanTools.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj
+build vkRenderingEngine.exe: CXX_EXECUTABLE_LINKER__vkRenderingEngine_Debug CMakeFiles\vkRenderingEngine.dir\main.cpp.obj CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\PCSSutils.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\VulkanTools.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj
   FLAGS = /DWIN32 /D_WINDOWS /EHsc /Ob0 /Od /RTC1 -MDd -Zi
   LINK_FLAGS = /machine:x64 /debug /INCREMENTAL /subsystem:console
   LINK_LIBRARIES = glfw3.lib  vulkan-1.lib  assimp-vc143-mtd.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib

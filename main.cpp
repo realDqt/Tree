@@ -1,10 +1,10 @@
 //#include "PCSSApplication/PCSSApplication.h"
 //#include "HelloBoxApplication/HelloBoxApplication.h"
 //#include "IBLApplication/IBLApplication.h"
-#include "SSRApplication/SSRApplication.h"
+#include "FFTBloomApplication/FFTBloomApplication.h"
 
 int main() {
-    SSRApplication app{};
+    FFTBloomApplication app{};
     return app.execute();
 }
 

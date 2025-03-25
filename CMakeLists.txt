@@ -74,6 +74,17 @@ add_executable(vkRenderingEngine
         SSRApplication/BlinnPhongPass.cpp
         SSRApplication/SSRShadowmapPass.h
         SSRApplication/SSRShadowmapPass.cpp
+        SSRApplication/GBufferPass.h
+        SSRApplication/GBufferPass.cpp
+        FFTBloomApplication/FFTBloomUtils.h
+        FFTBloomApplication/FBSkyboxPass.h
+        FFTBloomApplication/FBSkyboxPass.cpp
+        FFTBloomApplication/FBCubemapPass.h
+        FFTBloomApplication/FBCubemapPass.h
+        FFTBloomApplication/FBCubemapPass.h
+        FFTBloomApplication/FBCubemapPass.cpp
+        FFTBloomApplication/FFTBloomApplication.h
+        FFTBloomApplication/FFTBloomUtils.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)

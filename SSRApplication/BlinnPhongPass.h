@@ -59,9 +59,6 @@ public:
     VkExtent2D swapChainExtent;
 
     VkFormat swapChainImageFormat;
-    VkSampleCountFlagBits msaaSamples;
-
-    VkImageView colorImageView;
 
     VkImageView depthImageView;
 

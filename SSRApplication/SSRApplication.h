@@ -12,10 +12,12 @@
 #include "SSRutils.h"
 #include "BlinnPhongPass.h"
 #include "SSRShadowmapPass.h"
+#include "GBufferPass.h"
 
 class SSRApplication : public BaseApplication{
 public:
     SSRShadowmapPass shadowmapPass;
+    GBufferPass gBufferPasses[2];
     BlinnPhongPass blinnPhongPasses[2];
 
     // vb and ib for cube
@@ -61,6 +63,23 @@ public:
 
     uint32_t mipLevels;
 
+    // resources for gBuffer
+    VkImage gAlbedo;
+    VkDeviceMemory gAlbedoMemory;
+    VkImageView gAlbedoView;
+
+    VkImage gWorldPosition;
+    VkDeviceMemory gWorldPositionMemory;
+    VkImageView gWorldPositionView;
+
+    VkImage gWorldNormal;
+    VkDeviceMemory gWorldNormalMemory;
+    VkImageView gWorldNormalView;
+
+    VkImage gDepth;
+    VkDeviceMemory gDepthMemory;
+    VkImageView gDepthView;
+
 
 
     void prepareResources() override
@@ -70,7 +89,6 @@ public:
         blinnPhongPasses[0].device = device;
         blinnPhongPasses[0].physicalDevice = physicalDevice;
 
-        blinnPhongPasses[0].colorImageView = colorImageView;
         blinnPhongPasses[0].depthImageView = depthImageView;
 
         blinnPhongPasses[0].vertexBuffer = vertexBuffer;
@@ -80,7 +98,6 @@ public:
         blinnPhongPasses[0].swapChainExtent = swapChainExtent;
         blinnPhongPasses[0].swapChainImageFormat = swapChainImageFormat;
         blinnPhongPasses[0].swapChainImageViews = swapChainImageViews;
-        blinnPhongPasses[0].msaaSamples = msaaSamples;
 
         blinnPhongPasses[0].textureImageView = textureImageView;
         blinnPhongPasses[0].textureSampler = textureSampler;
@@ -95,7 +112,6 @@ public:
         blinnPhongPasses[1].device = device;
         blinnPhongPasses[1].physicalDevice = physicalDevice;
 
-        blinnPhongPasses[1].colorImageView = colorImageView;
         blinnPhongPasses[1].depthImageView = depthImageView;
 
         blinnPhongPasses[1].vertexBuffer = vertexBuffer2;
@@ -105,7 +121,6 @@ public:
         blinnPhongPasses[1].swapChainExtent = swapChainExtent;
         blinnPhongPasses[1].swapChainImageFormat = swapChainImageFormat;
         blinnPhongPasses[1].swapChainImageViews = swapChainImageViews;
-        blinnPhongPasses[1].msaaSamples = msaaSamples;
 
         blinnPhongPasses[1].textureImageView = textureImageView;
         blinnPhongPasses[1].textureSampler = textureSampler;
@@ -135,6 +150,55 @@ public:
         shadowmapPass.cubeModel = cubeModel;
         shadowmapPass.floorModel = floorModel;
 
+        // GBuffer Passes
+        gBufferPasses[0].device = device;
+        gBufferPasses[0].physicalDevice = physicalDevice;
+
+        gBufferPasses[0].swapChainExtent = swapChainExtent;
+        gBufferPasses[0].swapChainImageViewCount = swapChainImageViews.size();
+
+        gBufferPasses[0].depthImageView = depthImageView;
+
+        gBufferPasses[0].vertexBuffer = vertexBuffer;
+        gBufferPasses[0].indexBuffer = indexBuffer;
+        gBufferPasses[0].indicesCount = indices.size();
+
+        gBufferPasses[0].textureImageView = textureImageView;
+        gBufferPasses[0].textureSampler = textureSampler;
+
+        gBufferPasses[0].gAlbedoView = gAlbedoView;
+        gBufferPasses[0].gWorldPositionView = gWorldPositionView;
+        gBufferPasses[0].gWorldNormalView = gWorldNormalView;
+        gBufferPasses[0].gDepthView = gDepthView;
+
+        gBufferPasses[0].model = cubeModel;
+        gBufferPasses[0].isFloor = false;
+
+
+        gBufferPasses[1].device = device;
+        gBufferPasses[1].physicalDevice = physicalDevice;
+
+        gBufferPasses[1].swapChainExtent = swapChainExtent;
+        gBufferPasses[1].swapChainImageViewCount = swapChainImageViews.size();
+
+        gBufferPasses[1].depthImageView = depthImageView;
+
+        gBufferPasses[1].vertexBuffer = vertexBuffer;
+        gBufferPasses[1].indexBuffer = indexBuffer;
+        gBufferPasses[1].indicesCount = indices.size();
+
+        gBufferPasses[1].textureImageView = textureImageView;
+        gBufferPasses[1].textureSampler = textureSampler;
+
+        gBufferPasses[1].gAlbedoView = gAlbedoView;
+        gBufferPasses[1].gWorldPositionView = gWorldPositionView;
+        gBufferPasses[1].gWorldNormalView = gWorldNormalView;
+        gBufferPasses[1].gDepthView = gDepthView;
+
+        gBufferPasses[1].model = floorModel;
+        gBufferPasses[1].isFloor = true;
+
+
     }
 
     void initVulkan() override{
@@ -142,6 +206,7 @@ public:
         BaseApplication::initVulkan();
         createColorResources();
         createDepthResources();
+        createGBufferResources();
 
         createTextureImage();
         createTextureImageView();
@@ -157,6 +222,8 @@ public:
         shadowmapPass.init();
         blinnPhongPasses[0].init();
         blinnPhongPasses[1].init();
+        gBufferPasses[0].init();
+        gBufferPasses[1].init();
     }
 
     void cleanupSwapChain() override{
@@ -185,6 +252,14 @@ public:
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
+        for(auto& framebuffer :gBufferPasses[0].framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
+        for(auto& framebuffer : gBufferPasses[1].framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device, imageView, nullptr);
         }
@@ -197,6 +272,25 @@ public:
         shadowmapPass.cleanup();
         blinnPhongPasses[0].cleanup();
         blinnPhongPasses[1].cleanup();
+
+        gBufferPasses[0].cleanup();
+        gBufferPasses[1].cleanup();
+
+        vkDestroyImageView(device, gAlbedoView, nullptr);
+        vkFreeMemory(device, gAlbedoMemory, nullptr);
+        vkDestroyImage(device, gAlbedo, nullptr);
+
+        vkDestroyImageView(device, gWorldPositionView, nullptr);
+        vkFreeMemory(device, gWorldPositionMemory, nullptr);
+        vkDestroyImage(device, gWorldPosition, nullptr);
+
+        vkDestroyImageView(device, gWorldNormalView, nullptr);
+        vkFreeMemory(device, gWorldNormalMemory, nullptr);
+        vkDestroyImage(device, gWorldNormal, nullptr);
+
+        vkDestroyImageView(device, gDepthView, nullptr);
+        vkFreeMemory(device, gDepthMemory, nullptr);
+        vkDestroyImage(device, gDepth, nullptr);
 
         vkDestroyImageView(device, shadowmapView, nullptr);
         vkFreeMemory(device, shadowmapMemory, nullptr);
@@ -539,7 +633,7 @@ public:
     void createColorResources() {
         VkFormat colorFormat = swapChainImageFormat;
 
-        createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
         colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
         colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
@@ -547,10 +641,25 @@ public:
         shadowmapView = createImageView(shadowmap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
+    void createGBufferResources(){
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gAlbedoFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, gAlbedo, gAlbedoMemory);
+        gAlbedoView = createImageView(gAlbedo, gAlbedoFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gWorldPositionFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, gWorldPosition, gWorldPositionMemory);
+        gWorldPositionView = createImageView(gWorldPosition, gWorldPositionFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gWorldNormalFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, gWorldNormal, gWorldNormalMemory);
+        gWorldNormalView = createImageView(gWorldNormal, gWorldNormalFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gDepthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, gDepth, gDepthMemory);
+        gDepthView = createImageView(gDepth, gDepthFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+    }
+
     void createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
 
-        createImage(swapChainExtent.width, swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
         depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 
         createImage(SM_RESOLUTION, SM_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage2, depthImageMemory2);
@@ -631,6 +740,8 @@ public:
         }
 
         shadowmapPass.recordCommandBuffer(commandBuffer, imageIndex);
+        gBufferPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
+        gBufferPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
         blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
@@ -708,6 +819,8 @@ public:
         blinnPhongPasses[0].currentFrame = currentFrame;
         blinnPhongPasses[1].currentFrame = currentFrame;
         shadowmapPass.currentFrame = currentFrame;
+        gBufferPasses[0].currentFrame = currentFrame;
+        gBufferPasses[1].currentFrame = currentFrame;
     }
 };
 
