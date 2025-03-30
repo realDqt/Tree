@@ -927,6 +927,20 @@ void BaseApplication::transitionImageLayout(VkImage image, VkFormat format, VkIm
 
         sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
         destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    } else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_GENERAL) {
+        // 从 VK_IMAGE_LAYOUT_UNDEFINED 到 VK_IMAGE_LAYOUT_GENERAL
+        barrier.srcAccessMask = 0; // 没有之前的访问
+        barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT; // 允许计算着色器写入
+
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT; // 计算着色器阶段
+    } else if (oldLayout == VK_IMAGE_LAYOUT_GENERAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        // 从 VK_IMAGE_LAYOUT_GENERAL 到 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+        barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT; // 之前的写入操作
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT; // 新的读取操作
+
+        sourceStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT; // 计算着色器阶段
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; // 片段着色器阶段
     } else {
         throw std::invalid_argument("unsupported layout transition!");
     }

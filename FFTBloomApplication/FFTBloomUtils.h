@@ -8,4 +8,6 @@
 constexpr int FB_CUBEMAP_RESOLUTION = 512;
 
 extern const std::string FB_HDR_TEXTURE_PATH;
+extern const std::string KERNEL_PATH;
+extern const VkFormat HDR_FORMAT;
 #endif //VKRENDERINGENGINE_FFTBLOOMUTILS_H

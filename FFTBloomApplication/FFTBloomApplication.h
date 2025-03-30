@@ -35,6 +35,18 @@ class FFTBloomApplication : public BaseApplication{
     VkDeviceMemory hdrImageMemory;
     VkImageView hdrImageView;
     VkSampler hdrSampler;
+    VkExtent2D hdrImageExtent;
+
+    VkImage kernelImage;
+    VkDeviceMemory kernelImageMemory;
+    VkImageView kernelImageView;
+    VkSampler kernelSampler;
+
+    // res
+    VkImage bloomImage;
+    VkDeviceMemory bloomImageMemory;
+    VkImageView bloomImageView;
+    VkSampler bloomSampler;
 
     // vb and ib for box
     std::vector<VertexBoxIBL> vertices;
@@ -113,9 +125,18 @@ class FFTBloomApplication : public BaseApplication{
         createEnvSampler();
 
 
-        createHdrImage();
-        createHdrSampler();
-        createHdrImageView();
+        createHdrImage(FB_HDR_TEXTURE_PATH, hdrImage, hdrImageMemory, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+        createHdrSampler(hdrSampler);
+        createHdrImageView(hdrImageView, hdrImage);
+
+        createHdrImage(KERNEL_PATH, kernelImage, kernelImageMemory, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+        createHdrSampler(kernelSampler);
+        createHdrImageView(kernelImageView, kernelImage);
+
+        createBloomImage();
+        createHdrSampler(bloomSampler);
+        createHdrImageView(bloomImageView, bloomImage);
+
 
         loadModel();
         createVertexBuffer();
@@ -142,7 +163,6 @@ class FFTBloomApplication : public BaseApplication{
         }
 
         generateCubemapMipmaps(commandBuffer, envCubemap, FB_CUBEMAP_RESOLUTION, FB_CUBEMAP_RESOLUTION, log2(FB_CUBEMAP_RESOLUTION) + 1, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-        //copyImage2DtoCubemap(commandBuffer, colorImages, envCubemap, CUBEMAP_RESOLUTION);
 
 
         endSingleTimeCommands(commandBuffer);
@@ -266,7 +286,7 @@ class FFTBloomApplication : public BaseApplication{
     }
 
     void createEnvResources() {
-        VkFormat colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+        VkFormat colorFormat = HDR_FORMAT;
 
         createCubemapImage(FB_CUBEMAP_RESOLUTION, FB_CUBEMAP_RESOLUTION, log2(FB_CUBEMAP_RESOLUTION) + 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, envCubemap, envCubemapMemory);
         envCubemapView = createCubemapImageView(envCubemap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
@@ -277,16 +297,21 @@ class FFTBloomApplication : public BaseApplication{
         }
     }
 
-    void createHdrImage() {
-        //stbi_set_flip_vertically_on_load(true);
+    void createHdrImage(const std::string& imagePath, VkImage& image, VkDeviceMemory& imageMemory, VkImageUsageFlags usage) {
+        // 使用 stbi_loadf 加载 HDR 图片
         int texWidth, texHeight, texChannels;
-        stbi_uc* pixels = stbi_load(FB_HDR_TEXTURE_PATH.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-        VkDeviceSize imageSize = texWidth * texHeight * 4;
+        float* pixels = stbi_loadf(imagePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        if(imagePath == FB_HDR_TEXTURE_PATH){
+            hdrImageExtent = VkExtent2D(texWidth, texHeight);
+        }
+        VkDeviceSize imageSize = texWidth * texHeight * 4 * sizeof(float); // 每个通道占 4 字节（浮点数）
+        // std::cout << "w: " << texWidth << " h: " << texHeight << std::endl;
 
         if (!pixels) {
-            throw std::runtime_error("failed to load texture image!");
+            throw std::runtime_error("failed to load HDR texture image!");
         }
 
+        // 创建 staging buffer
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
         createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
@@ -296,22 +321,32 @@ class FFTBloomApplication : public BaseApplication{
         memcpy(data, pixels, static_cast<size_t>(imageSize));
         vkUnmapMemory(device, stagingBufferMemory);
 
-        stbi_image_free(pixels);
+        stbi_image_free(pixels); // 释放加载的 HDR 数据
 
-        createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, hdrImage, hdrImageMemory);
+        // 创建 HDR 图像
+        createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, HDR_FORMAT, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
 
-        transitionImageLayout(hdrImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
-        copyBufferToImage(stagingBuffer, hdrImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-        //transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
-
+        // 转换图像布局
+        transitionImageLayout(image, HDR_FORMAT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+        copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+        // 转换为 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
 
-        generateMipmaps(hdrImage, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, 1);
+        transitionImageLayout(image, HDR_FORMAT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+    }
+
+    void createBloomImage(){
+        uint32_t texWidth, texHeight;
+        texWidth = hdrImageExtent.width;
+        texHeight = hdrImageExtent.height;
+        createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, HDR_FORMAT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, bloomImage, bloomImageMemory);
+        transitionImageLayout(bloomImage, HDR_FORMAT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL, 1);
     }
 
 
-    void createHdrSampler() {
+
+    void createHdrSampler(VkSampler& sampler) {
         VkPhysicalDeviceProperties properties{};
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
 
@@ -333,7 +368,7 @@ class FFTBloomApplication : public BaseApplication{
         samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
         samplerInfo.mipLodBias = 0.0f;
 
-        if (vkCreateSampler(device, &samplerInfo, nullptr, &hdrSampler) != VK_SUCCESS) {
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create texture sampler!");
         }
     }
@@ -362,8 +397,8 @@ class FFTBloomApplication : public BaseApplication{
         }
     }
 
-    void createHdrImageView() {
-        hdrImageView = createImageView(hdrImage, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+    void createHdrImageView(VkImageView& imageView, VkImage& image) {
+        imageView = createImageView(image, HDR_FORMAT, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
     void loadModel(){
@@ -538,6 +573,7 @@ class FFTBloomApplication : public BaseApplication{
 
 
 
+        vkDestroySampler(device, envSampler, nullptr);
         vkDestroyImageView(device, envCubemapView, nullptr);
         vkDestroyImage(device, envCubemap, nullptr);
         vkFreeMemory(device, envCubemapMemory, nullptr);
@@ -545,11 +581,18 @@ class FFTBloomApplication : public BaseApplication{
 
         vkDestroySampler(device, hdrSampler, nullptr);
         vkDestroyImageView(device, hdrImageView, nullptr);
-
         vkDestroyImage(device, hdrImage, nullptr);
         vkFreeMemory(device, hdrImageMemory, nullptr);
 
-        vkDestroySampler(device, envSampler, nullptr);
+        vkDestroySampler(device, kernelSampler, nullptr);
+        vkDestroyImageView(device, kernelImageView, nullptr);
+        vkDestroyImage(device, kernelImage, nullptr);
+        vkFreeMemory(device, kernelImageMemory, nullptr);
+
+        vkDestroySampler(device, bloomSampler, nullptr);
+        vkDestroyImageView(device, bloomImageView, nullptr);
+        vkDestroyImage(device, bloomImage, nullptr);
+        vkFreeMemory(device, bloomImageMemory, nullptr);
 
 
 
