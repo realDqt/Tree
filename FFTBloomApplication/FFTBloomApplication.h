@@ -13,9 +13,12 @@
 #include <tiny_obj_loader.h>
 #include "FBCubemapPass.h"
 #include "FBSkyboxPass.h"
+#include "NativeBloomPass.h"
+
 
 class FFTBloomApplication : public BaseApplication{
     FBCubemapPass cubemapPasses[6];
+    NativeBloomPass nativeBloomPass;
     FBSkyboxPass skyboxPass;
 
     VkImage colorImage;
@@ -63,6 +66,22 @@ class FFTBloomApplication : public BaseApplication{
     VkSampler envSampler;
 
     void prepareResources() override{
+        // native bloom pass
+        nativeBloomPass.device = device;
+        nativeBloomPass.physicalDevice = physicalDevice;
+
+        nativeBloomPass.hdrImageView = hdrImageView;
+        nativeBloomPass.hdrSamper = hdrSampler;
+
+        nativeBloomPass.kernelImageView = kernelImageView;
+        nativeBloomPass.kernelSamper = kernelSampler;
+
+        nativeBloomPass.bloomImageView = bloomImageView;
+
+        nativeBloomPass.hdrTexSize = glm::uvec2(hdrImageExtent.width, hdrImageExtent.height);
+        nativeBloomPass.R = R;
+        nativeBloomPass.ratio = ratio;
+
         // cubemap passes
         glm::mat4 captureViews[6] =
                 {
@@ -78,8 +97,8 @@ class FFTBloomApplication : public BaseApplication{
             cubemapPasses[faceIndex].device = device;
             cubemapPasses[faceIndex].physicalDevice = physicalDevice;
 
-            cubemapPasses[faceIndex].hdrImageView = hdrImageView;
-            cubemapPasses[faceIndex].hdrSampler = hdrSampler;
+            cubemapPasses[faceIndex].hdrImageView = bloomImageView;
+            cubemapPasses[faceIndex].hdrSampler = bloomSampler;
 
             cubemapPasses[faceIndex].colorImageView = envPerFaceViews[faceIndex];
             cubemapPasses[faceIndex].depthImageView = depthImageView2;
@@ -144,7 +163,8 @@ class FFTBloomApplication : public BaseApplication{
 
 
         prepareResources();
-        //hdrVisualizationPass.init();
+        nativeBloomPass.init();
+
         for(auto & cubemapPass : cubemapPasses){
             cubemapPass.init();
         }
@@ -156,14 +176,23 @@ class FFTBloomApplication : public BaseApplication{
     }
 
     void executePrePass(){
+        // native bloom pass
         VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+        nativeBloomPass.updateUniformBuffer();
+        nativeBloomPass.recordCommandBuffer(commandBuffer);
+
+        endSingleTimeCommands(commandBuffer, true);
+
+        transitionImageLayout(bloomImage, HDR_FORMAT, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+
+        commandBuffer = beginSingleTimeCommands();
         // cubemap passes
         for(auto & cubemapPass : cubemapPasses){
             cubemapPass.recordCommandBuffer(commandBuffer);
         }
 
         generateCubemapMipmaps(commandBuffer, envCubemap, FB_CUBEMAP_RESOLUTION, FB_CUBEMAP_RESOLUTION, log2(FB_CUBEMAP_RESOLUTION) + 1, VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
 
         endSingleTimeCommands(commandBuffer);
     }
@@ -563,7 +592,8 @@ class FFTBloomApplication : public BaseApplication{
     void cleanup() override{
         cleanupSwapChain();
 
-        //hdrVisualizationPass.cleanup();
+        nativeBloomPass.cleanup();
+
         for(uint32_t faceIndex = 0; faceIndex < 6; ++faceIndex){
             cubemapPasses[faceIndex].cleanup();
             vkDestroyImageView(device, envPerFaceViews[faceIndex], nullptr);

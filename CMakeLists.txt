@@ -85,6 +85,10 @@ add_executable(vkRenderingEngine
         FFTBloomApplication/FBCubemapPass.cpp
         FFTBloomApplication/FFTBloomApplication.h
         FFTBloomApplication/FFTBloomUtils.cpp
+        FFTBloomApplication/NativeBloomPass.h
+        FFTBloomApplication/NativeBloomPass.h
+        FFTBloomApplication/NativeBloomPass.cpp
+        FFTBloomApplication/NativeBloomPass.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)

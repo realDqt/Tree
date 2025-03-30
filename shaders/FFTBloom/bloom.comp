@@ -11,7 +11,42 @@ layout(std140, binding = 3) uniform UnifromBufferObject {
 
 vec2 getKernelUV(ivec2 offset) {
     vec2 uv = vec2(0.5) + vec2(offset) / vec2(ubo.texSize) / ubo.ratio;
-    return clamp(uv, vec2(0.0), vec2(1.0));
+    return uv;
+}
+
+
+// 1. 亮度加权的高斯权重
+vec4 getWeightUp(int x, int y, vec4 sampleColor) {
+    // 基础高斯权重
+    const float sigma = float(ubo.R) / 2.0;
+    const float sigma2 = sigma * sigma;
+    float dist2 = float(x * x + y * y);
+    float gaussWeight = exp(-dist2 / (2.0 * sigma2));
+
+    // 计算亮度
+    float luminance = dot(sampleColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+
+    // 亮度权重，使用指数函数强化高亮部分
+    float luminanceWeight = exp(luminance - 1.0);
+
+    // 组合权重
+    return vec4(gaussWeight * luminanceWeight);
+}
+
+vec4 getWeight(int x, int y){
+    //return texture(kernelSampler, getKernelUV(ivec2(x, y)));
+
+    // 高斯函数参数
+    const float sigma = float(ubo.R) / 2.0; // 标准差，可以根据需要调整
+    const float sigma2 = sigma * sigma; // sigma的平方
+    const float pi = 3.14159265359;
+
+    // 计算二维高斯权重
+    float weight = exp(-(float(x * x + y * y) / (2.0 * sigma2))) / (2.0 * pi * sigma2);
+
+    // 返回同样的权重值到所有通道
+    return vec4(weight);
+
 }
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
@@ -19,20 +54,47 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 void main() {
     uvec2 index = gl_GlobalInvocationID.xy;
     vec2 uv = vec2(index) / vec2(ubo.texSize);
-    vec4 color = vec4(0.0);
-    vec4 totalWeight = vec4(0.0);
+    vec4 oriColor = texture(hdrSampler, uv);
 
-    for (int i = -ubo.R; i <= ubo.R; ++i) {
-        for (int j = -ubo.R; j <= ubo.R; ++j) {
-            vec2 offset = vec2(i, j) / vec2(ubo.texSize);
-            vec4 sampleColor = texture(hdrSampler, clamp(uv + offset, vec2(0.0), vec2(1.0)));
-            vec4 weight = texture(kernelSampler, getKernelUV(ivec2(i, j)));
-            color += weight * sampleColor;
-            totalWeight += weight;
+    // 1. 使用条件赋值替代early-return
+    vec4 finalColor = oriColor;
+    vec3 threshold = vec3(0.8f);
+    bool needsBlur = true;
+    if(finalColor.r < threshold.r || finalColor.g < threshold.g || finalColor.b < threshold.b)
+            needsBlur = false;
+
+    if (needsBlur) {
+        // 2. 预计算循环常量
+        const int diameter = 2 * ubo.R + 1;
+        const vec2 texelSize = 1.0 / vec2(ubo.texSize);
+
+        // 3. 优化累加变量
+        vec4 color = vec4(0.0);
+        vec4 totalWeight = vec4(0.0);
+
+        // 4. 考虑使用展开的小型循环或unroll提示
+        #pragma unroll
+        for (int i = -ubo.R; i <= ubo.R; ++i) {
+            #pragma unroll
+            for (int j = -ubo.R; j <= ubo.R; ++j) {
+                // 5. 优化UV计算
+                vec2 offset = vec2(i, j) * texelSize;
+                vec2 sampleUV = uv + offset;
+
+                // 6. 合并纹理采样
+                vec4 sampleColor = texture(hdrSampler, sampleUV);
+                vec4 weight = getWeightUp(i, j, sampleColor);
+
+                // 7. 使用FMA（Fused Multiply-Add）操作
+                color = fma(weight, sampleColor, color);
+                totalWeight += weight;
+            }
         }
+
+        // 8. 优化除法操作
+        totalWeight = totalWeight + vec4(1e-4);
+        finalColor = color / totalWeight;
     }
 
-    totalWeight += vec4(1e-4);
-    color /= totalWeight;
-    imageStore(outputImage, ivec2(index), color);
+    imageStore(outputImage, ivec2(index), finalColor);
 }

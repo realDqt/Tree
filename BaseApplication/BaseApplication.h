@@ -20,12 +20,11 @@ extern VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugU
 extern void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 
 struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> graphicsAndComputeFamily;
     std::optional<uint32_t> presentFamily;
-    std::optional<uint32_t> computeFamily;
 
     bool isComplete() {
-        return graphicsFamily.has_value() && presentFamily.has_value() && computeFamily.has_value();
+        return graphicsAndComputeFamily.has_value() && presentFamily.has_value();
     }
 };
 
@@ -49,6 +48,7 @@ public:
 
     VkQueue graphicsQueue;
     VkQueue presentQueue;
+    VkQueue computeQueue;
 
     VkSwapchainKHR swapChain;
     std::vector<VkImage> swapChainImages;
@@ -120,7 +120,7 @@ public:
 
     [[nodiscard]] VkCommandBuffer beginSingleTimeCommands() const;
 
-    void endSingleTimeCommands(VkCommandBuffer commandBuffer) const;
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer, bool useComputeQueue = false) const;
 
     void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
