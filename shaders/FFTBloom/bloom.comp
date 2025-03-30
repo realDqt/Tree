@@ -34,7 +34,10 @@ vec4 getWeightUp(int x, int y, vec4 sampleColor) {
 }
 
 vec4 getWeight(int x, int y){
+
     //return texture(kernelSampler, getKernelUV(ivec2(x, y)));
+
+
 
     // 高斯函数参数
     const float sigma = float(ubo.R) / 2.0; // 标准差，可以根据需要调整
@@ -56,45 +59,39 @@ void main() {
     vec2 uv = vec2(index) / vec2(ubo.texSize);
     vec4 oriColor = texture(hdrSampler, uv);
 
-    // 1. 使用条件赋值替代early-return
-    vec4 finalColor = oriColor;
-    vec3 threshold = vec3(0.8f);
-    bool needsBlur = true;
-    if(finalColor.r < threshold.r || finalColor.g < threshold.g || finalColor.b < threshold.b)
-            needsBlur = false;
+    float lumThreshold = 3.0f;
 
-    if (needsBlur) {
-        // 2. 预计算循环常量
-        const int diameter = 2 * ubo.R + 1;
-        const vec2 texelSize = 1.0 / vec2(ubo.texSize);
+    // 2. 预计算循环常量
+    const vec2 invTexelSize = 1.0 / vec2(ubo.texSize);
 
-        // 3. 优化累加变量
-        vec4 color = vec4(0.0);
-        vec4 totalWeight = vec4(0.0);
+    // 3. 优化累加变量
+    vec4 color = vec4(0.0);
+    vec4 totalWeight = vec4(0.0);
 
-        // 4. 考虑使用展开的小型循环或unroll提示
+    // 4. 考虑使用展开的小型循环或unroll提示
+    #pragma unroll
+    for (int i = -ubo.R; i <= ubo.R; ++i) {
         #pragma unroll
-        for (int i = -ubo.R; i <= ubo.R; ++i) {
-            #pragma unroll
-            for (int j = -ubo.R; j <= ubo.R; ++j) {
-                // 5. 优化UV计算
-                vec2 offset = vec2(i, j) * texelSize;
-                vec2 sampleUV = uv + offset;
+        for (int j = -ubo.R; j <= ubo.R; ++j) {
+            // 5. 优化UV计算
+            vec2 offset = vec2(i, j) * invTexelSize;
+            vec2 sampleUV = uv + offset;
 
-                // 6. 合并纹理采样
-                vec4 sampleColor = texture(hdrSampler, sampleUV);
-                vec4 weight = getWeightUp(i, j, sampleColor);
+            // 6. 合并纹理采样
+            vec4 sampleColor = texture(hdrSampler, sampleUV);
+            vec4 weight = vec4(0.0);
+            float lum = dot(vec3(0.2126, 0.7152, 0.0722), sampleColor.rgb);
+            if(lum > lumThreshold)
+                weight = getWeight(i, j);
 
-                // 7. 使用FMA（Fused Multiply-Add）操作
-                color = fma(weight, sampleColor, color);
-                totalWeight += weight;
-            }
+            // 7. 使用FMA（Fused Multiply-Add）操作
+            color = fma(weight, sampleColor, color);
+            totalWeight += weight;
         }
-
-        // 8. 优化除法操作
-        totalWeight = totalWeight + vec4(1e-4);
-        finalColor = color / totalWeight;
     }
 
+    // 8. 优化除法操作
+    totalWeight = totalWeight + vec4(1e-4);
+    vec4 finalColor = mix(color / totalWeight, oriColor, 0.8f);
     imageStore(outputImage, ivec2(index), finalColor);
 }

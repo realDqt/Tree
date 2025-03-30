@@ -6,7 +6,7 @@
 #define VKRENDERINGENGINE_FFTBLOOMUTILS_H
 #include "../VulkanTools.h"
 constexpr int FB_CUBEMAP_RESOLUTION = 1024;
-constexpr int R = 20;
+constexpr int R = 5;
 constexpr float ratio = 1.f;
 
 extern const std::string FB_HDR_TEXTURE_PATH;
