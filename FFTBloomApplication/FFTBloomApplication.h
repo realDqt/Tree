@@ -79,8 +79,6 @@ class FFTBloomApplication : public BaseApplication{
         nativeBloomPass.bloomImageView = bloomImageView;
 
         nativeBloomPass.hdrTexSize = glm::uvec2(hdrImageExtent.width, hdrImageExtent.height);
-        nativeBloomPass.R = R;
-        nativeBloomPass.ratio = ratio;
 
         // cubemap passes
         glm::mat4 captureViews[6] =

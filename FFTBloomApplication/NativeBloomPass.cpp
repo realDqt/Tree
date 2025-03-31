@@ -168,8 +168,9 @@ void NativeBloomPass::updateUniformBuffer()
 {
     UniformBufferObject ubo{};
     ubo.texSize = hdrTexSize;
-    ubo.ratio = ratio;
+    ubo.emissity = emissity;
     ubo.R = R;
+    ubo.method = methd;
 
     memcpy(uniformBufferMapped, &ubo, sizeof(ubo));
 }

@@ -5,12 +5,13 @@ layout(binding = 1) uniform sampler2D kernelSampler;
 layout(binding = 2, rgba32f) uniform image2D outputImage;
 layout(std140, binding = 3) uniform UnifromBufferObject {
     uvec2 texSize;
-    float ratio;
+    float emissity;
     int R;
+    int methd;
 } ubo;
 
 vec2 getKernelUV(ivec2 offset) {
-    vec2 uv = vec2(0.5) + vec2(offset) / vec2(ubo.texSize) / ubo.ratio;
+    vec2 uv = vec2(0.5) + vec2(offset) / vec2(ubo.texSize) / ubo.emissity;
     return uv;
 }
 
@@ -79,7 +80,7 @@ void main() {
             vec2 sampleUV = uv + offset;
 
             vec4 sampleColor = texture(hdrSampler, sampleUV);
-            vec4 weight = getWeight(i, j, 1, 5.0, sampleColor);
+            vec4 weight = getWeight(i, j, ubo.methd, 5.0, sampleColor);
             float lum = dot(vec3(0.2126, 0.7152, 0.0722), sampleColor.rgb);
             if(lum < lumThreshold)
                     sampleColor = vec4(0.0);
@@ -91,7 +92,7 @@ void main() {
     }
 
     totalWeight = totalWeight + vec4(1e-4);
-    vec4 blurColor = color / totalWeight;
-    vec4 finalColor = blurColor + oriColor;
+    vec4 blurHighlightColor = color / totalWeight;
+    vec4 finalColor = blurHighlightColor + oriColor;
     imageStore(outputImage, ivec2(index), finalColor);
 }

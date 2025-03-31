@@ -9,9 +9,10 @@ class NativeBloomPass
 {
 public:
     struct UniformBufferObject {
-        alignas(8) glm::uvec2 texSize;  // 8字节对齐，占8字节
-        alignas(4) float ratio;         // 4字节对齐，占4字节
-        alignas(4) int R;               // 4字节对齐，占4字节
+        alignas(8) glm::uvec2 texSize;
+        alignas(4) float emissity;
+        alignas(4) int R;
+        alignas(4) int method;
     };
     /*
      * device, physicalDevice
@@ -42,8 +43,6 @@ public:
     void* uniformBufferMapped;
 
     glm::uvec2 hdrTexSize;
-    float ratio;
-    int R;
 
     void createDescriptorPool();
     void createDescriptorSetLayout();
