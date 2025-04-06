@@ -459,6 +459,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/minwinbase.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/apiquery2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/processenv.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/fileapifromapp.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/fileapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/debugapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/utilapiset.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/handleapi.h
@@ -641,3 +642,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/assert.h
 E:/clion_proj/Tree/FFTBloomApplication/FBCubemapPass.h
 E:/clion_proj/Tree/FFTBloomApplication/FBSkyboxPass.h
 E:/clion_proj/Tree/FFTBloomApplication/NativeBloomPass.h
+E:/ImageProcess/stb_image_write.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/math.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/assert.h

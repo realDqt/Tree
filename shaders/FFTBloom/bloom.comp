@@ -8,6 +8,7 @@ layout(std140, binding = 3) uniform UnifromBufferObject {
     float emissity;
     int R;
     int methd;
+    float lumThreshold;
 } ubo;
 
 vec2 getKernelUV(ivec2 offset) {
@@ -17,11 +18,10 @@ vec2 getKernelUV(ivec2 offset) {
 
 
 // 1. 亮度加权的高斯权重
-vec4 getWeightUp(int x, int y, vec4 sampleColor) {
+vec4 getWeightUp(float dist2, vec4 sampleColor) {
     // 基础高斯权重
     const float sigma = float(ubo.R) / 2.0;
     const float sigma2 = sigma * sigma;
-    float dist2 = float(x * x + y * y);
     float gaussWeight = exp(-dist2 / (2.0 * sigma2));
 
     // 计算亮度
@@ -34,10 +34,10 @@ vec4 getWeightUp(int x, int y, vec4 sampleColor) {
     return vec4(gaussWeight * luminanceWeight);
 }
 
-vec4 getWeight(int x, int y, int method, float sigma, vec4 sampleColor){
+vec4 getWeight(ivec2 xy, int method, float sigma, vec4 sampleColor){
 
     if(method == 0)
-        return texture(kernelSampler, getKernelUV(ivec2(x, y)));
+        return texture(kernelSampler, getKernelUV(xy));
 
     if(method == 1){
         // 高斯函数参数
@@ -45,32 +45,22 @@ vec4 getWeight(int x, int y, int method, float sigma, vec4 sampleColor){
         const float pi = 3.14159265359;
 
         // 计算二维高斯权重
-        float weight = exp(-(float(x * x + y * y) / (2.0 * sigma2))) / (2.0 * pi * sigma2);
+        float weight = exp(-(dot(xy, xy) / (2.0 * sigma2))) / (2.0 * pi * sigma2);
 
         // 返回同样的权重值到所有通道
         return vec4(weight);
     }
 
     if(method == 2){
-        return getWeightUp(x, y, sampleColor);
+        return getWeightUp(dot(xy, xy), sampleColor);
     }
 
     return vec4(0.0);
 }
 
-layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
-
-void main() {
-    uvec2 index = gl_GlobalInvocationID.xy;
-    vec2 uv = vec2(index) / vec2(ubo.texSize);
-    vec4 oriColor = texture(hdrSampler, uv);
-
-    float lumThreshold = 3.0f;
-
-    const vec2 invTexelSize = 1.0 / vec2(ubo.texSize);
+vec4 oriBlur(vec2 uv, vec2 invTexelSize){
     vec4 color = vec4(0.0);
     vec4 totalWeight = vec4(0.0);
-
     // 考虑使用展开的小型循环或unroll提示
     #pragma unroll
     for (int i = -ubo.R; i <= ubo.R; ++i) {
@@ -80,10 +70,10 @@ void main() {
             vec2 sampleUV = uv + offset;
 
             vec4 sampleColor = texture(hdrSampler, sampleUV);
-            vec4 weight = getWeight(i, j, ubo.methd, 5.0, sampleColor);
+            vec4 weight = getWeight(ivec2(i, j), ubo.methd, 5.0, sampleColor);
             float lum = dot(vec3(0.2126, 0.7152, 0.0722), sampleColor.rgb);
-            if(lum < lumThreshold)
-                    sampleColor = vec4(0.0);
+            if(lum < ubo.lumThreshold)
+            sampleColor = vec4(0.0);
 
             // 使用FMA（Fused Multiply-Add）操作
             color = fma(weight, sampleColor, color);
@@ -92,7 +82,21 @@ void main() {
     }
 
     totalWeight = totalWeight + vec4(1e-4);
-    vec4 blurHighlightColor = color / totalWeight;
+    return color / totalWeight;
+}
+
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
+
+void main() {
+    uvec2 index = gl_GlobalInvocationID.xy;
+    vec2 uv = vec2(index) / vec2(ubo.texSize);
+    vec4 oriColor = texture(hdrSampler, uv);
+
+
+    const vec2 invTexelSize = 1.0 / vec2(ubo.texSize);
+
+    vec4 blurHighlightColor = oriBlur(uv, invTexelSize);
+
     vec4 finalColor = blurHighlightColor + oriColor;
-    imageStore(outputImage, ivec2(index), finalColor);
+    imageStore(outputImage, ivec2(index), blurHighlightColor);
 }

@@ -96,7 +96,6 @@ E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool2.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_vec2.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_vec2.inl
 E:/Vulkan/VulkanSDK/include/glm/detail/./compute_vector_relational.hpp
-E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool2_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_float2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_float2_precision.hpp
@@ -278,7 +277,6 @@ E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/quaternion_common.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../ext/quaternion_geometric.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/quaternion_geometric.inl
 E:/Vulkan/VulkanSDK/include/glm/ext/quaternion_common.inl
-E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/quaternion_float.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_quat.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/../ext/quaternion_relational.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/quaternion_relational.inl
@@ -448,6 +446,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/jobapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/jobapi2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/wow64apiset.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/libloaderapi.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/securitybaseapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/namespaceapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/systemtopologyapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/processtopologyapi.h
@@ -482,7 +481,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/consoleapi3.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winver.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/verrsrc.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winreg.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/reason.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winnetwk.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/wnnc.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/cderr.h
@@ -519,7 +517,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/rpcnsi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/rpcnterr.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/rpcasync.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack8.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/shellapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winperf.h
@@ -594,7 +591,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winsvc.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mcx.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/imm.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/ime_cmodes.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/fcntl.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/io.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_io.h
 E:/assimp/assimp-master/include/assimp/Importer.hpp

@@ -12,6 +12,7 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 E:/Vulkan/VulkanSDK/include/vulkan/vulkan.h
 E:/Vulkan/VulkanSDK/include/vulkan/vk_platform.h
 E:/Vulkan/VulkanSDK/include/vulkan/vulkan_core.h
+E:/Vulkan/VulkanSDK/include/vk_video/vulkan_video_codec_h264std.h
 E:/Vulkan/VulkanSDK/include/vk_video/vulkan_video_codecs_common.h
 E:/Vulkan/VulkanSDK/include/vk_video/vulkan_video_codec_h264std_encode.h
 E:/Vulkan/VulkanSDK/include/vk_video/vulkan_video_codec_h265std.h
@@ -56,8 +57,10 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/concepts
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/compare
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/climits
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cstring
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/string.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_memory.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_memcpy_s.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/errno.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/vcruntime_string.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wstring.h
@@ -69,6 +72,8 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/float.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/limits
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cwchar
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cstdio
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/stdio.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wstdio.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_stdio_config.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/wchar.h
@@ -226,6 +231,7 @@ E:/Vulkan/VulkanSDK/include/glm/detail/type_half.inl
 E:/Vulkan/VulkanSDK/include/glm/integer.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/func_integer.inl
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/intrin.h
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/setjmp.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/immintrin.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/wmmintrin.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/nmmintrin.h
@@ -412,7 +418,6 @@ E:/assimp/assimp-master/include/assimp/metadata.h
 E:/assimp/assimp-master/include/assimp/postprocess.h
 E:/clion_proj/Tree/VulkanInitializers.hpp
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/windows.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/sdkddkver.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/excpt.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/stdarg.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/windef.h
@@ -425,6 +430,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/sdv_driverspe
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winnt.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/kernelspecs.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/basetsd.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/guiddef.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack4.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack4.h
@@ -507,6 +513,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/consoleapi2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/consoleapi3.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winver.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/verrsrc.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winreg.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/reason.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winnetwk.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/wnnc.h
@@ -551,6 +558,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winperf.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack8.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winsock.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/inaddr.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/wincrypt.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/bcrypt.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/ncrypt.h
@@ -612,6 +620,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack8.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/commdlg.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/prsht.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/stralign.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winsvc.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mcx.h

@@ -453,6 +453,11 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/apiset.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/ktmtypes.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winbase.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/apisetcconv.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/minwinbase.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/apiquery2.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/processenv.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/fileapifromapp.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/fileapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/debugapi.h
@@ -468,6 +473,8 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/synchapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/interlockedapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/processthreadsapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/sysinfoapi.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/memoryapi.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/enclaveapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/threadpoollegacyapiset.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/threadpoolapiset.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/jobapi.h

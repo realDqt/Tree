@@ -92,6 +92,7 @@ E:/Vulkan/VulkanSDK/include/glm/fwd.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/qualifier.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/vec2.hpp
+E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool2.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_vec2.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_vec2.inl
 E:/Vulkan/VulkanSDK/include/glm/detail/./compute_vector_relational.hpp
@@ -107,6 +108,7 @@ E:/Vulkan/VulkanSDK/include/glm/ext/../ext/scalar_int_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_uint2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_uint2_sized.hpp
+E:/Vulkan/VulkanSDK/include/glm/ext/../ext/scalar_uint_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/vec3.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool3.hpp
@@ -124,6 +126,7 @@ E:/Vulkan/VulkanSDK/include/glm/./ext/vector_uint3_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/vec4.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool4.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_vec4.hpp
+E:/Vulkan/VulkanSDK/include/glm/detail/type_vec4.inl
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool4_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_float4.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_float4_precision.hpp
@@ -551,7 +554,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/winsmcrd.h

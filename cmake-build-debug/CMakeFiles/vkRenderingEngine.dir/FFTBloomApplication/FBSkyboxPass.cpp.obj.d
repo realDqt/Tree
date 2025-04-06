@@ -60,7 +60,6 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/climits
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cstring
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/string.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_memory.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_memcpy_s.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/errno.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/vcruntime_string.h
@@ -177,11 +176,7 @@ E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double3x4.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_mat3x4.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_mat3x4.inl
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double3x4_precision.hpp
-E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float3x4.hpp
-E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float3x4_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/mat4x2.hpp
-E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double4x2.hpp
-E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_mat4x2.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_mat4x2.inl
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double4x2_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float4x2.hpp
@@ -219,6 +214,7 @@ E:/Vulkan/VulkanSDK/include/glm/detail/func_common.inl
 E:/Vulkan/VulkanSDK/include/glm/detail/compute_common.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double2x2_precision.hpp
+E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float2x2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float2x2_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/trigonometric.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
@@ -242,6 +238,7 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xmmintrin.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/mmintrin.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/malloc.h
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/zmmintrin.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/ammintrin.h
 E:/Vulkan/VulkanSDK/include/glm/gtc/matrix_transform.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/matrix_projection.hpp
@@ -355,7 +352,10 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_chrono.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/ratio
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xfilesystem_abi.h
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_tzdb.hpp
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/forward_list
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/optional
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xsmf_control.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/sstream
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/string
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xloctime

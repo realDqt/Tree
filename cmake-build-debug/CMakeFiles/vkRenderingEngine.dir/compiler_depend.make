@@ -398,6 +398,7 @@ CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: E:\ass
 CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: E:\assimp\assimp-master\include\assimp\quaternion.h
 CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: E:\assimp\assimp-master\include\assimp\vector2.inl
 CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: E:\assimp\assimp-master\include\assimp\vector3.inl
+CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: E:\assimp\assimp-master\include\assimp\color4.inl
 CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: E:\assimp\assimp-master\include\assimp\matrix3x3.inl
 CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: E:\assimp\assimp-master\include\assimp\matrix4x4.inl
 CMakeFiles\vkRenderingEngine.dir\BaseApplication\BaseApplication.cpp.obj: E:\assimp\assimp-master\include\assimp\MathFunctions.h
@@ -785,6 +786,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: E:\V
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double2x3.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_mat2x3.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_mat2x3.inl
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double2x3_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float2x3.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float2x3_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\mat2x4.hpp
@@ -989,6 +991,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\fstream"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_filebuf.hpp"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\algorithm"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\chrono"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_chrono.hpp"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\ratio"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xfilesystem_abi.h"
@@ -1117,6 +1120,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\wow64apiset.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\libloaderapi.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\securitybaseapi.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\namespaceapi.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\systemtopologyapi.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\processtopologyapi.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\securityappcontainer.h"
@@ -1216,7 +1220,6 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
-CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBCubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
@@ -1331,7 +1334,6 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\climits"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cstring"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\string.h"
-CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memory.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memcpy_s.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\errno.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vcruntime_string.h"
@@ -1448,11 +1450,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vu
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_mat3x4.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_mat3x4.inl
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double3x4_precision.hpp
-CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float3x4.hpp
-CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float3x4_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\mat4x2.hpp
-CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double4x2.hpp
-CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_mat4x2.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_mat4x2.inl
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double4x2_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float4x2.hpp
@@ -1490,6 +1488,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vu
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\compute_common.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double2x2_precision.hpp
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float2x2.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float2x2_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\trigonometric.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
@@ -1513,6 +1512,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xmmintrin.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\mmintrin.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\malloc.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\zmmintrin.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\ammintrin.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\matrix_transform.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\matrix_projection.hpp
@@ -1626,7 +1626,10 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_chrono.hpp"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\ratio"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xfilesystem_abi.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_tzdb.hpp"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\forward_list"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\optional"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xsmf_control.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\sstream"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\string"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FBSkyboxPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xloctime"
@@ -1915,6 +1918,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\vulkan\vulkan.h
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\vulkan\vk_platform.h
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\vulkan\vulkan_core.h
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\vk_video\vulkan_video_codec_h264std.h
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\vk_video\vulkan_video_codecs_common.h
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\vk_video\vulkan_video_codec_h264std_encode.h
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\vk_video\vulkan_video_codec_h265std.h
@@ -1959,8 +1963,10 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\concepts"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\compare"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\climits"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cstring"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\string.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memory.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memcpy_s.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\errno.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vcruntime_string.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wstring.h"
@@ -1972,6 +1978,8 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\float.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\limits"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cwchar"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cstdio"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\stdio.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wstdio.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_stdio_config.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\wchar.h"
@@ -2129,6 +2137,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\V
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\integer.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\func_integer.inl
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\intrin.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\setjmp.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\immintrin.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\wmmintrin.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\nmmintrin.h"
@@ -2315,7 +2324,6 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\a
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\assimp\assimp-master\include\assimp\postprocess.h
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: E:\clion_proj\Tree\VulkanInitializers.hpp
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\windows.h"
-CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\sdkddkver.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\excpt.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\stdarg.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\windef.h"
@@ -2328,6 +2336,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winnt.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\kernelspecs.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\basetsd.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\guiddef.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack4.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack4.h"
@@ -2410,6 +2419,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\consoleapi3.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winver.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\verrsrc.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winreg.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\reason.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winnetwk.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\wnnc.h"
@@ -2454,6 +2464,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack8.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winsock.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\inaddr.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\wincrypt.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\bcrypt.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\ncrypt.h"
@@ -2515,6 +2526,7 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\commdlg.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\prsht.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\stralign.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winsvc.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\FFTBloomUtils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mcx.h"
@@ -2981,6 +2993,11 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\apiset.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\ktmtypes.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winbase.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\apisetcconv.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\minwinbase.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\apiquery2.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\processenv.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\fileapifromapp.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\fileapi.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\debugapi.h"
@@ -2996,6 +3013,8 @@ CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\interlockedapi.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\processthreadsapi.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\sysinfoapi.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\memoryapi.h"
+CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\enclaveapi.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\threadpoollegacyapiset.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\threadpoolapiset.h"
 CMakeFiles\vkRenderingEngine.dir\FFTBloomApplication\NativeBloomPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\jobapi.h"
@@ -3260,6 +3279,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\V
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_float2_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_double2.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_double2_precision.hpp
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_int2.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_int2_sized.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\ext\scalar_int_sized.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\setup.hpp
@@ -3371,7 +3391,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\assert.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\..\common.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\_fixes.hpp
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\func_common.inl
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\compute_common.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double2x2_precision.hpp
@@ -3472,7 +3491,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_bit_utils.hpp"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_sanitizer_annotate_container.hpp"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xbit_ops.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xnode_handle.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtx\hash.inl
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\iostream"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\istream"
@@ -3596,6 +3614,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack4.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack2.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack2.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack2.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\BrdfLUTPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
@@ -3855,7 +3874,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memory.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memcpy_s.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\errno.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vcruntime_string.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wstring.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cassert"
@@ -3940,7 +3958,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\V
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double2x3.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_mat2x3.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_mat2x3.inl
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_double2x3_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float2x3.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\matrix_float2x3_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\mat2x4.hpp
@@ -4021,7 +4038,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\V
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_half.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_half.inl
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\integer.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\func_integer.inl
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\intrin.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\setjmp.h"
@@ -4035,6 +4051,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xmmintrin.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\mmintrin.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\malloc.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\zmmintrin.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\ammintrin.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\matrix_transform.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\matrix_projection.hpp
@@ -4413,7 +4430,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\commdlg.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\prsht.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\stralign.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winsvc.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\CubemapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mcx.h"
@@ -4518,7 +4534,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cassert"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\assert.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\fwd.hpp
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\qualifier.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\vec2.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool2.hpp
@@ -5017,7 +5032,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\winsmcrd.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winspool.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\prsht.h"
@@ -5037,7 +5051,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\coml2api.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\objidl.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\unknwn.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\propidlbase.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\oaidl.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\urlmon.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\HDRVisualizationPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\oleidl.h"
@@ -5122,6 +5135,8 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Fi
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\concepts"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\compare"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\climits"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cstring"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\string.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memory.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memcpy_s.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\errno.h"
@@ -5375,6 +5390,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Fi
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\list"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xpolymorphic_allocator.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vector"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_bit_utils.hpp"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_sanitizer_annotate_container.hpp"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xbit_ops.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xnode_handle.h"
@@ -5516,6 +5532,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Fi
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\ktmtypes.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winbase.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\apisetcconv.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\minwinbase.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\apiquery2.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\processenv.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\fileapifromapp.h"
@@ -5568,7 +5585,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Fi
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\datetimeapi.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\stringapiset.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winnls.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\wincon.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\wincontypes.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\consoleapi.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IBLutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\consoleapi2.h"
@@ -5773,7 +5789,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\stdio.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wstdio.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_stdio_config.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\wchar.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wconio.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wctype.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wdirect.h"
@@ -6013,7 +6028,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_sanitizer_annotate_container.hpp"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xbit_ops.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xnode_handle.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtx\hash.inl
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\iostream"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\istream"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\ostream"
@@ -6075,8 +6089,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xlocmon"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\iomanip"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\array"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\set"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xtree"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: E:\clion_proj\Tree\camera.h
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: E:\clion_proj\Tree\BaseApplication\BaseApplication.h
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: E:\clion_proj\Tree\BaseApplication\..\VulkanTools.h
@@ -6144,6 +6156,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\apiset.h"
@@ -6310,6 +6323,10 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\oleidl.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\servprov.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\msxml.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\propidl.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\oleauto.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack8.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\commdlg.h"
@@ -6322,6 +6339,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\P
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\fcntl.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\io.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_io.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\IrradianceMapPass.cpp.obj: E:\clion_proj\Tree\IBLApplication\..\Vertex.h
 
 
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\clion_proj\Tree\IBLApplication\PrefilterMapPass.cpp
@@ -6372,7 +6390,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Pr
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_search.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wstdlib.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\limits.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xtr1common"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\intrin0.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\intrin0.inl.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xutility"
@@ -6437,7 +6454,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\Vul
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_uint2.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_uint2_sized.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\ext\scalar_uint_sized.hpp
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\vec3.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool3.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_vec3.hpp
@@ -6828,6 +6844,8 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Pr
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack4.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winuser.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack2.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\tvout.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winnls.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\datetimeapi.h"
@@ -6858,7 +6876,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Pr
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmsyscom.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmiscapi.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmsyscom.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmiscapi2.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmsyscom.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\playsoundapi.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmsyscom.h"
@@ -6935,7 +6952,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Pr
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\objidl.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\unknwn.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\propidlbase.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\oaidl.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\urlmon.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\oleidl.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\PrefilterMapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\servprov.h"
@@ -7057,6 +7073,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\Vu
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\vec2.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool2.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_vec2.hpp
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_vec2.inl
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\.\compute_vector_relational.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool2_precision.hpp
@@ -7209,7 +7226,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program 
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\matrix_transform.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\matrix_projection.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\gtc\constants.hpp
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\scalar_constants.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\scalar_constants.inl
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\constants.inl
@@ -7526,6 +7542,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program 
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\bcrypt.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\ncrypt.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\dpapi.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winefs.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winscard.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\wtypes.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\rpcndr.h"
@@ -7585,6 +7602,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program 
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\prsht.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\stralign.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winsvc.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mcx.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\imm.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\ime_cmodes.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SkyboxPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\fcntl.h"
@@ -7708,7 +7726,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\Vu
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\ext\scalar_uint_sized.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\vec3.hpp
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool3.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_vec3.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_vec3.inl
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool3_precision.hpp
@@ -7841,6 +7858,7 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program 
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\malloc.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\zmmintrin.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\ammintrin.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\matrix_transform.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\matrix_projection.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\gtc\constants.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\scalar_constants.hpp
@@ -7890,12 +7908,12 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\Vu
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\epsilon.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\epsilon.inl
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtx\..\gtx\dual_quaternion.hpp
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtx\dual_quaternion.inl
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\functional"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\exception"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vcruntime_exception.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\eh.h"
+CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_terminate.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\tuple"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\typeinfo"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vcruntime_typeinfo.h"
@@ -8223,7 +8241,6 @@ CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program 
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\imm.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\ime_cmodes.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\fcntl.h"
-CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\io.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_io.h"
 CMakeFiles\vkRenderingEngine.dir\IBLApplication\SpherePass.cpp.obj: E:\clion_proj\Tree\IBLApplication\..\Vertex.h
 
@@ -8264,6 +8281,7 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Prog
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xkeycheck.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\crtdbg.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vcruntime_new_debug.h"
+CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vcruntime_new.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\crtdefs.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\use_ansi.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cstdlib"
@@ -8291,7 +8309,6 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Prog
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\string.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memory.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_memcpy_s.h"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\errno.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\vcruntime_string.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wstring.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
@@ -8555,13 +8572,7 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Prog
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\iterator"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\iosfwd"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\streambuf"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xiosbase"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\share.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\system_error"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\__msvc_system_error_abi.hpp"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cerrno"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\stdexcept"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xcall_once.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xerrc.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\BlinPhongPass.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\atomic"
@@ -8960,6 +8971,7 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\qualifier.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\vec2.hpp
+CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool2.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_vec2.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_vec2.inl
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\.\compute_vector_relational.hpp
@@ -8975,6 +8987,7 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_uint2.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_uint2_sized.hpp
+CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\ext\scalar_uint_sized.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\vec3.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool3.hpp
@@ -8992,6 +9005,7 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\vec4.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool4.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_vec4.hpp
+CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_vec4.inl
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool4_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_float4.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_float4_precision.hpp
@@ -9419,7 +9433,6 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: "C:
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\LightVisualization.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\winsmcrd.h"
@@ -10235,7 +10248,6 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulka
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_vec2.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_vec2.inl
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\.\compute_vector_relational.hpp
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool2_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_float2.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_float2_precision.hpp
@@ -10417,7 +10429,6 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulka
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\ext\quaternion_geometric.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\quaternion_geometric.inl
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\quaternion_common.inl
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\quaternion_float.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_quat.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\..\ext\quaternion_relational.hpp
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\quaternion_relational.inl
@@ -10587,6 +10598,7 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Prog
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\jobapi2.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\wow64apiset.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\libloaderapi.h"
+CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\securitybaseapi.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\namespaceapi.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\systemtopologyapi.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\processtopologyapi.h"
@@ -10621,7 +10633,6 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Prog
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winver.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\verrsrc.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winreg.h"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\reason.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winnetwk.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\wnnc.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\cderr.h"
@@ -10658,7 +10669,6 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Prog
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\rpcnterr.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\rpcasync.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack8.h"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\shellapi.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\winperf.h"
@@ -10733,7 +10743,6 @@ CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Prog
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mcx.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\imm.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\ime_cmodes.h"
-CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\fcntl.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\io.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_io.h"
 CMakeFiles\vkRenderingEngine.dir\PCSSApplication\ShadowmapPass.cpp.obj: E:\assimp\assimp-master\include\assimp\Importer.hpp
@@ -11065,7 +11074,6 @@ CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: E:\Vulka
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\quaternion_trigonometric.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\quaternion_trigonometric.inl
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\quaternion_transform.hpp
-CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\quaternion_transform.inl
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\quaternion.inl
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\epsilon.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\detail\setup.hpp
@@ -11292,6 +11300,7 @@ CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: "C:\Prog
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack8.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\rpcdce.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\rpcdcep.h"
+CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\rpcnsi.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\rpcnterr.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\rpcasync.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\BlinnPhongPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack8.h"
@@ -11525,7 +11534,6 @@ CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\V
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\vec3.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool3.hpp
-CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_vec3.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\detail\type_vec3.inl
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_bool3_precision.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\.\ext\vector_float3.hpp
@@ -11682,7 +11690,6 @@ CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\V
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\vector_int1_sized.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\vector_uint1.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\vector_uint1_sized.hpp
-CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtx\..\gtc\quaternion.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\vector_relational.hpp
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\vector_relational.inl
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\GBufferPass.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\type_float.hpp
@@ -12599,7 +12606,6 @@ CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: "C:\Pr
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
-CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRShadowmapPass.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\pshpack1.h"
@@ -13195,6 +13201,7 @@ CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: "C:\Program Fi
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmeapi.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmsyscom.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\timeapi.h"
+CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmsyscom.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\joystickapi.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\mmsyscom.h"
 CMakeFiles\vkRenderingEngine.dir\SSRApplication\SSRutils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\poppack.h"
@@ -14417,6 +14424,7 @@ CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows K
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\apiquery2.h"
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\processenv.h"
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\fileapifromapp.h"
+CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\fileapi.h"
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\debugapi.h"
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\utilapiset.h"
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\handleapi.h"
@@ -14599,6 +14607,9 @@ CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows K
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: E:\clion_proj\Tree\FFTBloomApplication\FBCubemapPass.h
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: E:\clion_proj\Tree\FFTBloomApplication\FBSkyboxPass.h
 CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: E:\clion_proj\Tree\FFTBloomApplication\NativeBloomPass.h
+CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: E:\ImageProcess\stb_image_write.h
+CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\math.h"
+CMakeFiles\vkRenderingEngine.dir\main.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\assert.h"
 
 
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\clion_proj\Tree\utils.cpp
@@ -14673,7 +14684,6 @@ CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cfloat"
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\float.h"
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\limits"
-CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cwchar"
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\cstdio"
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\stdio.h"
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt\corecrt_wstdio.h"
@@ -14852,7 +14862,6 @@ CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\scalar_constants.hpp
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\..\detail\setup.hpp
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\scalar_constants.inl
-CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\constants.inl
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\matrix_projection.inl
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\gtc\..\ext\matrix_clip_space.hpp
 CMakeFiles\vkRenderingEngine.dir\utils.cpp.obj: E:\Vulkan\VulkanSDK\include\glm\ext\matrix_clip_space.inl
@@ -15956,11 +15965,11 @@ E:\Vulkan\VulkanSDK\include\glm\detail\func_integer.inl:
 
 "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\tmmintrin.h":
 
-"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\pmmintrin.h":
+E:\assimp\assimp-master\include\assimp\vector2.h:
 
 "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared\winsmcrd.h":
 
-E:\assimp\assimp-master\include\assimp\vector2.h:
+"C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\pmmintrin.h":
 
 "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um\sysinfoapi.h":
 
@@ -16134,6 +16143,8 @@ E:\clion_proj\Tree\FFTBloomApplication\FFTBloomApplication.h:
 
 "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xcall_once.h":
 
+E:\ImageProcess\stb_image_write.h:
+
 "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xerrc.h":
 
 E:\assimp\assimp-master\include\assimp\quaternion.h:
@@ -16213,6 +16224,8 @@ E:\assimp\assimp-master\include\assimp\config.h:
 E:\assimp\assimp-master\include\assimp\color4.h:
 
 E:\assimp\assimp-master\include\assimp\matrix3x3.h:
+
+E:\assimp\assimp-master\include\assimp\color4.inl:
 
 E:\assimp\assimp-master\include\assimp\matrix3x3.inl:
 
@@ -16379,8 +16392,6 @@ E:\clion_proj\Tree\IBLApplication\SkyboxPass.h:
 E:\clion_proj\Tree\FFTBloomApplication\FBCubemapPass.h:
 
 E:\clion_proj\Tree\FFTBloomApplication\..\VulkanTools.h:
-
-E:\assimp\assimp-master\include\assimp\color4.inl:
 
 E:\clion_proj\Tree\FFTBloomApplication\FFTBloomUtils.cpp:
 

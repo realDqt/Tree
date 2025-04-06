@@ -289,7 +289,6 @@ E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/quaternion_double_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/quaternion_trigonometric.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/quaternion_trigonometric.inl
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/quaternion_transform.hpp
-E:/Vulkan/VulkanSDK/include/glm/ext/quaternion_transform.inl
 E:/Vulkan/VulkanSDK/include/glm/gtc/quaternion.inl
 E:/Vulkan/VulkanSDK/include/glm/gtc/epsilon.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../detail/setup.hpp
@@ -516,6 +515,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/rpc.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack8.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/rpcdce.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/rpcdcep.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/rpcnsi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/rpcnterr.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/rpcasync.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack8.h

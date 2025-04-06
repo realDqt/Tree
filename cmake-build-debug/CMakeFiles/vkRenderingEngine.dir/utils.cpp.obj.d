@@ -69,7 +69,6 @@ E:/Vulkan/VulkanSDK/include/glm/detail/../simd/platform.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cfloat
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/float.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/limits
-C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cwchar
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cstdio
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/stdio.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wstdio.h
@@ -248,7 +247,6 @@ E:/Vulkan/VulkanSDK/include/glm/ext/../gtc/constants.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/scalar_constants.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/scalar_constants.inl
-E:/Vulkan/VulkanSDK/include/glm/gtc/constants.inl
 E:/Vulkan/VulkanSDK/include/glm/ext/matrix_projection.inl
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/matrix_clip_space.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/matrix_clip_space.inl

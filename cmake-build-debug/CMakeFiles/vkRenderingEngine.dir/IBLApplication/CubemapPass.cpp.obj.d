@@ -63,7 +63,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/string.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_memory.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_memcpy_s.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/errno.h
-C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/vcruntime_string.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wstring.h
 E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cassert
@@ -148,7 +147,6 @@ E:/Vulkan/VulkanSDK/include/glm/mat2x3.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double2x3.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_mat2x3.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_mat2x3.inl
-E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double2x3_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float2x3.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float2x3_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/mat2x4.hpp
@@ -229,7 +227,6 @@ E:/Vulkan/VulkanSDK/include/glm/detail/func_packing.inl
 E:/Vulkan/VulkanSDK/include/glm/detail/type_half.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_half.inl
-E:/Vulkan/VulkanSDK/include/glm/integer.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/func_integer.inl
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/intrin.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/setjmp.h
@@ -243,6 +240,7 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xmmintrin.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/mmintrin.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/malloc.h
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/zmmintrin.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/ammintrin.h
 E:/Vulkan/VulkanSDK/include/glm/gtc/matrix_transform.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/matrix_projection.hpp
@@ -621,7 +619,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack8.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/commdlg.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/prsht.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/stralign.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winsvc.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mcx.h

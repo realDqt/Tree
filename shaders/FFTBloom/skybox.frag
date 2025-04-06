@@ -17,12 +17,16 @@ vec3 ACESToneMapping(vec3 color, float adapted_lum)
     return (color * (A * color + B)) / (color * (C * color + D) + E);
 }
 
+vec3 ReinhardToneMapping(vec3 color){
+    return color / (color + vec3(1.0));
+}
+
 void main()
 {
     vec3 envColor = texture(environmentMap, localPos).rgb;
 
     //envColor = envColor / (envColor + vec3(1.0));
-    envColor = ACESToneMapping(envColor, 1.0);
+    envColor = ReinhardToneMapping(envColor);
     envColor = pow(envColor, vec3(1.0/2.2));
 
     FragColor = vec4(envColor, 1.0);

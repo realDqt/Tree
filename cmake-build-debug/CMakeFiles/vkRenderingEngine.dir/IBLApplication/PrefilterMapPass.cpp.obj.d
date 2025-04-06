@@ -45,7 +45,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_malloc.
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_search.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wstdlib.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/limits.h
-C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xtr1common
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/intrin0.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/intrin0.inl.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xutility
@@ -110,7 +109,6 @@ E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_uint2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_uint2_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../ext/scalar_uint_sized.hpp
-E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/vec3.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool3.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_vec3.hpp
@@ -501,6 +499,8 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack4.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winuser.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack2.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/tvout.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winnls.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/datetimeapi.h
@@ -531,7 +531,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mciapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mmsyscom.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mmiscapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mmsyscom.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mmiscapi2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mmsyscom.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/playsoundapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mmsyscom.h
@@ -608,7 +607,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/coml2api.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/objidl.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/unknwn.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/propidlbase.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/oaidl.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/urlmon.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/oleidl.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/servprov.h

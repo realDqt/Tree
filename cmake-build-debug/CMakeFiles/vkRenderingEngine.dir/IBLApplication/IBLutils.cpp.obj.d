@@ -57,6 +57,8 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/concepts
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/compare
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/climits
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cstring
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/string.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_memory.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_memcpy_s.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/errno.h
@@ -310,6 +312,7 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/list
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xpolymorphic_allocator.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/vector
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_bit_utils.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_sanitizer_annotate_container.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xbit_ops.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xnode_handle.h
@@ -451,6 +454,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/apiset.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/ktmtypes.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winbase.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/apisetcconv.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/minwinbase.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/apiquery2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/processenv.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/fileapifromapp.h
@@ -503,7 +507,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winnls.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/datetimeapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/stringapiset.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winnls.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/wincon.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/wincontypes.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/consoleapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/consoleapi2.h

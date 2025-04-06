@@ -103,6 +103,7 @@ E:/Vulkan/VulkanSDK/include/glm/./ext/vector_float2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_float2_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_double2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_double2_precision.hpp
+E:/Vulkan/VulkanSDK/include/glm/./ext/vector_int2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_int2_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../ext/scalar_int_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
@@ -214,7 +215,6 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/assert.h
 E:/Vulkan/VulkanSDK/include/glm/detail/../common.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/_fixes.hpp
-E:/Vulkan/VulkanSDK/include/glm/detail/func_common.inl
 E:/Vulkan/VulkanSDK/include/glm/detail/compute_common.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double2x2_precision.hpp
@@ -315,7 +315,6 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_bit_utils.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_sanitizer_annotate_container.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xbit_ops.h
-C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xnode_handle.h
 E:/Vulkan/VulkanSDK/include/glm/gtx/hash.inl
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/iostream
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/istream
@@ -439,6 +438,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack4.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h

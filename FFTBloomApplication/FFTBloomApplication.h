@@ -14,6 +14,9 @@
 #include "FBCubemapPass.h"
 #include "FBSkyboxPass.h"
 #include "NativeBloomPass.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 
 
 class FFTBloomApplication : public BaseApplication{
@@ -182,7 +185,16 @@ class FFTBloomApplication : public BaseApplication{
 
         endSingleTimeCommands(commandBuffer, true);
 
-        transitionImageLayout(bloomImage, HDR_FORMAT, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+        if(output)
+        {
+            // save to local
+            std::vector<float> outputData;
+            copyHdrImageToCPU(bloomImage, HDR_FORMAT, hdrImageExtent.width, hdrImageExtent.height, outputData);
+            saveHdrImage(SAVE_PATH.c_str(), hdrImageExtent.width, hdrImageExtent.height, outputData);
+
+            transitionImageLayout(bloomImage, HDR_FORMAT, VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+        }
+
 
         commandBuffer = beginSingleTimeCommands();
         // cubemap passes
@@ -209,6 +221,13 @@ class FFTBloomApplication : public BaseApplication{
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
         }
+    }
+
+
+    // ±£´æHDRÍ¼Æ¬º¯Êı
+    void saveHdrImage(const char* filename, int width, int height, const std::vector<float>& data) {
+        // Ê¹ÓÃ stb_image_write ±£´æÎª HDR ¸ñÊ½
+        stbi_write_hdr(filename, width, height, 4, data.data());
     }
 
     void recreateSwapChain() {
@@ -294,6 +313,7 @@ class FFTBloomApplication : public BaseApplication{
         skyboxPass.currentFrame = currentFrame;
     }
 
+
     void createColorResources() {
         VkFormat colorFormat = swapChainImageFormat;
 
@@ -325,20 +345,21 @@ class FFTBloomApplication : public BaseApplication{
     }
 
     void createHdrImage(const std::string& imagePath, VkImage& image, VkDeviceMemory& imageMemory, VkImageUsageFlags usage) {
-        // ä½¿ç”¨ stbi_loadf åŠ è½½ HDR å›¾ç‰‡
+        // Ê¹ÓÃ stbi_loadf ¼ÓÔØ HDR Í¼Æ¬
         int texWidth, texHeight, texChannels;
         float* pixels = stbi_loadf(imagePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         if(imagePath == FB_HDR_TEXTURE_PATH){
             hdrImageExtent = VkExtent2D(texWidth, texHeight);
         }
-        VkDeviceSize imageSize = texWidth * texHeight * 4 * sizeof(float); // æ¯ä¸ªé€šé“å  4 å­—èŠ‚ï¼ˆæµ®ç‚¹æ•°ï¼‰
-        // std::cout << "w: " << texWidth << " h: " << texHeight << std::endl;
+        VkDeviceSize imageSize = texWidth * texHeight * 4 * sizeof(float); // Ã¿¸öÍ¨µÀÕ¼ 4 ×Ö½Ú£¨¸¡µãÊı£©
+        //std::cout << "w: " << texWidth << " h: " << texHeight << std::endl;
 
         if (!pixels) {
             throw std::runtime_error("failed to load HDR texture image!");
         }
 
-        // åˆ›å»º staging buffer
+        // ÀûÓÃpixels´´½¨image
+        // ´´½¨ staging buffer
         VkBuffer stagingBuffer;
         VkDeviceMemory stagingBufferMemory;
         createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
@@ -348,26 +369,27 @@ class FFTBloomApplication : public BaseApplication{
         memcpy(data, pixels, static_cast<size_t>(imageSize));
         vkUnmapMemory(device, stagingBufferMemory);
 
-        stbi_image_free(pixels); // é‡Šæ”¾åŠ è½½çš„ HDR æ•°æ®
+        stbi_image_free(pixels); // ÊÍ·Å¼ÓÔØµÄ HDR Êı¾İ
 
-        // åˆ›å»º HDR å›¾åƒ
+        // ´´½¨ HDR Í¼Ïñ
         createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, HDR_FORMAT, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
 
-        // è½¬æ¢å›¾åƒå¸ƒå±€
+        // ×ª»»Í¼Ïñ²¼¾Ö
         transitionImageLayout(image, HDR_FORMAT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
         copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-        // è½¬æ¢ä¸º VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+        // ×ª»»Îª VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
 
         transitionImageLayout(image, HDR_FORMAT, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
     }
 
+
     void createBloomImage(){
         uint32_t texWidth, texHeight;
         texWidth = hdrImageExtent.width;
         texHeight = hdrImageExtent.height;
-        createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, HDR_FORMAT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, bloomImage, bloomImageMemory);
+        createImage(texWidth, texHeight, 1, VK_SAMPLE_COUNT_1_BIT, HDR_FORMAT, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, bloomImage, bloomImageMemory);
         transitionImageLayout(bloomImage, HDR_FORMAT, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL, 1);
     }
 
@@ -409,8 +431,8 @@ class FFTBloomApplication : public BaseApplication{
         samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.anisotropyEnable = VK_TRUE;
-        samplerInfo.anisotropyEnable = VK_FALSE;  // æ˜¯å¦å¯ç”¨å„å‘å¼‚æ€§è¿‡æ»¤
-        samplerInfo.maxAnisotropy = 1.0f;  // å„å‘å¼‚æ€§è¿‡æ»¤æœ€å¤§å€¼
+        samplerInfo.anisotropyEnable = VK_FALSE;  // ÊÇ·ñÆôÓÃ¸÷ÏòÒìĞÔ¹ıÂË
+        samplerInfo.maxAnisotropy = 1.0f;  // ¸÷ÏòÒìĞÔ¹ıÂË×î´óÖµ
         samplerInfo.unnormalizedCoordinates = VK_FALSE;
         samplerInfo.compareEnable = VK_FALSE;
         samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
@@ -437,13 +459,13 @@ class FFTBloomApplication : public BaseApplication{
 
     void loadBoxModel() {
         float positions[] = {
-                // åé¢ (z = -0.5)
+                // ºóÃæ (z = -0.5)
                 -1.f, -1.f, -1.f, // v0
                 1.f, -1.f, -1.f, // v1
                 1.f,  1.f, -1.f, // v2
                 -1.f,  1.f, -1.f, // v3
 
-                // å‰é¢ (z = 0.5)
+                // Ç°Ãæ (z = 0.5)
                 -1.f, -1.f,  1.f, // v4
                 1.f, -1.f,  1.f, // v5
                 1.f,  1.f,  1.f, // v6
@@ -451,12 +473,12 @@ class FFTBloomApplication : public BaseApplication{
         };
 
         float colors[] = {
-                // åé¢
+                // ºóÃæ
                 1.0f, 0.0f, 0.0f,  // v0
                 1.0f, 0.0f, 0.0f,  // v1
                 0.0f, 1.0f, 0.0f,  // v2
                 1.0f, 0.0f, 0.0f,  // v3
-                // å‰é¢
+                // Ç°Ãæ
                 1.0f, 0.0f, 0.0f,  // v4
                 1.0f, 0.0f, 0.0f,  // v5
                 0.0f, 0.0f, 1.0f,  // v6
@@ -471,29 +493,29 @@ class FFTBloomApplication : public BaseApplication{
 
         indices.clear();
         unsigned int ids[] = {
-                // åé¢ (z = -0.5)
-                1, 0, 2,  // ç¬¬ä¸€ä¸ªä¸‰è§’å½¢
-                3, 2, 0,  // ç¬¬äºŒä¸ªä¸‰è§’å½¢
+                // ºóÃæ (z = -0.5)
+                1, 0, 2,  // µÚÒ»¸öÈı½ÇĞÎ
+                3, 2, 0,  // µÚ¶ş¸öÈı½ÇĞÎ
 
-                // å‰é¢ (z = 0.5)
-                4, 5, 6,  // ç¬¬ä¸€ä¸ªä¸‰è§’å½¢
-                6, 7, 4,  // ç¬¬äºŒä¸ªä¸‰è§’å½¢
+                // Ç°Ãæ (z = 0.5)
+                4, 5, 6,  // µÚÒ»¸öÈı½ÇĞÎ
+                6, 7, 4,  // µÚ¶ş¸öÈı½ÇĞÎ
 
-                // å·¦é¢ (x = -0.5)
-                0, 4, 7,  // ç¬¬ä¸€ä¸ªä¸‰è§’å½¢
-                7, 3, 0,  // ç¬¬äºŒä¸ªä¸‰è§’å½¢
+                // ×óÃæ (x = -0.5)
+                0, 4, 7,  // µÚÒ»¸öÈı½ÇĞÎ
+                7, 3, 0,  // µÚ¶ş¸öÈı½ÇĞÎ
 
-                // å³é¢ (x = 0.5)
-                1, 6, 5,  // ç¬¬ä¸€ä¸ªä¸‰è§’å½¢
-                6, 1, 2,  // ç¬¬äºŒä¸ªä¸‰è§’å½¢
+                // ÓÒÃæ (x = 0.5)
+                1, 6, 5,  // µÚÒ»¸öÈı½ÇĞÎ
+                6, 1, 2,  // µÚ¶ş¸öÈı½ÇĞÎ
 
-                // åº•é¢ (y = -0.5)
-                0, 1, 5,  // ç¬¬ä¸€ä¸ªä¸‰è§’å½¢
-                5, 4, 0,  // ç¬¬äºŒä¸ªä¸‰è§’å½¢
+                // µ×Ãæ (y = -0.5)
+                0, 1, 5,  // µÚÒ»¸öÈı½ÇĞÎ
+                5, 4, 0,  // µÚ¶ş¸öÈı½ÇĞÎ
 
-                // é¡¶é¢ (y = 0.5)
-                2, 3,6,  // ç¬¬ä¸€ä¸ªä¸‰è§’å½¢
-                6, 3, 7   // ç¬¬äºŒä¸ªä¸‰è§’å½¢
+                // ¶¥Ãæ (y = 0.5)
+                2, 3,6,  // µÚÒ»¸öÈı½ÇĞÎ
+                6, 3, 7   // µÚ¶ş¸öÈı½ÇĞÎ
         };
         for(unsigned int id : ids)
             indices.push_back(id);

@@ -90,7 +90,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/sys/types.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/cassert
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/assert.h
 E:/Vulkan/VulkanSDK/include/glm/fwd.hpp
-E:/Vulkan/VulkanSDK/include/glm/detail/qualifier.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/vec2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool2.hpp
@@ -589,7 +588,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/winsmcrd.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winspool.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/prsht.h
@@ -609,7 +607,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/coml2api.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/objidl.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/unknwn.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/propidlbase.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/oaidl.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/urlmon.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/oleidl.h

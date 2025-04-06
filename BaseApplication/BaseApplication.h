@@ -136,6 +136,8 @@ public:
 
     bool hasStencilComponent(VkFormat format);
 
+    void copyHdrImageToCPU(VkImage image, VkFormat format, int width, int height, std::vector<float>& outputData);
+
     static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
 };

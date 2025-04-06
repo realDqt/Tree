@@ -95,6 +95,7 @@ E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/vec2.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool2.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_vec2.hpp
+E:/Vulkan/VulkanSDK/include/glm/detail/type_vec2.inl
 E:/Vulkan/VulkanSDK/include/glm/detail/./compute_vector_relational.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool2_precision.hpp
@@ -247,7 +248,6 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 E:/Vulkan/VulkanSDK/include/glm/gtc/matrix_transform.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/matrix_projection.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../gtc/constants.hpp
-E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/scalar_constants.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/scalar_constants.inl
 E:/Vulkan/VulkanSDK/include/glm/gtc/constants.inl
@@ -564,6 +564,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/wincrypt.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/bcrypt.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/ncrypt.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/dpapi.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winefs.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winscard.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/wtypes.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/rpcndr.h
@@ -623,6 +624,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/commdlg.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/prsht.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/stralign.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/winsvc.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mcx.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/imm.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/ime_cmodes.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/fcntl.h

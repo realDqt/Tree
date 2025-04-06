@@ -112,7 +112,6 @@ E:/Vulkan/VulkanSDK/include/glm/ext/../ext/scalar_uint_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/vec3.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool3.hpp
-E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_vec3.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_vec3.inl
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool3_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_float3.hpp
@@ -269,7 +268,6 @@ E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/vector_int1.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/vector_int1_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/vector_uint1.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/vector_uint1_sized.hpp
-E:/Vulkan/VulkanSDK/include/glm/gtx/../gtc/quaternion.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/vector_relational.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/vector_relational.inl
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_float.hpp

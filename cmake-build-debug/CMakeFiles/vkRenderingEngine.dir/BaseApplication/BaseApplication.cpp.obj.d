@@ -394,6 +394,7 @@ E:/assimp/assimp-master/include/assimp/matrix4x4.h
 E:/assimp/assimp-master/include/assimp/quaternion.h
 E:/assimp/assimp-master/include/assimp/vector2.inl
 E:/assimp/assimp-master/include/assimp/vector3.inl
+E:/assimp/assimp-master/include/assimp/color4.inl
 E:/assimp/assimp-master/include/assimp/matrix3x3.inl
 E:/assimp/assimp-master/include/assimp/matrix4x4.inl
 E:/assimp/assimp-master/include/assimp/MathFunctions.h

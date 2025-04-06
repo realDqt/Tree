@@ -171,6 +171,7 @@ void NativeBloomPass::updateUniformBuffer()
     ubo.emissity = emissity;
     ubo.R = R;
     ubo.method = methd;
+    ubo.lumThreshold = lumThreshold;
 
     memcpy(uniformBufferMapped, &ubo, sizeof(ubo));
 }

@@ -13,6 +13,7 @@ public:
         alignas(4) float emissity;
         alignas(4) int R;
         alignas(4) int method;
+        alignas(4) float lumThreshold;
     };
     /*
      * device, physicalDevice

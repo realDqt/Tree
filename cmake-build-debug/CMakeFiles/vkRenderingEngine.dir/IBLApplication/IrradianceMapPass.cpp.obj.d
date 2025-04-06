@@ -77,7 +77,6 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/stdio.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wstdio.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_stdio_config.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/wchar.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wconio.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wctype.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_wdirect.h
@@ -317,7 +316,6 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_sanitizer_annotate_container.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xbit_ops.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xnode_handle.h
-E:/Vulkan/VulkanSDK/include/glm/gtx/hash.inl
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/iostream
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/istream
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/ostream
@@ -379,8 +377,6 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xlocmon
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/iomanip
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/array
-C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/set
-C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xtree
 E:/clion_proj/Tree/camera.h
 E:/clion_proj/Tree/BaseApplication/BaseApplication.h
 E:/clion_proj/Tree/BaseApplication/../VulkanTools.h
@@ -448,6 +444,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack8.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/apiset.h
@@ -614,6 +611,10 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/urlmon.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/oleidl.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/servprov.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/msxml.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/propidl.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/oleauto.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack8.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/commdlg.h
@@ -626,3 +627,4 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/ime_cmodes.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/fcntl.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/io.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_io.h
+E:/clion_proj/Tree/IBLApplication/../Vertex.h

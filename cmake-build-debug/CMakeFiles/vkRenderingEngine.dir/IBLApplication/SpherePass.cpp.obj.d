@@ -112,7 +112,6 @@ E:/Vulkan/VulkanSDK/include/glm/./ext/vector_uint2_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../ext/scalar_uint_sized.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/vec3.hpp
-E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool3.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_vec3.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_vec3.inl
 E:/Vulkan/VulkanSDK/include/glm/./ext/vector_bool3_precision.hpp
@@ -245,6 +244,7 @@ C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.3313
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/malloc.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/zmmintrin.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/ammintrin.h
+E:/Vulkan/VulkanSDK/include/glm/gtc/matrix_transform.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/matrix_projection.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../gtc/constants.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../ext/scalar_constants.hpp
@@ -294,12 +294,12 @@ E:/Vulkan/VulkanSDK/include/glm/gtc/quaternion.inl
 E:/Vulkan/VulkanSDK/include/glm/gtc/epsilon.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/../detail/setup.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtc/epsilon.inl
-E:/Vulkan/VulkanSDK/include/glm/gtx/../gtx/dual_quaternion.hpp
 E:/Vulkan/VulkanSDK/include/glm/gtx/dual_quaternion.inl
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/functional
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/exception
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/vcruntime_exception.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/eh.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_terminate.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/tuple
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/typeinfo
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/vcruntime_typeinfo.h
@@ -627,6 +627,5 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/mcx.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/imm.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/ime_cmodes.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/fcntl.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/io.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/corecrt_io.h
 E:/clion_proj/Tree/IBLApplication/../Vertex.h

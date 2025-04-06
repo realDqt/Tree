@@ -148,6 +148,7 @@ E:/Vulkan/VulkanSDK/include/glm/mat2x3.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double2x3.hpp
 E:/Vulkan/VulkanSDK/include/glm/ext/../detail/type_mat2x3.hpp
 E:/Vulkan/VulkanSDK/include/glm/detail/type_mat2x3.inl
+E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_double2x3_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float2x3.hpp
 E:/Vulkan/VulkanSDK/include/glm/./ext/matrix_float2x3_precision.hpp
 E:/Vulkan/VulkanSDK/include/glm/mat2x4.hpp
@@ -352,6 +353,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/ucrt/locale.h
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/fstream
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_filebuf.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/algorithm
+C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/chrono
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/__msvc_chrono.hpp
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/ratio
 C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.38.33130/include/xfilesystem_abi.h
@@ -480,6 +482,7 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/jobapi2.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/wow64apiset.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/libloaderapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/securitybaseapi.h
+C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/namespaceapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/systemtopologyapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/processtopologyapi.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/um/securityappcontainer.h
@@ -579,7 +582,6 @@ C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
-C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/pshpack1.h
 C:/Program Files (x86)/Windows Kits/10/include/10.0.22621.0/shared/poppack.h
