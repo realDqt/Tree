@@ -219,7 +219,7 @@ void BlinnPhongPass::createUniformBuffers() {
     uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-    VkDeviceSize bufferSize2 = sizeof(UniformBufferObject);
+    VkDeviceSize bufferSize2 = sizeof(UniformBufferObject2);
     uniformBuffers2.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMemory2.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMapped2.resize(MAX_FRAMES_IN_FLIGHT);

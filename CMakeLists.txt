@@ -89,6 +89,8 @@ add_executable(vkRenderingEngine
         FFTBloomApplication/NativeBloomPass.h
         FFTBloomApplication/NativeBloomPass.cpp
         FFTBloomApplication/NativeBloomPass.cpp
+        SSRApplication/SSRPass.h
+        SSRApplication/SSRPass.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)

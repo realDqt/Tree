@@ -26,10 +26,9 @@ public:
 
     /*
     * device, physicalDevice
-    * colorImageView
     * depthImageView
     * vertexBufferCube, indexBufferCube, indicesCountCube
-    * currentFrame, swapChainImageViews, swapChainExtent, msaaSamples, swapChainImageFormat
+    * currentFrame, swapChainImageViews, swapChainExtent, swapChainImageFormat
     * textureImageView, textureSampler
     * model
     */

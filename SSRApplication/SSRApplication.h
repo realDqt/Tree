@@ -13,11 +13,13 @@
 #include "BlinnPhongPass.h"
 #include "SSRShadowmapPass.h"
 #include "GBufferPass.h"
+#include "SSRPass.h"
 
 class SSRApplication : public BaseApplication{
 public:
     SSRShadowmapPass shadowmapPass;
     GBufferPass gBufferPasses[2];
+    SSRPass ssrPass[2];
     BlinnPhongPass blinnPhongPasses[2];
 
     // vb and ib for cube
@@ -79,6 +81,11 @@ public:
     VkImage gDepth;
     VkDeviceMemory gDepthMemory;
     VkImageView gDepthView;
+
+    VkSampler gAlbedoSampler;
+    VkSampler gWorldPositionSampler;
+    VkSampler gWorldNormalSampler;
+    VkSampler gDepthSampler;
 
 
 
@@ -199,8 +206,69 @@ public:
         gBufferPasses[1].isFloor = true;
 
 
-    }
+        // ssr pass
+        ssrPass[0].device = device;
+        ssrPass[0].physicalDevice = physicalDevice;
 
+        ssrPass[0].swapChainExtent = swapChainExtent;
+        ssrPass[0].swapChainImageFormat = swapChainImageFormat;
+        ssrPass[0].swapChainImageViews = swapChainImageViews;
+
+        ssrPass[0].depthImageView = depthImageView;
+
+        ssrPass[0].vertexBuffer = vertexBuffer;
+        ssrPass[0].indexBuffer = indexBuffer;
+        ssrPass[0].indicesCount = indices.size();
+
+        ssrPass[0].gAlbedoImageView = gAlbedoView;
+        ssrPass[0].gAlbedoSampler = gAlbedoSampler;
+
+        ssrPass[0].gWorldPositionImageView = gWorldPositionView;
+        ssrPass[0].gWorldPositionSampler = gWorldPositionSampler;
+
+        ssrPass[0].gWorldNormalImageView = gWorldNormalView;
+        ssrPass[0].gWorldNormalSampler = gWorldNormalSampler;
+
+        ssrPass[0].gDepthImageView = gDepthView;
+        ssrPass[0].gDepthSampler = gDepthSampler;
+
+        ssrPass[0].smImageView = shadowmapView;
+        ssrPass[0].smSampler = shadowmapSampler;
+
+        ssrPass[0].model = cubeModel;
+
+        ssrPass[1].device = device;
+        ssrPass[1].physicalDevice = physicalDevice;
+
+        ssrPass[1].swapChainExtent = swapChainExtent;
+        ssrPass[1].swapChainImageFormat = swapChainImageFormat;
+        ssrPass[1].swapChainImageViews = swapChainImageViews;
+
+        ssrPass[1].depthImageView = depthImageView;
+
+        ssrPass[1].vertexBuffer = vertexBuffer2;
+        ssrPass[1].indexBuffer = indexBuffer2;
+        ssrPass[1].indicesCount = indices2.size();
+
+        ssrPass[1].gAlbedoImageView = gAlbedoView;
+        ssrPass[1].gAlbedoSampler = gAlbedoSampler;
+
+        ssrPass[1].gWorldPositionImageView = gWorldPositionView;
+        ssrPass[1].gWorldPositionSampler = gWorldPositionSampler;
+
+        ssrPass[1].gWorldNormalImageView = gWorldNormalView;
+        ssrPass[1].gWorldNormalSampler = gWorldNormalSampler;
+
+        ssrPass[1].gDepthImageView = gDepthView;
+        ssrPass[1].gDepthSampler = gDepthSampler;
+
+        ssrPass[1].smImageView = shadowmapView;
+        ssrPass[1].smSampler = shadowmapSampler;
+
+        ssrPass[1].model = floorModel;
+
+
+    }
     void initVulkan() override{
         //camera.Position = lightPos;
         BaseApplication::initVulkan();
@@ -213,6 +281,11 @@ public:
         createTextureSampler();
 
         createShadowmapSampler();
+        createGSampler(gAlbedoSampler);
+        createGSampler(gWorldPositionSampler);
+        createGSampler(gWorldNormalSampler);
+        createGSampler(gDepthSampler);
+
 
         loadModel();
         createVertexBuffer();
@@ -224,6 +297,8 @@ public:
         blinnPhongPasses[1].init();
         gBufferPasses[0].init();
         gBufferPasses[1].init();
+        ssrPass[0].init();
+        ssrPass[1].init();
     }
 
     void cleanupSwapChain() override{
@@ -260,6 +335,14 @@ public:
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
+        for(auto& framebuffer :ssrPass[0].framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
+        for(auto& framebuffer : ssrPass[1].framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device, imageView, nullptr);
         }
@@ -276,21 +359,28 @@ public:
         gBufferPasses[0].cleanup();
         gBufferPasses[1].cleanup();
 
+        ssrPass[0].cleanup();
+        ssrPass[1].cleanup();
+
         vkDestroyImageView(device, gAlbedoView, nullptr);
         vkFreeMemory(device, gAlbedoMemory, nullptr);
         vkDestroyImage(device, gAlbedo, nullptr);
+        vkDestroySampler(device, gAlbedoSampler, nullptr);
 
         vkDestroyImageView(device, gWorldPositionView, nullptr);
         vkFreeMemory(device, gWorldPositionMemory, nullptr);
         vkDestroyImage(device, gWorldPosition, nullptr);
+        vkDestroySampler(device, gWorldPositionSampler, nullptr);
 
         vkDestroyImageView(device, gWorldNormalView, nullptr);
         vkFreeMemory(device, gWorldNormalMemory, nullptr);
         vkDestroyImage(device, gWorldNormal, nullptr);
+        vkDestroySampler(device, gWorldNormalSampler, nullptr);
 
         vkDestroyImageView(device, gDepthView, nullptr);
         vkFreeMemory(device, gDepthMemory, nullptr);
         vkDestroyImage(device, gDepth, nullptr);
+        vkDestroySampler(device, gDepthSampler, nullptr);
 
         vkDestroyImageView(device, shadowmapView, nullptr);
         vkFreeMemory(device, shadowmapMemory, nullptr);
@@ -302,6 +392,7 @@ public:
         vkDestroyImage(device, textureImage, nullptr);
 
         vkDestroySampler(device, textureSampler, nullptr);
+        vkDestroySampler(device, shadowmapSampler, nullptr);
 
         vkDestroyBuffer(device, vertexBuffer, nullptr);
         vkFreeMemory(device, vertexBufferMemory, nullptr);
@@ -454,6 +545,33 @@ public:
         samplerInfo.mipLodBias = 0.0f;
 
         if (vkCreateSampler(device, &samplerInfo, nullptr, &shadowmapSampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create shadow map sampler!");
+        }
+    }
+
+    void createGSampler(VkSampler& gSampler) {
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(physicalDevice, &properties);
+
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;  // 使用线性过滤
+        samplerInfo.minFilter = VK_FILTER_LINEAR;  // 使用线性过滤
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;  // 边界模式
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
+        samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;  // 边界颜色为白色
+        samplerInfo.anisotropyEnable = VK_FALSE;  // 关闭各向异性过滤
+        samplerInfo.maxAnisotropy = 1.0f;  // 设置为 1.0（无效，但需要初始化）
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;  // 使用标准化坐标
+        samplerInfo.compareEnable = VK_TRUE;  // 启用深度比较
+        samplerInfo.compareOp = VK_COMPARE_OP_LESS;  // 深度比较操作
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;  // 禁用 Mipmap
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = 0.0f;  // 禁用 Mipmap
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &gSampler) != VK_SUCCESS) {
             throw std::runtime_error("failed to create shadow map sampler!");
         }
     }
@@ -745,6 +863,8 @@ public:
 
         blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
+        //ssrPass[0].recordCommandBuffer(commandBuffer, imageIndex);
+        //ssrPass[1].recordCommandBuffer(commandBuffer, imageIndex);
 
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
@@ -821,6 +941,8 @@ public:
         shadowmapPass.currentFrame = currentFrame;
         gBufferPasses[0].currentFrame = currentFrame;
         gBufferPasses[1].currentFrame = currentFrame;
+        ssrPass[0].currentFrame = currentFrame;
+        ssrPass[1].currentFrame = currentFrame;
     }
 };
 
