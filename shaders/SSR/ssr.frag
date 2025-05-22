@@ -202,5 +202,6 @@ void main() {
     L_indir /= (float(cnt) + 1e-3);
     vec3 L_dir = EvalDiffuse(ubo2.lightDir, wo, uv) * EvalDirectionalLight(uv);
     vec3 color = pow(clamp(L_dir + L_indir, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
+    color = L_dir;
     outColor = vec4(color, 1.0);
 }

@@ -390,9 +390,7 @@ public:
         vkDestroyImageView(device, textureImageView, nullptr);
         vkFreeMemory(device, textureImageMemory, nullptr);
         vkDestroyImage(device, textureImage, nullptr);
-
         vkDestroySampler(device, textureSampler, nullptr);
-        vkDestroySampler(device, shadowmapSampler, nullptr);
 
         vkDestroyBuffer(device, vertexBuffer, nullptr);
         vkFreeMemory(device, vertexBufferMemory, nullptr);
@@ -861,10 +859,10 @@ public:
         gBufferPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         gBufferPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
-        blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
-        blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
-        //ssrPass[0].recordCommandBuffer(commandBuffer, imageIndex);
-        //ssrPass[1].recordCommandBuffer(commandBuffer, imageIndex);
+        //blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
+        //blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
+        ssrPass[0].recordCommandBuffer(commandBuffer, imageIndex);
+        ssrPass[1].recordCommandBuffer(commandBuffer, imageIndex);
 
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
