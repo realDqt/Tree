@@ -190,9 +190,9 @@ public:
 
         gBufferPasses[1].depthImageView = depthImageView;
 
-        gBufferPasses[1].vertexBuffer = vertexBuffer;
-        gBufferPasses[1].indexBuffer = indexBuffer;
-        gBufferPasses[1].indicesCount = indices.size();
+        gBufferPasses[1].vertexBuffer = vertexBuffer2;
+        gBufferPasses[1].indexBuffer = indexBuffer2;
+        gBufferPasses[1].indicesCount = indices2.size();
 
         gBufferPasses[1].textureImageView = textureImageView;
         gBufferPasses[1].textureSampler = textureSampler;

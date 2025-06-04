@@ -20,5 +20,5 @@ void main() {
     worldNormal = (ubo.modelInvTrans * vec4(aNormal, 0.0)).xyz;
     texCoords = aTexCoords;
     clipPosition = ubo.proj * ubo.view * ubo.model * vec4(aPosition, 1.0);
-    gl_Position = ubo.proj * ubo.view * ubo.model * vec4(aPosition, 1.0);
+    gl_Position = clipPosition;
 }

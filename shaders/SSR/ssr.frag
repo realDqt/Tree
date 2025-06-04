@@ -139,13 +139,14 @@ float unpack(vec4 rgbaDepth) {
 }
 
 float GetVisibility(vec2 uv){
+    //return 1.0;
     vec3 worldNormal = GetGBufferWorldNormal(uv);
     vec3 worldPos = GetGBufferWorldPosition(uv);
     vec4 lightSpaceCoord = vec4(ubo2.lightVP * vec4(worldPos, 1.0));
     vec3 NDC = lightSpaceCoord.xyz / lightSpaceCoord.w;
     NDC.xy = (NDC.xy + 1.0) * .5;
     float depth = unpack(texture(smSampler, NDC.xy));
-    if(NDC.z <= depth + getBias(6.4, worldNormal))
+    if(NDC.z <= depth + getBias(1.4, worldNormal))
         return 1.0;
     else
         return 0.0;
@@ -175,7 +176,7 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
     return false;
 }
 
-#define SAMPLE_NUM 1
+#define SAMPLE_NUM 10
 
 void main() {
     float s = InitRand(gl_FragCoord.xy);
@@ -195,13 +196,12 @@ void main() {
         if(dot(sampleDir, worldNormal) > 0.0 && RayMarch(worldPos, sampleDir, hitPos)){
             vec3 wi = normalize(hitPos - worldPos);
             vec2 uvReflect = GetScreenCoordinate(hitPos);
-            L_indir += (EvalDiffuse(wi, wo, uv) / pdf) * EvalDiffuse(ubo2.lightDir, -wi, uvReflect) * EvalDirectionalLight(uvReflect);
+            L_indir += (EvalDiffuse(wi, wo, uv) / pdf) * EvalDiffuse(normalize(-ubo2.lightDir), -wi, uvReflect) * EvalDirectionalLight(uvReflect);
             ++cnt;
         }
     }
     L_indir /= (float(cnt) + 1e-3);
-    vec3 L_dir = EvalDiffuse(ubo2.lightDir, wo, uv) * EvalDirectionalLight(uv);
+    vec3 L_dir = EvalDiffuse(normalize(-ubo2.lightDir), wo, uv) * EvalDirectionalLight(uv);
     vec3 color = pow(clamp(L_dir + L_indir, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-    color = L_dir;
     outColor = vec4(color, 1.0);
 }

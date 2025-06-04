@@ -17,7 +17,7 @@ layout(push_constant, std140) uniform PushConstants{
 
 
 void main() {
-    gAlbedo = constants.isFloor ? texture(texSampler, texCoords) : vec4(1.0);
+    gAlbedo = constants.isFloor ? vec4(1.0) : texture(texSampler, texCoords);
     gWorldPosition = vec4(worldPosition, 1.0);
     gWorldNormal = vec4(normalize(worldNormal), 0.0);
     gDepth = clipPosition.w;
