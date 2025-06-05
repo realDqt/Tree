@@ -142,6 +142,7 @@ float GetVisibility(vec2 uv){
     //return 1.0;
     vec3 worldNormal = GetGBufferWorldNormal(uv);
     vec3 worldPos = GetGBufferWorldPosition(uv);
+    worldPos += worldNormal * 1e-2;
     vec4 lightSpaceCoord = vec4(ubo2.lightVP * vec4(worldPos, 1.0));
     vec3 NDC = lightSpaceCoord.xyz / lightSpaceCoord.w;
     NDC.xy = (NDC.xy + 1.0) * .5;
