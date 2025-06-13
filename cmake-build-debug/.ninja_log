@@ -1,9 +1,9 @@
 # ninja log v5
-1949	2304	7696301403158125	vkRenderingEngine.exe	57d845cf92d58303
+2444	3435	7707516524306199	vkRenderingEngine.exe	57d845cf92d58303
 113	3656	7660659531767233	CMakeFiles/vkRenderingEngine.dir/IBLApplication/BrdfLUTPass.cpp.obj	6e96855feb7dc44c
 48	3912	7660659534561519	CMakeFiles/vkRenderingEngine.dir/IBLApplication/HDRVisualizationPass.cpp.obj	69f5642768ba5f19
-1	1949	7696301400186372	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	302dc7c68b85f351
-1	82	7706658796119889	build.ninja	fe7766852ec9007e
+2	2444	7707516521185741	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	302dc7c68b85f351
+1	82	7710068726348886	build.ninja	fe7766852ec9007e
 3723	5743	7660659552905975	CMakeFiles/vkRenderingEngine.dir/FFTBloomApplication/NativeBloomPass.cpp.obj	bc24d279761efb55
 14	3749	7660659532905183	CMakeFiles/vkRenderingEngine.dir/utils.cpp.obj	991d447a2d11fc7e
 19	3929	7660659534684086	CMakeFiles/vkRenderingEngine.dir/BaseApplication/BaseApplication.cpp.obj	1d39b6e205c2af83
@@ -26,5 +26,7 @@
 3656	5850	7660659553977417	CMakeFiles/vkRenderingEngine.dir/SSRApplication/GBufferPass.cpp.obj	fe16680e25fdce2
 3713	5790	7660659553383401	CMakeFiles/vkRenderingEngine.dir/FFTBloomApplication/FFTBloomUtils.cpp.obj	2a76b95cb390fd3f
 3702	5875	7660659554223744	CMakeFiles/vkRenderingEngine.dir/FFTBloomApplication/FBCubemapPass.cpp.obj	9c2ff277a6f52763
-2	2444	7707516521185741	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	302dc7c68b85f351
-2444	3435	7707516524306199	vkRenderingEngine.exe	57d845cf92d58303
+1	2834	7715076130469258	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	302dc7c68b85f351
+2835	4539	7715076142544946	vkRenderingEngine.exe	57d845cf92d58303
+3	1926	7715076617884580	CMakeFiles/vkRenderingEngine.dir/main.cpp.obj	302dc7c68b85f351
+1926	2217	7715076620353580	vkRenderingEngine.exe	57d845cf92d58303
