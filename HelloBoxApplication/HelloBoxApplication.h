@@ -12,7 +12,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-const std::string TEXTURE_PATH = "E:/clion_proj/Tree/textures/viking_room.png";
+const std::string TEXTURE_PATH = "../textures/viking_room.png";
 
 
 struct RoomUniformBufferObject{
@@ -255,8 +255,8 @@ public:
     }
 
     void createGraphicsPipeline() {
-        auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/box/boxVert.spv");
-        auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/box/boxFrag.spv");
+        auto vertShaderCode = readFile("../shaders/box/boxVert.spv");
+        auto fragShaderCode = readFile("../shaders/box/boxFrag.spv");
 
         VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
         VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

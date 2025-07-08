@@ -3,8 +3,8 @@
 //
 #include "SSRutils.h"
 
-const std::string CUBE_PATH = "E:/clion_proj/Tree/models/SSRModel/cube2.gltf";
-const std::string CUBE_TEXTURE_PATH = "E:/clion_proj/Tree/models/SSRModel/checker.png";
+const std::string CUBE_PATH = "../models/SSRModel/cube2.gltf";
+const std::string CUBE_TEXTURE_PATH = "../models/SSRModel/checker.png";
 
 DirectionalLight ssrLight{
         .lightDir = glm::vec3(-0.01f, -1.0f, 1.0f),

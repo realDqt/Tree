@@ -97,8 +97,8 @@ void LightVisualizationPass::createDescriptorSetLayout()
 }
 
 void LightVisualizationPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/Marry/LVVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/Marry/LVFrag.spv");
+    auto vertShaderCode = readFile("../shaders/Marry/LVVert.spv");
+    auto fragShaderCode = readFile("../shaders/Marry/LVFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

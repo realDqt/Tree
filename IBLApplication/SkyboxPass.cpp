@@ -104,8 +104,8 @@ void SkyboxPass::createDescriptorSetLayout()
 }
 
 void SkyboxPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/skyboxVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/skyboxFrag.spv");
+    auto vertShaderCode = readFile("../shaders/IBL/skyboxVert.spv");
+    auto fragShaderCode = readFile("../shaders/IBL/skyboxFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

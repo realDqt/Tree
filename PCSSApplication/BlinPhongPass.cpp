@@ -77,8 +77,8 @@ void BlinPhongPass::createRenderPass() {
 }
 
 void BlinPhongPass::createGraphicsPipeline() {
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/Marry/marryVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/Marry/marryFrag.spv");
+    auto vertShaderCode = readFile("../shaders/Marry/marryVert.spv");
+    auto fragShaderCode = readFile("../shaders/Marry/marryFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

@@ -63,8 +63,8 @@ void BrdfLUTPass::createRenderPass() {
 }
 
 void BrdfLUTPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/brdfLUTVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/brdfLUTFrag.spv");
+    auto vertShaderCode = readFile("../shaders/IBL/brdfLUTVert.spv");
+    auto fragShaderCode = readFile("../shaders/IBL/brdfLUTFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

@@ -136,8 +136,8 @@ void SpherePass::createDescriptorSetLayout()
 }
 
 void SpherePass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/pbrVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/pbrFrag.spv");
+    auto vertShaderCode = readFile("../shaders/IBL/pbrVert.spv");
+    auto fragShaderCode = readFile("../shaders/IBL/pbrFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

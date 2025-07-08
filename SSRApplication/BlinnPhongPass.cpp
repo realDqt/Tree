@@ -66,8 +66,8 @@ void BlinnPhongPass::createRenderPass() {
 }
 
 void BlinnPhongPass::createGraphicsPipeline() {
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/SSR/directLightVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/SSR/directLightFrag.spv");
+    auto vertShaderCode = readFile("../shaders/SSR/directLightVert.spv");
+    auto fragShaderCode = readFile("../shaders/SSR/directLightFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

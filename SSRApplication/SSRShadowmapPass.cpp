@@ -87,8 +87,8 @@ void SSRShadowmapPass::createFramebuffers() {
 }
 
 void SSRShadowmapPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/SSR/shadowVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/SSR/shadowFrag.spv");
+    auto vertShaderCode = readFile("../shaders/SSR/shadowVert.spv");
+    auto fragShaderCode = readFile("../shaders/SSR/shadowFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

@@ -91,8 +91,8 @@ void IrradianceMapPass::createDescriptorSetLayout()
 }
 
 void IrradianceMapPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/renderBoxVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/irradianceConvolutionFrag.spv");
+    auto vertShaderCode = readFile("../shaders/IBL/renderBoxVert.spv");
+    auto fragShaderCode = readFile("../shaders/IBL/irradianceConvolutionFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

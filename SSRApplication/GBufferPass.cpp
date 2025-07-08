@@ -103,8 +103,8 @@ void GBufferPass::createRenderPass() {
 }
 
 void GBufferPass::createGraphicsPipeline() {
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/SSR/gBufferVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/SSR/gBufferFrag.spv");
+    auto vertShaderCode = readFile("../shaders/SSR/gBufferVert.spv");
+    auto fragShaderCode = readFile("../shaders/SSR/gBufferFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

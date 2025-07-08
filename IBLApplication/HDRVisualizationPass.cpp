@@ -104,8 +104,8 @@ void HDRVisualizationPass::createDescriptorSetLayout()
 }
 
 void HDRVisualizationPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/renderBoxVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/IBL/renderBoxFrag.spv");
+    auto vertShaderCode = readFile("../shaders/IBL/renderBoxVert.spv");
+    auto fragShaderCode = readFile("../shaders/IBL/renderBoxFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

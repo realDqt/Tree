@@ -594,20 +594,7 @@ public:
 
     void loadModel(){
         loadCube();
-        /*
-        for(auto& vertex : vertices){
-            std::cout << "pos: (" << vertex.pos.x << ", " << vertex.pos.y << ", " << vertex.pos.z <<")"<< std::endl;
-            std::cout << "normal: (" << vertex.normal.x << ", " << vertex.normal.y << ", " << vertex.normal.z << std::endl;
-            std::cout << "texCoord: (" << vertex.texCoord.x << ", " << vertex.texCoord.y << std::endl;
-            std::cout << "-------------------------------------------------" << std::endl;
-        }
-
-        for(auto& index : indices){
-            std::cout << index << std::endl;
-        }
-         */
         loadFloor();
-
     }
 
     void loadCube(){

@@ -2,9 +2,9 @@
 // Created by 22473 on 2025-01-26.
 //
 #include "PCSSutils.h"
-const std::string MARRY_PATH = "E:/clion_proj/Tree/models/Marry.obj";
-const std::string FLOOR_PATH = "E:/clion_proj/Tree/models/floor.obj";
-const std::string TEXTURE_PATH = "E:/clion_proj/Tree/textures/MarryTexture.png";
+const std::string MARRY_PATH = "../models/Marry.obj";
+const std::string FLOOR_PATH = "../models/floor.obj";
+const std::string TEXTURE_PATH = "../textures/MarryTexture.png";
 
 // light's info
 DirectionalLight light{
