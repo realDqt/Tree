@@ -667,7 +667,8 @@ public:
 
         uint32_t imageIndex;
         VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-
+        //std::cout << "imageIndex = " << imageIndex << std::endl;
+        //std::cout << "currentFrame = " << currentFrame << std::endl;
         if (result == VK_ERROR_OUT_OF_DATE_KHR) {
             recreateSwapChain();
             return;

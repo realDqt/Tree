@@ -660,7 +660,6 @@ public:
                 processNode(node->mChildren[i], currentTransform);
             }
         };
-
         // 从根节点开始处理
         processNode(scene->mRootNode, aiMatrix4x4());
     }
@@ -861,6 +860,7 @@ public:
 
 
     void drawFrame() override{
+        //std::cout << "SSRApplication: call drawFrame" << std::endl;
         vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
         uint32_t imageIndex;

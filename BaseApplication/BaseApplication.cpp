@@ -10,7 +10,7 @@ const std::vector<const char*> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-const int MAX_FRAMES_IN_FLIGHT = 2;
+int MAX_FRAMES_IN_FLIGHT = 2;
 
 
 #ifdef NDEBUG
@@ -439,6 +439,7 @@ void BaseApplication::createSwapChain() {
     VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
 
     uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+    MAX_FRAMES_IN_FLIGHT = static_cast<int>(imageCount);
     if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
         imageCount = swapChainSupport.capabilities.maxImageCount;
     }

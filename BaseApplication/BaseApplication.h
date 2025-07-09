@@ -10,7 +10,7 @@ extern const std::vector<const char*> validationLayers;
 
 extern const std::vector<const char*> deviceExtensions;
 
-extern const int MAX_FRAMES_IN_FLIGHT;
+extern int MAX_FRAMES_IN_FLIGHT;
 
 
 extern const bool enableValidationLayers;
