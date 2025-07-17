@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_SSRAPPLICATION_H
 #define VKRENDERINGENGINE_SSRAPPLICATION_H
 #include "../BaseApplication/BaseApplication.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 

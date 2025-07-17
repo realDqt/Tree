@@ -4,7 +4,7 @@
 
 #ifndef VKRENDERINGENGINE_IBLUTILS_H
 #define VKRENDERINGENGINE_IBLUTILS_H
-#include "../VulkanTools.h"
+#include "../EngineCore/VulkanTools.h"
 constexpr int CUBEMAP_RESOLUTION = 512;
 constexpr int IRRADIANCE_MAP_RESOLUTION = 32;
 constexpr int MIPMAP_COUNT = 5;

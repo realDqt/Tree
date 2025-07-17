@@ -29,8 +29,8 @@
 #include <set>
 #include <unordered_map>
 
-#include "camera.h"
-#include "BaseApplication/BaseApplication.h"
+#include "../camera.h"
+#include "../BaseApplication/BaseApplication.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>

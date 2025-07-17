@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_IBLAPPLICATION_H
 #define VKRENDERINGENGINE_IBLAPPLICATION_H
 #include "../BaseApplication/BaseApplication.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define TINYOBJLOADER_IMPLEMENTATION

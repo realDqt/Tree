@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_GBUFFERPASS_H
 #define VKRENDERINGENGINE_GBUFFERPASS_H
 #include "SSRutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 
 class GBufferPass{
 public:

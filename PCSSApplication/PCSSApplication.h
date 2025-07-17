@@ -7,7 +7,7 @@
 #include "ShadowmapPass.h"
 #include "BlinPhongPass.h"
 #include "LightVisualizationPass.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define TINYOBJLOADER_IMPLEMENTATION

@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_SHADOWMAPPASS_H
 #define VKRENDERINGENGINE_SHADOWMAPPASS_H
 #include "PCSSutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 
 class ShadowmapPass{
 public:

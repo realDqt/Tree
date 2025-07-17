@@ -4,7 +4,7 @@
 
 #ifndef VKRENDERINGENGINE_BASEAPPLICATION_H
 #define VKRENDERINGENGINE_BASEAPPLICATION_H
-#include "../VulkanTools.h"
+#include "../EngineCore/VulkanTools.h"
 
 extern const std::vector<const char*> validationLayers;
 

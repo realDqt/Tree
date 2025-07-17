@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_SSRSHADOWMAPPASS_H
 #define VKRENDERINGENGINE_SSRSHADOWMAPPASS_H
 #include "SSRutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 
 class SSRShadowmapPass{
 public:

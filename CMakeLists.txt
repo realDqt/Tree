@@ -30,12 +30,12 @@ add_definitions(-DNOMINMAX)
 
 add_executable(vkRenderingEngine
         main.cpp
-        Vertex.h
+        EngineCore/Vertex.h
         camera.h
-        utils.h
-        utils.cpp
+        EngineCore/utils.h
+        EngineCore/utils.cpp
         PCSSApplication/PCSSApplication.h
-        Light.h
+        EngineCore/Light.h
         BaseApplication/BaseApplication.h
         BaseApplication/BaseApplication.cpp
         HelloBoxApplication/HelloBoxApplication.h
@@ -56,9 +56,9 @@ add_executable(vkRenderingEngine
         IBLApplication/CubemapPass.cpp
         IBLApplication/SkyboxPass.h
         IBLApplication/SkyboxPass.cpp
-        VulkanInitializers.hpp
-        VulkanTools.h
-        VulkanTools.cpp
+        EngineCore/VulkanInitializers.hpp
+        EngineCore/VulkanTools.h
+        EngineCore/VulkanTools.cpp
         IBLApplication/SpherePass.h
         IBLApplication/SpherePass.cpp
         IBLApplication/IrradianceMapPass.h
@@ -91,6 +91,10 @@ add_executable(vkRenderingEngine
         FFTBloomApplication/NativeBloomPass.cpp
         SSRApplication/SSRPass.h
         SSRApplication/SSRPass.cpp
+        EngineCore/RenderPass/RenderPass.h
+        EngineCore/RenderPass/RenderPass.cpp
+        EngineCore/RenderPass/PresentPass.h
+        EngineCore/RenderPass/PresentPass.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)

@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_SKYBOXPASS_H
 #define VKRENDERINGENGINE_SKYBOXPASS_H
 #include "IBLutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class SkyboxPass{
 public:
     struct UniformBufferObject{

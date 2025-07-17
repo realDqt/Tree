@@ -6,7 +6,7 @@
 #define VKRENDERINGENGINE_HELLOBOXAPPLICATION_H
 
 #include "../BaseApplication/BaseApplication.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #define TINYOBJLOADER_IMPLEMENTATION

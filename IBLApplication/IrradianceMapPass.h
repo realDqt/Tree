@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_IRRADIANCEMAPPASS_H
 #define VKRENDERINGENGINE_IRRADIANCEMAPPASS_H
 #include "IBLutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class IrradianceMapPass{
 public:
     struct UniformBufferObject{

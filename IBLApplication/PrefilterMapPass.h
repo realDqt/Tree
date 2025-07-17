@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_PREFILTERMAPPASS_H
 #define VKRENDERINGENGINE_PREFILTERMAPPASS_H
 #include "IBLutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class PrefilterMapPass{
 public:
     struct alignas(16) UniformBufferObject{

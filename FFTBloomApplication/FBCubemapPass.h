@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_CUBEMAPPASS_H
 #define VKRENDERINGENGINE_CUBEMAPPASS_H
 #include "FFTBloomUtils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class FBCubemapPass{
 public:
     struct UniformBufferObject{

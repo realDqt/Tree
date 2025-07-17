@@ -4,7 +4,7 @@
 
 #ifndef VKRENDERINGENGINE_FFTBLOOMUTILS_H
 #define VKRENDERINGENGINE_FFTBLOOMUTILS_H
-#include "../VulkanTools.h"
+#include "../EngineCore/VulkanTools.h"
 constexpr int FB_CUBEMAP_RESOLUTION = 1024;
 constexpr int R = 20;                // 滤波半径
 constexpr float emissity = 20.f;      // 发散程度

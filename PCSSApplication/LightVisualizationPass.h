@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_LIGHTVISUALIZATIONPASS_H
 #define VKRENDERINGENGINE_LIGHTVISUALIZATIONPASS_H
 #include "PCSSutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class LightVisualizationPass{
 public:
     struct alignas(16) UniformBufferObject{

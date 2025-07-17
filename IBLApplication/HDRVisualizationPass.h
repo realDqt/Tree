@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_HDRVISUALIZATIONPASS_H
 #define VKRENDERINGENGINE_HDRVISUALIZATIONPASS_H
 #include "IBLutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class HDRVisualizationPass{
 public:
     struct UniformBufferObject{

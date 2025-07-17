@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_SKYBOXPASS_H
 #define VKRENDERINGENGINE_SKYBOXPASS_H
 #include "FFTBloomUtils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class FBSkyboxPass{
 public:
     struct UniformBufferObject{

@@ -4,8 +4,8 @@
 
 #ifndef VKRENDERINGENGINE_PCSSUTILS_H
 #define VKRENDERINGENGINE_PCSSUTILS_H
-#include "../utils.h"
-#include "../Light.h"
+#include "../EngineCore/utils.h"
+#include "../EngineCore/Light.h"
 extern const std::string MARRY_PATH;
 extern const std::string FLOOR_PATH;
 extern const std::string TEXTURE_PATH;

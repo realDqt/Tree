@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_BLINPHONGPASS_H
 #define VKRENDERINGENGINE_BLINPHONGPASS_H
 #include "PCSSutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 
 class BlinPhongPass{
 public:

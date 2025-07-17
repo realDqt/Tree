@@ -4,8 +4,8 @@
 
 #ifndef VKRENDERINGENGINE_SSRUTILS_H
 #define VKRENDERINGENGINE_SSRUTILS_H
-#include "../utils.h"
-#include "../Light.h"
+#include "../EngineCore/utils.h"
+#include "../EngineCore/Light.h"
 extern const std::string CUBE_PATH;
 extern const std::string CUBE_TEXTURE_PATH;
 

@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_SSRPASS_H
 #define VKRENDERINGENGINE_SSRPASS_H
 #include "SSRutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 
 class SSRPass{
 public:

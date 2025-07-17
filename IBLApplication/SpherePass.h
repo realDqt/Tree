@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_SPHEREPASS_H
 #define VKRENDERINGENGINE_SPHEREPASS_H
 #include "IBLutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class SpherePass{
 public:
     struct alignas(16) UniformBufferObject{

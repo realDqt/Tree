@@ -5,7 +5,7 @@
 #ifndef VKRENDERINGENGINE_BRDFLUTPASS_H
 #define VKRENDERINGENGINE_BRDFLUTPASS_H
 #include "IBLutils.h"
-#include "../Vertex.h"
+#include "../EngineCore/Vertex.h"
 class BrdfLUTPass{
 public:
 
