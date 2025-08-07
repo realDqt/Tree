@@ -95,6 +95,10 @@ add_executable(vkRenderingEngine
         EngineCore/RenderPass/RenderPass.cpp
         EngineCore/RenderPass/PresentPass.h
         EngineCore/RenderPass/PresentPass.cpp
+        SSAOApplication/SSAOGBufferPass.cpp
+        SSAOApplication/SSAOGBufferPass.h
+        SSAOApplication/SSAOutils.h
+        SSAOApplication/SSAOutils.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)
