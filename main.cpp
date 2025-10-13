@@ -2,10 +2,11 @@
 //#include "HelloBoxApplication/HelloBoxApplication.h"
 //#include "IBLApplication/IBLApplication.h"
 //#include "FFTBloomApplication/FFTBloomApplication.h"
-#include "SSRApplication/SSRApplication.h"
+//#include "SSRApplication/SSRApplication.h"
+#include "SSAOApplication/SSAOApplication.h"
 
 int main() {
-    SSRApplication app{};
+    SSAOApplication app{};
     return app.execute();
 }
 

@@ -16,7 +16,7 @@ void GBufferPass::createRenderPass() {
     colorAttachment0.initialLayout = first ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     colorAttachment0.finalLayout =  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-    // gWorldPosition
+    // gViewPosition
     VkAttachmentDescription colorAttachment1{};
     colorAttachment1.format = gWorldPositionFormat;
     colorAttachment1.samples = VK_SAMPLE_COUNT_1_BIT;

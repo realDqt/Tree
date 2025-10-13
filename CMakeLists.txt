@@ -99,6 +99,7 @@ add_executable(vkRenderingEngine
         SSAOApplication/SSAOGBufferPass.h
         SSAOApplication/SSAOutils.h
         SSAOApplication/SSAOutils.cpp
+        SSAOApplication/SSAOApplication.h
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)

@@ -73,6 +73,7 @@ public:
     virtual void drawFrame();
     virtual int execute();
     virtual void prepareResources();
+    virtual void checkValid();
 
     void createInstance();
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);

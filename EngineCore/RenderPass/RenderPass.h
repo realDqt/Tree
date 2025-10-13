@@ -26,6 +26,13 @@ public:
 
     std::optional<uint32_t> currentFrame{std::nullopt};
 
+    std::vector<VkFramebuffer> framebuffers;
+
+    std::optional<VkImageView> depthImageView{std::nullopt};
+
+    std::optional<int> swapChainImageViewCount;
+    std::optional<VkExtent2D> swapChainExtent{std::nullopt};
+
     virtual void init() = 0;
 
     virtual void createRenderPass() = 0;
@@ -42,5 +49,6 @@ public:
     [[nodiscard]] VkShaderModule createShaderModule(const std::vector<char>& code)const;
 
     virtual void cleanup() = 0;
+
 };
 #endif //VKRENDERINGENGINE_RENDERPASS_H

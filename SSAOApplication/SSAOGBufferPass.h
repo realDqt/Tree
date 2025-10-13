@@ -15,6 +15,14 @@ public:
         glm::mat4 modelInvTrans;
     };
 
+    struct PushConstants{
+        alignas(4) bool isFloor;
+    };
+
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkDeviceMemory> uniformBuffersMemory;
+    std::vector<void*> uniformBuffersMapped;
+
     void init() override;
 
     void createRenderPass() override;
@@ -30,12 +38,17 @@ public:
 
     void cleanup() override;
 
-    VkImageView gAlbedoView;
-    VkImageView gWorldPositionView;
-    VkImageView gWorldNormalView;
-    VkImageView gDepthView;
+    void createUniformBuffers();
+    void updateUniformBuffer(uint32_t currentImage);
 
-    glm::mat4 model;
+    std::optional<VkImageView> gAlbedoView{std::nullopt};
+    std::optional<VkImageView> gViewPositionView{std::nullopt};
+    std::optional<VkImageView> gViewNormalView{std::nullopt};
+    std::optional<VkImageView> gDepthView{std::nullopt};
+
+    std::optional<glm::mat4> model{std::nullopt};
+
+    std::optional<bool> isFloor{std::nullopt};
 };
 
 

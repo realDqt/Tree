@@ -193,7 +193,7 @@ void SSRPass::createFramebuffers() {
 
     for (size_t i = 0; i < swapChainImageViews.size(); i++) {
         std::array<VkImageView, 2> attachments = {
-                swapChainImageViews[i],
+                swapChainImageViews[i], // on-screen or off-screen
                 depthImageView
         };
 

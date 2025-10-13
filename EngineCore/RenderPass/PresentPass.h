@@ -8,13 +8,9 @@
 
 class PresentPass : public RenderPass{
 public:
-    std::vector<VkFramebuffer> framebuffers;
 
     std::optional<std::vector<VkImageView>> swapChainImageViews{std::nullopt};
-    std::optional<VkExtent2D> swapChainExtent{std::nullopt};
-
     std::optional<VkFormat> swapChainImageFormat{std::nullopt};
-    std::optional<VkImageView> depthImageView{std::nullopt};
 
     bool IsValid() override;
 };

@@ -793,6 +793,8 @@ void BaseApplication::drawFrame() {}
 
 void BaseApplication::prepareResources() {}
 
+void BaseApplication::checkValid() {}
+
 void BaseApplication::cleanupSwapChain() {
     for (auto imageView : swapChainImageViews) {
         vkDestroyImageView(device, imageView, nullptr);
