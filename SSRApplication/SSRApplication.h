@@ -236,6 +236,7 @@ public:
         ssrPass[0].smSampler = shadowmapSampler;
 
         ssrPass[0].model = cubeModel;
+        ssrPass[0].currentFrame = currentFrame; // test
 
         ssrPass[1].device = device;
         ssrPass[1].physicalDevice = physicalDevice;
@@ -266,6 +267,7 @@ public:
         ssrPass[1].smSampler = shadowmapSampler;
 
         ssrPass[1].model = floorModel;
+        ssrPass[1].currentFrame = currentFrame; // test
 
 
     }

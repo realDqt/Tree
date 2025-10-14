@@ -1,7 +1,8 @@
 ﻿#version 450
 layout(location = 0) in vec2 TexCoords;
 
-layout(location = 0) out float FragColor;
+layout(location = 0) out float Occlusion;
+layout(location = 1) out vec4 OutColor;
 
 layout(binding = 0) uniform sampler2D gViewPositionSampler;
 layout(binding = 1) uniform sampler2D gDepthSampler;
@@ -43,16 +44,18 @@ void main()
         vec4 offset = vec4(samplePos, 1.0);
         offset = ubo.projection * offset; // from view to clip-space
         offset.xyz /= offset.w; // perspective divide
-        offset.xyz = offset.xyz * 0.5 + 0.5; // transform to range 0.0 - 1.0
+        offset.xy = offset.xy * 0.5 + 0.5; // transform to range 0.0 - 1.0
 
         // get sample depth
         float sampleDepth = -texture(gDepthSampler, offset.xy).r; // Get depth value of kernel sample
 
         // range check & accumulate
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(fragPos.z - sampleDepth ));
-        occlusion += (sampleDepth >= samplePos.z ? 1.0 : 0.0) * rangeCheck;
+        occlusion += (sampleDepth >= offset.z ? 1.0 : 0.0) * rangeCheck;
     }
     occlusion = 1.0 - (occlusion / kernelSize);
 
-    FragColor = occlusion;
+    Occlusion = occlusion;
+    OutColor = vec4(occlusion, occlusion, occlusion, 1.0);
+    OutColor = vec4(1.0);
 }

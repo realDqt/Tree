@@ -163,6 +163,11 @@ glm::vec2 aiVec2glmVec(const aiVector2D& rhs){
     return res;
 }
 
+float lerp(float a, float b, float k)
+{
+    return a + k * (b - a);
+}
+
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 

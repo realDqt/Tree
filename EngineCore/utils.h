@@ -28,6 +28,7 @@
 #include <optional>
 #include <set>
 #include <unordered_map>
+#include <random>
 
 #include "../camera.h"
 #include "../BaseApplication/BaseApplication.h"
@@ -48,6 +49,8 @@ void createBuffer(VkPhysicalDevice physicalDevice, VkDevice device, VkDeviceSize
 glm::mat4 aiMat2glmMat(const aiMatrix4x4& rhs);
 glm::vec3 aiVec2glmVec(const aiVector3D& rhs);
 glm::vec2 aiVec2glmVec(const aiVector2D& rhs);
+
+float lerp(float a, float b, float k);
 
 
 

@@ -23,4 +23,5 @@ extern const VkFormat gAlbedoFormatSSAO;
 extern const VkFormat gWorldPositionFormatSSAO;
 extern const VkFormat gWorldNormalFormatSSAO;
 extern const VkFormat gDepthFormatSSAO;
+extern const VkFormat occlusionFormat;
 #endif //VKRENDERINGENGINE_SSAOUTILS_H

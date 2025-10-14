@@ -1,70 +1,43 @@
 ﻿//
-// Created by Administrator on 2025/8/7.
+// Created by Administrator on 2025/10/14.
 //
+#include "SSAOPass.h"
 
-#include "SSAOGBufferPass.h"
-
-void SSAOGBufferPass::createRenderPass() {
-    static bool first = true;
-    // gAlbedo
+void SSAOPass::createRenderPass() {
+    // Occlusion
     VkAttachmentDescription colorAttachment0{};
-    colorAttachment0.format = gAlbedoFormatSSAO;
+    colorAttachment0.format = occlusionFormat;
     colorAttachment0.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment0.loadOp = first ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
+    colorAttachment0.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment0.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     colorAttachment0.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     colorAttachment0.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment0.initialLayout = first ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    colorAttachment0.finalLayout =  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    colorAttachment0.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    colorAttachment0.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-    // gViewPosition
+    // OutColor
     VkAttachmentDescription colorAttachment1{};
-    colorAttachment1.format = gWorldPositionFormatSSAO;
+    colorAttachment1.format = swapChainImageFormat.value();
     colorAttachment1.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment1.loadOp = first ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
-    colorAttachment1.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    colorAttachment1.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    colorAttachment1.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     colorAttachment1.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     colorAttachment1.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment1.initialLayout = first ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    colorAttachment1.finalLayout =  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-    // gWorldNormal
-    VkAttachmentDescription colorAttachment2{};
-    colorAttachment2.format = gWorldNormalFormatSSAO;
-    colorAttachment2.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment2.loadOp = first ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
-    colorAttachment2.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    colorAttachment2.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    colorAttachment2.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment2.initialLayout = first ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    colorAttachment2.finalLayout =  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-    // gDepth
-    VkAttachmentDescription colorAttachment3{};
-    colorAttachment3.format = gDepthFormatSSAO;
-    colorAttachment3.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment3.loadOp = first ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
-    colorAttachment3.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    colorAttachment3.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    colorAttachment3.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment3.initialLayout = first ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-    colorAttachment3.finalLayout =  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    colorAttachment1.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+    colorAttachment1.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
     VkAttachmentDescription depthAttachment{};
     depthAttachment.format = findDepthFormat(physicalDevice.value());
     depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    depthAttachment.loadOp = first ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
-    depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depthAttachment.initialLayout = first ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    first = false;
-
-
-    std::array<VkAttachmentReference, 4> colorAttachmentRefs{};
-    for(uint32_t i = 0; i < colorAttachmentRefs.size(); ++i){
+    std::array<VkAttachmentReference, 2> colorAttachmentRefs{};
+    for (uint32_t i = 0; i < colorAttachmentRefs.size(); ++i) {
         colorAttachmentRefs[i].attachment = i;
         colorAttachmentRefs[i].layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
     }
@@ -85,10 +58,11 @@ void SSAOGBufferPass::createRenderPass() {
     dependency.dstSubpass = 0;
     dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
     dependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-    dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    dependency.dstStageMask =
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
     dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-    std::array<VkAttachmentDescription, 5> attachments = {colorAttachment0, colorAttachment1, colorAttachment2, colorAttachment3, depthAttachment};
+    std::array<VkAttachmentDescription, 3> attachments = {colorAttachment0, colorAttachment1, depthAttachment};
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -101,11 +75,14 @@ void SSAOGBufferPass::createRenderPass() {
     if (vkCreateRenderPass(device.value(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
         throw std::runtime_error("failed to create render pass!");
     }
+
+
 }
 
-void SSAOGBufferPass::createGraphicsPipeline() {
-    auto vertShaderCode = readFile("../shaders/SSAO/gBufferSSAOVert.spv");
-    auto fragShaderCode = readFile("../shaders/SSAO/gBufferSSAOFrag.spv");
+
+void SSAOPass::createGraphicsPipeline() {
+    auto vertShaderCode = readFile("../shaders/SSAO/SSAOVert.spv");
+    auto fragShaderCode = readFile("../shaders/SSAO/SSAOFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -127,8 +104,8 @@ void SSAOGBufferPass::createGraphicsPipeline() {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-    auto bindingDescription = VertexMarry::getBindingDescription();
-    auto attributeDescriptions = VertexMarry::getAttributeDescriptions();
+    auto bindingDescription = VertexQuad::getBindingDescription();
+    auto attributeDescriptions = VertexQuad::getAttributeDescriptions();
 
     vertexInputInfo.vertexBindingDescriptionCount = 1;
     vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -171,7 +148,7 @@ void SSAOGBufferPass::createGraphicsPipeline() {
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
     colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_FALSE;
-    std::array<VkPipelineColorBlendAttachmentState, 4> colorBlendAttachments{colorBlendAttachment, colorBlendAttachment, colorBlendAttachment, colorBlendAttachment};
+    std::array<VkPipelineColorBlendAttachmentState, 2> colorBlendAttachments{colorBlendAttachment, colorBlendAttachment};
 
     VkPipelineColorBlendStateCreateInfo colorBlending{};
     colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
@@ -197,14 +174,6 @@ void SSAOGBufferPass::createGraphicsPipeline() {
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount = 1;
     pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
-
-    VkPushConstantRange pushConstantRange{};
-    pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(PushConstants);
-    pushConstantRange.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    pipelineLayoutInfo.pushConstantRangeCount = 1;
-    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
     if (vkCreatePipelineLayout(device.value(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
@@ -235,15 +204,13 @@ void SSAOGBufferPass::createGraphicsPipeline() {
     vkDestroyShaderModule(device.value(), vertShaderModule, nullptr);
 }
 
-void SSAOGBufferPass::createFramebuffers() {
+void SSAOPass::createFramebuffers() {
     framebuffers.resize(swapChainImageViewCount.value());
 
     for (size_t i = 0; i < swapChainImageViewCount.value(); i++) {
-        std::array<VkImageView, 5> attachments = {
-                gAlbedoView.value(),
-                gViewPositionView.value(),
-                gViewNormalView.value(),
-                gDepthView.value(),
+        std::array<VkImageView, 3> attachments = {
+                occlusionView.value(),
+                swapChainImageViews.value()[i],
                 depthImageView.value()
         };
 
@@ -262,7 +229,7 @@ void SSAOGBufferPass::createFramebuffers() {
     }
 }
 
-void SSAOGBufferPass::createUniformBuffers() {
+void SSAOPass::createUniformBuffers() {
     VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
     uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -276,16 +243,16 @@ void SSAOGBufferPass::createUniformBuffers() {
     }
 }
 
-bool SSAOGBufferPass::IsValid() {
-    if(!RenderPass::IsValid()) return false;
-
-    if(!gAlbedoView.has_value()){
-        std::cerr << "gAlbedoView is not initialized!" << std::endl;
-        return false;
-    }
+bool SSAOPass::IsValid() {
+    if(!PresentPass::IsValid()) return false;
 
     if(!gViewPositionView.has_value()){
         std::cerr << "gViewPositionView is not initialized!" << std::endl;
+        return false;
+    }
+
+    if(!gViewPositionSampler.has_value()){
+        std::cerr << "gViewPositionSampler is not initialized!" << std::endl;
         return false;
     }
 
@@ -294,28 +261,48 @@ bool SSAOGBufferPass::IsValid() {
         return false;
     }
 
+    if(!gViewNormalSampler.has_value()){
+        std::cerr << "gViewNormalSampler is not initialized!" << std::endl;
+        return false;
+    }
+
     if(!gDepthView.has_value()){
         std::cerr << "gDepthView is not initialized!" << std::endl;
         return false;
     }
 
-    if(!model.has_value()){
-        std::cerr << "model is not initialized!" << std::endl;
+    if(!gDepthSampler.has_value()){
+        std::cerr << "gDepthSampler is not initialized!" << std::endl;
         return false;
     }
 
-    if(!isFloor.has_value()){
-        std::cerr << "isFloor is not initialized!" << std::endl;
+    if(!texNoiseView.has_value()){
+        std::cerr << "texNoiseView is not initialized!" << std::endl;
         return false;
     }
+
+    if(!texNoiseSampler.has_value()){
+        std::cerr << "texNoiseSampler is not initialized!" << std::endl;
+        return false;
+    }
+
+    if(!occlusionView.has_value()){
+        std::cerr << "occlusionView is not initialized!" << std::endl;
+        return false;
+    }
+
 
     return true;
 }
 
-void SSAOGBufferPass::createDescriptorPool() {
-    std::array<VkDescriptorPoolSize, 1> poolSizes{};
+
+void SSAOPass::createDescriptorPool() {
+    std::array<VkDescriptorPoolSize, 2> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 4;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -328,7 +315,7 @@ void SSAOGBufferPass::createDescriptorPool() {
     }
 }
 
-void SSAOGBufferPass::createDescriptorSets() {
+void SSAOPass::createDescriptorSets() {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -347,32 +334,111 @@ void SSAOGBufferPass::createDescriptorSets() {
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
 
+        VkDescriptorImageInfo viewPositionImageInfo{};
+        viewPositionImageInfo.imageView = gViewPositionView.value();
+        viewPositionImageInfo.sampler = gViewPositionSampler.value();
+        viewPositionImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
+        VkDescriptorImageInfo depthImageInfo{};
+        depthImageInfo.imageView = gDepthView.value();
+        depthImageInfo.sampler = gDepthSampler.value();
+        depthImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
+        VkDescriptorImageInfo viewNormalImageInfo{};
+        viewNormalImageInfo.imageView = gViewNormalView.value();
+        viewNormalImageInfo.sampler = gViewNormalSampler.value();
+        viewNormalImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        VkDescriptorImageInfo texNoiseImageInfo{};
+        texNoiseImageInfo.imageView = texNoiseView.value();
+        texNoiseImageInfo.sampler = texNoiseSampler.value();
+        texNoiseImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        std::array<VkWriteDescriptorSet, 5> descriptorWrites{};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
         descriptorWrites[0].dstBinding = 0;
         descriptorWrites[0].dstArrayElement = 0;
-        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[0].descriptorCount = 1;
-        descriptorWrites[0].pBufferInfo = &bufferInfo;
+        descriptorWrites[0].pImageInfo = &viewPositionImageInfo;
+
+        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[1].dstSet = descriptorSets[i];
+        descriptorWrites[1].dstBinding = 1;
+        descriptorWrites[1].dstArrayElement = 0;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptorWrites[1].descriptorCount = 1;
+        descriptorWrites[1].pImageInfo = &depthImageInfo;
+
+        descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[2].dstSet = descriptorSets[i];
+        descriptorWrites[2].dstBinding = 2;
+        descriptorWrites[2].dstArrayElement = 0;
+        descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptorWrites[2].descriptorCount = 1;
+        descriptorWrites[2].pImageInfo = &viewNormalImageInfo;
+
+        descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[3].dstSet = descriptorSets[i];
+        descriptorWrites[3].dstBinding = 3;
+        descriptorWrites[3].dstArrayElement = 0;
+        descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptorWrites[3].descriptorCount = 1;
+        descriptorWrites[3].pImageInfo = &texNoiseImageInfo;
+
+        descriptorWrites[4].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[4].dstSet = descriptorSets[i];
+        descriptorWrites[4].dstBinding = 4;
+        descriptorWrites[4].dstArrayElement = 0;
+        descriptorWrites[4].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[4].descriptorCount = 1;
+        descriptorWrites[4].pBufferInfo = &bufferInfo;
 
         vkUpdateDescriptorSets(device.value(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
-void SSAOGBufferPass::createDescriptorSetLayout() {
+void SSAOPass::createDescriptorSetLayout() {
+
+    VkDescriptorSetLayoutBinding viewPositionLayoutBinding{};
+    viewPositionLayoutBinding.binding = 0;
+    viewPositionLayoutBinding.descriptorCount = 1;
+    viewPositionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    viewPositionLayoutBinding.pImmutableSamplers = nullptr;
+    viewPositionLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    VkDescriptorSetLayoutBinding depthLayoutBinding{};
+    depthLayoutBinding.binding = 1;
+    depthLayoutBinding.descriptorCount = 1;
+    depthLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    depthLayoutBinding.pImmutableSamplers = nullptr;
+    depthLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    VkDescriptorSetLayoutBinding viewNormalLayoutBinding{};
+    viewNormalLayoutBinding.binding = 2;
+    viewNormalLayoutBinding.descriptorCount = 1;
+    viewNormalLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    viewNormalLayoutBinding.pImmutableSamplers = nullptr;
+    viewNormalLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    VkDescriptorSetLayoutBinding texNoiseLayoutBinding{};
+    texNoiseLayoutBinding.binding = 3;
+    texNoiseLayoutBinding.descriptorCount = 1;
+    texNoiseLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    texNoiseLayoutBinding.pImmutableSamplers = nullptr;
+    texNoiseLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.binding = 4;
     uboLayoutBinding.descriptorCount = 1;
     uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     uboLayoutBinding.pImmutableSamplers = nullptr;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 
-    std::array<VkDescriptorSetLayoutBinding, 1> bindings = {uboLayoutBinding};
+    std::array<VkDescriptorSetLayoutBinding, 5> bindings = {viewPositionLayoutBinding, depthLayoutBinding, viewNormalLayoutBinding, texNoiseLayoutBinding, uboLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -383,21 +449,35 @@ void SSAOGBufferPass::createDescriptorSetLayout() {
     }
 }
 
-
-
-void SSAOGBufferPass::updateUniformBuffer(uint32_t currentImage) {
-    //std::cout << camera.Up.x << " " << camera.Up.y << " " << camera.Up.z << std::endl;
+void SSAOPass::updateUniformBuffer(uint32_t currentImage) {
+    // only updating on the first frame
+    static bool first = true;
+    if(!first)return;
+    first = false;
     UniformBufferObject ubo{};
-    ubo.model = model.value();
-    ubo.modelInvTrans = glm::transpose(glm::inverse(ubo.model));
-    ubo.view = camera.GetViewMatrix();
-    ubo.proj = glm::perspective(glm::radians(45.0f), (float) swapChainExtent.value().width / (float) swapChainExtent.value().height, 0.1f, 100.0f);
-    ubo.proj[1][1] *= -1;
+
+    ubo.projection = glm::perspective(glm::radians(45.0f), (float) swapChainExtent.value().width / (float) swapChainExtent.value().height, 0.1f, 100.0f);
+    ubo.projection[1][1] *= -1;
+
+    std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
+    std::default_random_engine generator;
+    for (GLuint i = 0; i < 64; ++i)
+    {
+        glm::vec4 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator), 0.0);
+        sample = glm::normalize(sample);
+        sample *= randomFloats(generator);
+        GLfloat scale = GLfloat(i) / 64.0;
+
+        // Scale samples s.t. they're more aligned to center of kernel
+        scale = lerp(0.1f, 1.0f, scale * scale);
+        sample *= scale;
+        ubo.samples[i] = sample;
+    }
 
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
 
-void SSAOGBufferPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+void SSAOPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -406,22 +486,16 @@ void SSAOGBufferPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = swapChainExtent.value();
 
-    std::array<VkClearValue, 5> clearValues{};
-    clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; // albedo
-    clearValues[1].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; // position
-    clearValues[2].color = {{0.0f, 0.0f, 0.0f, 0.0f}}; // normal
-    clearValues[3].color = {{1.0f}};                                // depth
-    clearValues[4].depthStencil = {1.0f, 0};
+    std::array<VkClearValue, 3> clearValues{};
+    clearValues[0].color = {{0.0f}}; // occlusion
+    clearValues[1].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+    clearValues[2].depthStencil = {1.0f, 0};
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
 
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
-    PushConstants constants{};
-    constants.isFloor = isFloor.value();
-    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &constants);
 
 
     VkViewport viewport{};
@@ -444,16 +518,15 @@ void SSAOGBufferPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer.value(), 0, VK_INDEX_TYPE_UINT32);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame.value()], 0, nullptr);
 
-    vkCmdDrawIndexed(commandBuffer, indicesCount.value(), 1, 0, 0, 0);
+    vkCmdDraw(commandBuffer, 4, 1, 0, 0);
 
     vkCmdEndRenderPass(commandBuffer);
 }
 
-void SSAOGBufferPass::cleanup() {
+void SSAOPass::cleanup() {
     vkDestroyPipeline(device.value(), graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device.value(), pipelineLayout, nullptr);
     vkDestroyRenderPass(device.value(), renderPass, nullptr);
@@ -468,7 +541,7 @@ void SSAOGBufferPass::cleanup() {
     vkDestroyDescriptorSetLayout(device.value(), descriptorSetLayout, nullptr);
 }
 
-void SSAOGBufferPass::init()
+void SSAOPass::init()
 {
     createRenderPass();
     createFramebuffers();
@@ -478,3 +551,4 @@ void SSAOGBufferPass::init()
     createUniformBuffers();
     createDescriptorSets();
 }
+

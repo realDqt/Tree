@@ -8,10 +8,12 @@
 #include "SSAOutils.h"
 #include <random>
 #include "SSAOGBufferPass.h"
+#include "SSAOPass.h"
 
 class SSAOApplication : public BaseApplication{
 public:
     SSAOGBufferPass gBufferPasses[2];
+    SSAOPass ssaoPass;
 
     // vb and ib for robot
     std::vector<VertexMarry> vertices;
@@ -30,6 +32,11 @@ public:
     VkBuffer indexBuffer2;
     VkDeviceMemory indexBufferMemory2;
     glm::mat4 floorModel;
+
+    // vb for full-quad screen
+    std::vector<VertexQuad> verticesQuad;
+    VkBuffer vertexBufferQuad;
+    VkDeviceMemory vertexBufferMemoryQuad;
 
 
     VkImage colorImage;
@@ -61,6 +68,10 @@ public:
     VkDeviceMemory gDepthMemory;
     VkImageView gDepthView;
 
+    VkImage occlusionImage;
+    VkDeviceMemory occlusionMemory;
+    VkImageView occlusionView;
+
     NoiseTexture noiseTexture;
 
     VkSampler gAlbedoSampler;
@@ -91,11 +102,43 @@ public:
         gBufferPasses[0].isFloor = false;
 
         gBufferPasses[0].currentFrame = currentFrame;
+
+        // SSAO Pass
+        ssaoPass.device = device;
+        ssaoPass.physicalDevice = physicalDevice;
+
+        ssaoPass.swapChainExtent = swapChainExtent;
+        ssaoPass.swapChainImageFormat = swapChainImageFormat;
+        ssaoPass.swapChainImageViews = swapChainImageViews;
+        ssaoPass.swapChainImageViewCount = swapChainImageViews.size();
+
+        ssaoPass.depthImageView = depthImageView;
+
+        ssaoPass.vertexBuffer = vertexBufferQuad;
+        ssaoPass.indexBuffer = VkBuffer{};
+        ssaoPass.indicesCount = 0;
+
+        ssaoPass.gViewPositionView = gViewPositionView;
+        ssaoPass.gViewPositionSampler = gViewPositionSampler;
+
+        ssaoPass.gViewNormalView = gViewNormalView;
+        ssaoPass.gViewNormalSampler = gViewNormalSampler;
+
+        ssaoPass.gDepthView = gDepthView;
+        ssaoPass.gDepthSampler = gDepthSampler;
+
+        ssaoPass.texNoiseView = noiseTexture.view;
+        ssaoPass.texNoiseSampler = noiseTexture.sampler;
+
+        ssaoPass.occlusionView = occlusionView;
+
+        ssaoPass.currentFrame = currentFrame;
     }
 
     void checkValid() override
     {
         assert(gBufferPasses[0].IsValid());
+        assert(ssaoPass.IsValid());
     }
 
     void initVulkan() override{
@@ -104,6 +147,7 @@ public:
         createColorResources();
         createDepthResources();
         createGBufferResources();
+        createOcclusionResources();
 
 
         createGSampler(gAlbedoSampler);
@@ -121,6 +165,7 @@ public:
         prepareResources();
         gBufferPasses[0].init();
         //gBufferPasses[1].init();
+        ssaoPass.init();
 
         checkValid();
     }
@@ -147,6 +192,9 @@ public:
            //vkDestroyFramebuffer(device, framebuffer, nullptr);
         //}
 
+        for(auto& framebuffer :ssaoPass.framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
 
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device, imageView, nullptr);
@@ -160,6 +208,7 @@ public:
 
         gBufferPasses[0].cleanup();
         //gBufferPasses[1].cleanup();
+        ssaoPass.cleanup();
 
         DestroyNoiseTexture();
 
@@ -183,6 +232,10 @@ public:
         vkDestroyImage(device, gDepth, nullptr);
         vkDestroySampler(device, gDepthSampler, nullptr);
 
+        vkDestroyImageView(device, occlusionView, nullptr);
+        vkFreeMemory(device, occlusionMemory, nullptr);
+        vkDestroyImage(device, occlusionImage, nullptr);
+
 
         vkDestroyBuffer(device, vertexBuffer, nullptr);
         vkFreeMemory(device, vertexBufferMemory, nullptr);
@@ -195,6 +248,9 @@ public:
 
         vkDestroyBuffer(device, indexBuffer2, nullptr);
         vkFreeMemory(device, indexBufferMemory2, nullptr);
+
+        vkDestroyBuffer(device, vertexBufferQuad, nullptr);
+        vkFreeMemory(device, vertexBufferMemoryQuad, nullptr);
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -221,10 +277,56 @@ public:
 
     void createVertexBuffer(){
         createRobotVertexBuffer();
+        createQuadVertexBuffer();
     }
 
     void createIndexBuffer(){
         createRobotIndexBuffer();
+    }
+
+    void createQuadVertexBuffer(){
+        VkDeviceSize bufferSize = sizeof(verticesQuad[0]) * verticesQuad.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, verticesQuad.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBufferQuad, vertexBufferMemoryQuad);
+
+        copyBuffer(stagingBuffer, vertexBufferQuad, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void loadQuadModel(){
+        float positions[] = {
+                -1.f, 1.f, 0.f,
+                -1.f, -1.f, 0.f,
+                1.f, 1.f, 0.f,
+                1.f, -1.f, 0.f
+        };
+
+        float texCoords[] = {
+                0.f, 1.f,
+                0.f, 0.f,
+                1.f, 1.f,
+                1.f, 0.f
+        };
+
+        verticesQuad.clear();
+        for(uint32_t i = 0; i < 4; ++i){
+            VertexQuad vertexQuad{};
+            vertexQuad.pos = glm::vec3(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+            vertexQuad.texCoord = glm::vec2(texCoords[i * 2], texCoords[i * 2 + 1]);
+
+            verticesQuad.push_back(vertexQuad);
+        }
     }
 
     void createRobotVertexBuffer(){
@@ -358,6 +460,7 @@ public:
 
     void loadModel(){
         loadRobot();
+        loadQuadModel();
     }
 
     void createColorResources() {
@@ -381,6 +484,11 @@ public:
         gDepthView = createImageView(gDepth, gDepthFormatSSAO, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
+    void createOcclusionResources(){
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gDepthFormatSSAO, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, occlusionImage, occlusionMemory);
+        occlusionView = createImageView(occlusionImage, occlusionFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+    }
+
     void createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
 
@@ -399,7 +507,7 @@ public:
         gBufferPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         //gBufferPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
-
+        ssaoPass.recordCommandBuffer(commandBuffer, imageIndex);
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
