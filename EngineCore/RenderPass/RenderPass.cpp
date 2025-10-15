@@ -46,6 +46,10 @@ bool RenderPass::IsValid() {
         std::cerr << "swapChainExtent is not initialized" << std::endl;
         return false;
     }
+    if(!swapChainImageViewCount.has_value()){
+        std::cerr << "swapChainImageViewCount is not initialized" << std::endl;
+        return false;
+    }
     if(!depthImageView.has_value()){
         std::cerr << "depthImageView is not initialized" << std::endl;
         return false;

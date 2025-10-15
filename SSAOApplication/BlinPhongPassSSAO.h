@@ -6,7 +6,7 @@
 #define VKRENDERINGENGINE_BLINPHONGPASSSSAO_H
 #include "SSAOutils.h"
 
-class BlinPhongPassSSAO{
+class BlinPhongPassSSAO : public PresentPass{
 public:
     struct alignas(16) UniformBufferObject{
         glm::mat4 model;
@@ -21,25 +21,7 @@ public:
         alignas(16) glm::vec3 lightRadiance;
     };
 
-    /*
-    * device, physicalDevice
-    * depthImageView
-    * vertexBuffe, indexBuffer, indicesCount
-    * currentFrame, swapChainImageViews, swapChainExtent, swapChainImageFormat
-    * model
-    */
 
-    VkDevice device;
-    VkPhysicalDevice physicalDevice;
-
-    VkRenderPass renderPass;
-
-    VkDescriptorSetLayout descriptorSetLayout;
-    VkDescriptorPool descriptorPool;
-    std::vector<VkDescriptorSet> descriptorSets;
-
-    VkPipelineLayout pipelineLayout;
-    VkPipeline graphicsPipeline;
 
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
@@ -49,38 +31,25 @@ public:
     std::vector<VkDeviceMemory> uniformBuffersMemory2;
     std::vector<void*> uniformBuffersMapped2;
 
-    std::vector<VkFramebuffer> framebuffers;
-    std::vector<VkImageView> swapChainImageViews;
-    VkExtent2D swapChainExtent;
 
-    VkFormat swapChainImageFormat;
+    std::optional<glm::mat4> model;
 
-    VkImageView depthImageView;
+    void init() override;
 
-    VkBuffer vertexBuffer;
-    VkBuffer indexBuffer;
-    uint32_t indicesCount;
-
-    glm::mat4 model;
-    uint32_t currentFrame;
-
-    void init();
-
-    void createRenderPass();
-    void createFramebuffers();
-    void createGraphicsPipeline();
+    void createRenderPass() override;
+    void createFramebuffers() override;
+    void createGraphicsPipeline() override;
 
     void createUniformBuffers();
 
-    void createDescriptorSetLayout();
-    void createDescriptorPool();
-    void createDescriptorSets();
+    void createDescriptorSetLayout() override;
+    void createDescriptorPool() override;
+    void createDescriptorSets() override;
 
-    void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+    void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) override;
+    bool IsValid() override;
 
-    [[nodiscard]] VkShaderModule createShaderModule(const std::vector<char>& code)const;
-
-    void cleanup();
+    void cleanup() override;
 
     void updateUniformBuffer(uint32_t currentImage);
 

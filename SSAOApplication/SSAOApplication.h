@@ -188,6 +188,8 @@ public:
     {
         assert(gBufferPasses[0].IsValid());
         assert(ssaoPass.IsValid());
+        assert(blinPhongPasses[0].IsValid());
+        assert(blinPhongPasses[1].IsValid());
     }
 
     void initVulkan() override{
