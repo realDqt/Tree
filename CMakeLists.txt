@@ -70,8 +70,8 @@ add_executable(vkRenderingEngine
         SSRApplication/SSRApplication.h
         SSRApplication/SSRutils.h
         SSRApplication/SSRutils.cpp
-        SSRApplication/BlinnPhongPass.h
-        SSRApplication/BlinnPhongPass.cpp
+        SSRApplication/BlinPhongPassSSR.h
+        SSRApplication/BlinPhongPassSSR.cpp
         SSRApplication/SSRShadowmapPass.h
         SSRApplication/SSRShadowmapPass.cpp
         SSRApplication/GBufferPass.h
@@ -102,6 +102,8 @@ add_executable(vkRenderingEngine
         SSAOApplication/SSAOApplication.h
         SSAOApplication/SSAOPass.h
         SSAOApplication/SSAOPass.cpp
+        SSAOApplication/BlinPhongPassSSAO.h
+        SSAOApplication/BlinPhongPassSSAO.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)

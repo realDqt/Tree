@@ -7,13 +7,19 @@
 #include "../BaseApplication/BaseApplication.h"
 #include "SSAOutils.h"
 #include <random>
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
 #include "SSAOGBufferPass.h"
 #include "SSAOPass.h"
+#include "BlinPhongPassSSAO.h"
 
 class SSAOApplication : public BaseApplication{
 public:
     SSAOGBufferPass gBufferPasses[2];
     SSAOPass ssaoPass;
+    BlinPhongPassSSAO blinPhongPasses[2];
 
     // vb and ib for robot
     std::vector<VertexMarry> vertices;
@@ -47,6 +53,7 @@ public:
     VkDeviceMemory depthImageMemory;
     VkImageView depthImageView;
 
+    // not use?
     VkImage depthImage2;
     VkDeviceMemory depthImageMemory2;
     VkImageView depthImageView2;
@@ -133,6 +140,48 @@ public:
         ssaoPass.occlusionView = occlusionView;
 
         ssaoPass.currentFrame = currentFrame;
+
+        // blin-phong pass for testing
+        blinPhongPasses[0].device = device;
+        blinPhongPasses[0].physicalDevice = physicalDevice;
+
+        blinPhongPasses[0].depthImageView = depthImageView;
+
+        blinPhongPasses[0].vertexBuffer = vertexBuffer;
+        blinPhongPasses[0].indexBuffer = indexBuffer;
+        blinPhongPasses[0].indicesCount = indices.size();
+
+        blinPhongPasses[0].swapChainImageViews = swapChainImageViews;
+        blinPhongPasses[0].swapChainExtent = swapChainExtent;
+        blinPhongPasses[0].swapChainImageFormat = swapChainImageFormat;
+
+        blinPhongPasses[0].currentFrame = currentFrame;
+
+        robotModel = glm::mat4(1.0f);
+        robotModel = glm::translate(robotModel, glm::vec3(0.0f, 0.1f, 0.0));
+        robotModel = glm::rotate(robotModel, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+        robotModel = glm::scale(robotModel, glm::vec3(0.5f));
+        blinPhongPasses[0].model = robotModel;
+
+        blinPhongPasses[1].device = device;
+        blinPhongPasses[1].physicalDevice = physicalDevice;
+
+        blinPhongPasses[1].depthImageView = depthImageView;
+
+        blinPhongPasses[1].vertexBuffer = vertexBuffer2;
+        blinPhongPasses[1].indexBuffer = indexBuffer2;
+        blinPhongPasses[1].indicesCount = indices2.size();
+
+        blinPhongPasses[1].swapChainImageViews = swapChainImageViews;
+        blinPhongPasses[1].swapChainExtent = swapChainExtent;
+        blinPhongPasses[1].swapChainImageFormat = swapChainImageFormat;
+
+        blinPhongPasses[1].currentFrame = currentFrame;
+
+        floorModel = glm::mat4(1.0f);
+        floorModel = glm::translate(floorModel, glm::vec3(0.0, -1.0f, 0.0f));
+        floorModel = glm::scale(floorModel, glm::vec3(20.0f, 1.0f, 20.0f));
+        blinPhongPasses[1].model = floorModel;
     }
 
     void checkValid() override
@@ -166,7 +215,8 @@ public:
         gBufferPasses[0].init();
         //gBufferPasses[1].init();
         ssaoPass.init();
-
+        blinPhongPasses[0].init();
+        blinPhongPasses[1].init();
         checkValid();
     }
 
@@ -196,6 +246,14 @@ public:
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
+        for(auto& framebuffer :blinPhongPasses[0].framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
+        for(auto& framebuffer :blinPhongPasses[1].framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device, imageView, nullptr);
         }
@@ -209,6 +267,8 @@ public:
         gBufferPasses[0].cleanup();
         //gBufferPasses[1].cleanup();
         ssaoPass.cleanup();
+        blinPhongPasses[0].cleanup();
+        blinPhongPasses[1].cleanup();
 
         DestroyNoiseTexture();
 
@@ -277,11 +337,13 @@ public:
 
     void createVertexBuffer(){
         createRobotVertexBuffer();
+        createFloorVertexBuffer();
         createQuadVertexBuffer();
     }
 
     void createIndexBuffer(){
         createRobotIndexBuffer();
+        createFloorIndexBuffer();
     }
 
     void createQuadVertexBuffer(){
@@ -329,6 +391,114 @@ public:
         }
     }
 
+    void loadFloor(){
+        float verticesCube[] = {
+                // positions          // normals           // texture coords
+                // Back face
+                -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f, // 0
+                0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f, // 1
+                0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f, // 2
+                -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f, // 3
+                // Front face
+                -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 0.0f, // 4
+                0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 0.0f, // 5
+                0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  1.0f, 1.0f, // 6
+                -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,  0.0f, 1.0f, // 7
+                // Left face
+                -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f, // 8
+                -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f, // 9
+                -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f, // 10
+                -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f, // 11
+                // Right face
+                0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, // 12
+                0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, // 13
+                0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f, // 14
+                0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f, // 15
+                // Bottom face
+                -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f, // 16
+                0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f, // 17
+                0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f, // 18
+                -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f, // 19
+                // Top face
+                -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f, // 20
+                0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f, // 21
+                0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f, // 22
+                -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f  // 23
+        };
+
+        // Indices for the 12 triangles (2 per face)
+        uint32_t indicesCube[] = {
+                // Back face
+                0, 1, 2,  2, 3, 0,
+                // Front face
+                4, 5, 6,  6, 7, 4,
+                // Left face
+                8, 9, 10, 10, 11, 8,
+                // Right face (**** CORRECTED ****)
+                12, 15, 14, 12, 14, 13,
+                // Bottom face
+                16, 17, 18, 18, 19, 16,
+                // Top face (**** CORRECTED ****)
+                20, 23, 22, 22, 21, 20
+        };
+
+        // vertices2
+        vertices2.clear();
+        for(uint32_t i = 0; i < 24u; ++i){
+            VertexMarry vertex{};
+            vertex.pos = glm::vec3(verticesCube[i * 8], verticesCube[i * 8 + 1], verticesCube[i * 8 + 2]);
+            vertex.normal = glm::vec3(verticesCube[i * 8 + 3], verticesCube[i * 8 + 4], verticesCube[i * 8 + 5]);
+            vertex.texCoord = glm::vec2(verticesCube[i * 8 + 6], verticesCube[i * 8 + 7]);
+            vertices2.push_back(vertex);
+        }
+
+        // indices2
+        indices2.clear();
+        for(uint32_t i = 0; i < 36u; ++i){
+            indices2.push_back(indicesCube[i]);
+        }
+    }
+
+    void createFloorVertexBuffer(){
+        VkDeviceSize bufferSize = sizeof(vertices2[0]) * vertices2.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices2.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer2, vertexBufferMemory2);
+
+        copyBuffer(stagingBuffer, vertexBuffer2, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void createFloorIndexBuffer(){
+        VkDeviceSize bufferSize = sizeof(indices2[0]) * indices2.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, indices2.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, indexBuffer2, indexBufferMemory2);
+
+        copyBuffer(stagingBuffer, indexBuffer2, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
     void createRobotVertexBuffer(){
         VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
@@ -367,6 +537,56 @@ public:
 
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void loadMarry()
+    {
+        tinyobj::attrib_t attrib;
+        std::vector<tinyobj::shape_t> shapes;
+        std::vector<tinyobj::material_t> materials;
+        std::string warn, err;
+
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MARRY_SSAO_PATH.c_str())) {
+            throw std::runtime_error(warn + err);
+        }
+
+        std::unordered_map<VertexMarry, uint32_t> uniqueVertices{};
+
+        for (const auto& shape : shapes) {
+            for (const auto& index : shape.mesh.indices) {
+                VertexMarry vertex{};
+
+                vertex.pos = {
+                        attrib.vertices[3 * index.vertex_index + 0],
+                        attrib.vertices[3 * index.vertex_index + 1],
+                        attrib.vertices[3 * index.vertex_index + 2]
+                };
+
+                vertex.texCoord = {
+                        attrib.texcoords[2 * index.texcoord_index + 0],
+                        1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                };
+
+                vertex.normal = {
+                        attrib.normals[3 * index.normal_index + 0],
+                        attrib.normals[3 * index.normal_index + 1],
+                        attrib.normals[3 * index.normal_index + 2]
+                };
+
+                if (uniqueVertices.count(vertex) == 0) {
+                    uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
+                    vertices.push_back(vertex);
+                }
+
+                indices.push_back(uniqueVertices[vertex]);
+
+
+                /*
+                vertices.push_back(vertex);
+                indices.push_back(vertices.size() - 1);
+                 */
+            }
+        }
     }
 
     void loadRobot()
@@ -460,6 +680,8 @@ public:
 
     void loadModel(){
         loadRobot();
+        loadFloor();
+        //loadMarry();
         loadQuadModel();
     }
 
@@ -504,10 +726,12 @@ public:
             throw std::runtime_error("failed to begin recording command buffer!");
         }
 
-        gBufferPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
+        //gBufferPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         //gBufferPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
-        ssaoPass.recordCommandBuffer(commandBuffer, imageIndex);
+        //ssaoPass.recordCommandBuffer(commandBuffer, imageIndex);
+        blinPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
+        blinPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
@@ -579,8 +803,12 @@ public:
         }
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
         gBufferPasses[0].currentFrame = currentFrame;
         //gBufferPasses[1].currentFrame = currentFrame;
+        ssaoPass.currentFrame = currentFrame;
+        blinPhongPasses[0].currentFrame = currentFrame;
+        blinPhongPasses[1].currentFrame = currentFrame;
     }
 
     void createSSAOJitterNoiseTexture()

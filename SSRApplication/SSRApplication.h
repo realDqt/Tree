@@ -10,7 +10,7 @@
 #include <stb_image.h>
 
 #include "SSRutils.h"
-#include "BlinnPhongPass.h"
+#include "BlinPhongPassSSR.h"
 #include "SSRShadowmapPass.h"
 #include "GBufferPass.h"
 #include "SSRPass.h"
@@ -20,7 +20,7 @@ public:
     SSRShadowmapPass shadowmapPass;
     GBufferPass gBufferPasses[2];
     SSRPass ssrPass[2];
-    BlinnPhongPass blinnPhongPasses[2];
+    BlinPhongPassSSR blinnPhongPasses[2];
 
     // vb and ib for cube
     std::vector<VertexMarry> vertices;

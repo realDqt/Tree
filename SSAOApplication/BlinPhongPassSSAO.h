@@ -1,35 +1,31 @@
-//
-// Created by 22473 on 2025-03-05.
+﻿//
+// Created by Administrator on 2025/10/15.
 //
 
-#ifndef VKRENDERINGENGINE_BLINNPHONGPASS_H
-#define VKRENDERINGENGINE_BLINNPHONGPASS_H
-#include "SSRutils.h"
-#include "../EngineCore/Vertex.h"
+#ifndef VKRENDERINGENGINE_BLINPHONGPASSSSAO_H
+#define VKRENDERINGENGINE_BLINPHONGPASSSSAO_H
+#include "SSAOutils.h"
 
-class BlinnPhongPass{
+class BlinPhongPassSSAO{
 public:
     struct alignas(16) UniformBufferObject{
         glm::mat4 model;
         glm::mat4 view;
         glm::mat4 proj;
         glm::mat4 modelInvTrans;
-        glm::mat4 lightVP;
     };
 
     struct alignas(16) UniformBufferObject2{
         glm::vec3 cameraPos;
         alignas(16) glm::vec3 lightDir;
         alignas(16) glm::vec3 lightRadiance;
-        alignas(4) bool isFloor;
     };
 
     /*
     * device, physicalDevice
     * depthImageView
-    * vertexBufferCube, indexBufferCube, indicesCountCube
+    * vertexBuffe, indexBuffer, indicesCount
     * currentFrame, swapChainImageViews, swapChainExtent, swapChainImageFormat
-    * textureImageView, textureSampler
     * model
     */
 
@@ -65,15 +61,8 @@ public:
     VkBuffer indexBuffer;
     uint32_t indicesCount;
 
-    VkImageView textureImageView;
-    VkSampler textureSampler;
-
-    VkImageView shadowmapView;
-    VkSampler smSampler;
-
     glm::mat4 model;
     uint32_t currentFrame;
-    bool isFloor;
 
     void init();
 
@@ -96,4 +85,4 @@ public:
     void updateUniformBuffer(uint32_t currentImage);
 
 };
-#endif //VKRENDERINGENGINE_BLINNPHONGPASS_H
+#endif //VKRENDERINGENGINE_BLINPHONGPASSSSAO_H
