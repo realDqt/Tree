@@ -430,8 +430,8 @@ public:
 
         // Indices for the 12 triangles (2 per face)
         uint32_t indicesCube[] = {
-                // Back face
-                0, 1, 2,  2, 3, 0,
+                // Back face (**** CORRECTED ****)
+                0, 3, 2,  2, 1, 0,
                 // Front face
                 4, 5, 6,  6, 7, 4,
                 // Left face
