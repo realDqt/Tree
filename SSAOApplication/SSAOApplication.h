@@ -13,13 +13,15 @@
 
 #include "SSAOGBufferPass.h"
 #include "SSAOPass.h"
-#include "BlinPhongPassSSAO.h"
+#include "DeferredLightPass.h"
+#include "BlurPass.h"
 
 class SSAOApplication : public BaseApplication{
 public:
     SSAOGBufferPass gBufferPasses[2];
     SSAOPass ssaoPass;
-    BlinPhongPassSSAO blinPhongPasses[2];
+    BlurPass blurPass;
+    DeferredLightPass deferredLightPass;
 
     // vb and ib for robot
     std::vector<VertexMarry> vertices;
@@ -78,6 +80,12 @@ public:
     VkImage occlusionImage;
     VkDeviceMemory occlusionMemory;
     VkImageView occlusionView;
+    VkSampler occlusionSampler;
+
+    VkImage blurredOcclusionImage;
+    VkDeviceMemory blurredOcclusionMemory;
+    VkImageView blurredOcclusionView;
+    VkSampler blurredOcclusionSampler;
 
     NoiseTexture noiseTexture;
 
@@ -147,8 +155,7 @@ public:
         ssaoPass.physicalDevice = physicalDevice;
 
         ssaoPass.swapChainExtent = swapChainExtent;
-        ssaoPass.swapChainImageFormat = swapChainImageFormat;
-        ssaoPass.swapChainImageViews = swapChainImageViews;
+        ssaoPass.swapChainImageViewCount = swapChainImageViews.size();
 
         ssaoPass.depthImageView = depthImageView;
 
@@ -189,41 +196,51 @@ public:
         }
         ssaoPass.samples = samples;
 
+        // blurPass
+        blurPass.device = device;
+        blurPass.physicalDevice = physicalDevice;
+
+        blurPass.swapChainExtent = swapChainExtent;
+        blurPass.swapChainImageViewCount = swapChainImageViews.size();
+
+        blurPass.depthImageView = depthImageView;
+
+        blurPass.vertexBuffer = vertexBufferQuad;
+        blurPass.indexBuffer = VkBuffer{};
+        blurPass.indicesCount = 0;
+
+        blurPass.occlusionView = occlusionView;
+        blurPass.occlusionSampler = occlusionSampler;
+
+        blurPass.blurredOcclusionView = blurredOcclusionView;
+
+        blurPass.currentFrame = currentFrame;
+
 
         // blin-phong pass for testing
-        blinPhongPasses[0].device = device;
-        blinPhongPasses[0].physicalDevice = physicalDevice;
+        deferredLightPass.device = device;
+        deferredLightPass.physicalDevice = physicalDevice;
 
-        blinPhongPasses[0].depthImageView = depthImageView;
+        deferredLightPass.depthImageView = depthImageView;
 
-        blinPhongPasses[0].vertexBuffer = vertexBuffer;
-        blinPhongPasses[0].indexBuffer = indexBuffer;
-        blinPhongPasses[0].indicesCount = indices.size();
+        deferredLightPass.vertexBuffer = vertexBufferQuad;
+        deferredLightPass.indexBuffer = VkBuffer{};
+        deferredLightPass.indicesCount = 0;
 
-        blinPhongPasses[0].swapChainImageViews = swapChainImageViews;
-        blinPhongPasses[0].swapChainExtent = swapChainExtent;
-        blinPhongPasses[0].swapChainImageFormat = swapChainImageFormat;
+        deferredLightPass.swapChainImageViews = swapChainImageViews;
+        deferredLightPass.swapChainExtent = swapChainExtent;
+        deferredLightPass.swapChainImageFormat = swapChainImageFormat;
 
-        blinPhongPasses[0].currentFrame = currentFrame;
+        deferredLightPass.blurredOcclusionView = blurredOcclusionView;
+        deferredLightPass.blurredOcclusionSampler = blurredOcclusionSampler;
 
-        blinPhongPasses[0].model = robotModel;
+        deferredLightPass.gViewPositionView = gViewPositionView;
+        deferredLightPass.gViewPositionSampler = gViewPositionSampler;
 
-        blinPhongPasses[1].device = device;
-        blinPhongPasses[1].physicalDevice = physicalDevice;
+        deferredLightPass.gViewNormalView = gViewNormalView;
+        deferredLightPass.gViewNormalSampler = gViewNormalSampler;
 
-        blinPhongPasses[1].depthImageView = depthImageView;
-
-        blinPhongPasses[1].vertexBuffer = vertexBuffer2;
-        blinPhongPasses[1].indexBuffer = indexBuffer2;
-        blinPhongPasses[1].indicesCount = indices2.size();
-
-        blinPhongPasses[1].swapChainImageViews = swapChainImageViews;
-        blinPhongPasses[1].swapChainExtent = swapChainExtent;
-        blinPhongPasses[1].swapChainImageFormat = swapChainImageFormat;
-
-        blinPhongPasses[1].currentFrame = currentFrame;
-
-        blinPhongPasses[1].model = floorModel;
+        deferredLightPass.currentFrame = currentFrame;
     }
 
     void checkValid() override
@@ -231,8 +248,8 @@ public:
         assert(gBufferPasses[0].IsValid());
         assert(gBufferPasses[1].IsValid());
         assert(ssaoPass.IsValid());
-        assert(blinPhongPasses[0].IsValid());
-        assert(blinPhongPasses[1].IsValid());
+        assert(blurPass.IsValid());
+        assert(deferredLightPass.IsValid());
     }
 
     void initVulkan() override{
@@ -248,6 +265,8 @@ public:
         createGSampler(gViewPositionSampler);
         createGSampler(gViewNormalSampler);
         createGSampler(gDepthSampler);
+        createGSampler(occlusionSampler);
+        createGSampler(blurredOcclusionSampler);
 
 
         loadModel();
@@ -260,8 +279,8 @@ public:
         gBufferPasses[0].init();
         gBufferPasses[1].init();
         ssaoPass.init();
-        blinPhongPasses[0].init();
-        blinPhongPasses[1].init();
+        blurPass.init();
+        deferredLightPass.init();
         checkValid();
     }
 
@@ -291,13 +310,14 @@ public:
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
-        for(auto& framebuffer :blinPhongPasses[0].framebuffers){
+        for(auto& framebuffer :blurPass.framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
-        for(auto& framebuffer :blinPhongPasses[1].framebuffers){
+        for(auto& framebuffer :deferredLightPass.framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+
 
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device, imageView, nullptr);
@@ -312,8 +332,8 @@ public:
         gBufferPasses[0].cleanup();
         gBufferPasses[1].cleanup();
         ssaoPass.cleanup();
-        blinPhongPasses[0].cleanup();
-        blinPhongPasses[1].cleanup();
+        blurPass.cleanup();
+        deferredLightPass.cleanup();
 
         DestroyNoiseTexture();
 
@@ -340,6 +360,12 @@ public:
         vkDestroyImageView(device, occlusionView, nullptr);
         vkFreeMemory(device, occlusionMemory, nullptr);
         vkDestroyImage(device, occlusionImage, nullptr);
+        vkDestroySampler(device, occlusionSampler, nullptr);
+
+        vkDestroyImageView(device, blurredOcclusionView, nullptr);
+        vkFreeMemory(device, blurredOcclusionMemory, nullptr);
+        vkDestroyImage(device, blurredOcclusionImage, nullptr);
+        vkDestroySampler(device, blurredOcclusionSampler, nullptr);
 
 
         vkDestroyBuffer(device, vertexBuffer, nullptr);
@@ -754,6 +780,9 @@ public:
     void createOcclusionResources(){
         createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gDepthFormatSSAO, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, occlusionImage, occlusionMemory);
         occlusionView = createImageView(occlusionImage, occlusionFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gDepthFormatSSAO, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,  blurredOcclusionImage, blurredOcclusionMemory);
+        blurredOcclusionView = createImageView(blurredOcclusionImage, occlusionFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
     void createDepthResources() {
@@ -775,8 +804,8 @@ public:
         gBufferPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
         ssaoPass.recordCommandBuffer(commandBuffer, imageIndex);
-        //blinPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
-        //blinPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
+        blurPass.recordCommandBuffer(commandBuffer, imageIndex);
+        deferredLightPass.recordCommandBuffer(commandBuffer, imageIndex);
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
@@ -852,8 +881,8 @@ public:
         gBufferPasses[0].currentFrame = currentFrame;
         gBufferPasses[1].currentFrame = currentFrame;
         ssaoPass.currentFrame = currentFrame;
-        blinPhongPasses[0].currentFrame = currentFrame;
-        blinPhongPasses[1].currentFrame = currentFrame;
+        blurPass.currentFrame = currentFrame;
+        deferredLightPass.currentFrame = currentFrame;
     }
 
     void createSSAOJitterNoiseTexture()

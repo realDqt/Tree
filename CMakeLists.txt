@@ -102,8 +102,10 @@ add_executable(vkRenderingEngine
         SSAOApplication/SSAOApplication.h
         SSAOApplication/SSAOPass.h
         SSAOApplication/SSAOPass.cpp
-        SSAOApplication/BlinPhongPassSSAO.h
-        SSAOApplication/BlinPhongPassSSAO.cpp
+        SSAOApplication/DeferredLightPass.h
+        SSAOApplication/DeferredLightPass.cpp
+        SSAOApplication/BlurPass.h
+        SSAOApplication/BlurPass.cpp
 )
 
 target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)

@@ -1,9 +1,9 @@
 ﻿//
-// Created by Administrator on 2025/10/14.
+// Created by Administrator on 2025/10/17.
 //
-#include "SSAOPass.h"
+#include "BlurPass.h"
 
-void SSAOPass::createRenderPass() {
+void BlurPass::createRenderPass() {
     // Occlusion
     VkAttachmentDescription colorAttachment0{};
     colorAttachment0.format = occlusionFormat;
@@ -69,9 +69,9 @@ void SSAOPass::createRenderPass() {
 }
 
 
-void SSAOPass::createGraphicsPipeline() {
-    auto vertShaderCode = readFile("../shaders/SSAO/ssaoVert.spv");
-    auto fragShaderCode = readFile("../shaders/SSAO/ssaoFrag.spv");
+void BlurPass::createGraphicsPipeline() {
+    auto vertShaderCode = readFile("../shaders/SSAO/blurVert.spv");
+    auto fragShaderCode = readFile("../shaders/SSAO/blurFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -193,12 +193,12 @@ void SSAOPass::createGraphicsPipeline() {
     vkDestroyShaderModule(device.value(), vertShaderModule, nullptr);
 }
 
-void SSAOPass::createFramebuffers() {
+void BlurPass::createFramebuffers() {
     framebuffers.resize(swapChainImageViewCount.value());
 
     for (size_t i = 0; i < swapChainImageViewCount.value(); i++) {
         std::array<VkImageView, 2> attachments = {
-                occlusionView.value(),
+                blurredOcclusionView.value(),
                 depthImageView.value()
         };
 
@@ -217,85 +217,34 @@ void SSAOPass::createFramebuffers() {
     }
 }
 
-void SSAOPass::createUniformBuffers() {
-    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
-
-    uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        createBuffer(physicalDevice.value(), device.value(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
-
-        vkMapMemory(device.value(), uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
-    }
-}
-
-bool SSAOPass::IsValid() {
+bool BlurPass::IsValid() {
     if(!RenderPass::IsValid()) return false;
 
-    if(!gViewPositionView.has_value()){
-        std::cerr << "gViewPositionView is not initialized!" << std::endl;
-        return false;
-    }
 
-    if(!gViewPositionSampler.has_value()){
-        std::cerr << "gViewPositionSampler is not initialized!" << std::endl;
-        return false;
-    }
-
-    if(!gViewNormalView.has_value()){
-        std::cerr << "gViewNormalView is not initialized!" << std::endl;
-        return false;
-    }
-
-    if(!gViewNormalSampler.has_value()){
-        std::cerr << "gViewNormalSampler is not initialized!" << std::endl;
-        return false;
-    }
-
-    if(!gDepthView.has_value()){
-        std::cerr << "gDepthView is not initialized!" << std::endl;
-        return false;
-    }
-
-    if(!gDepthSampler.has_value()){
-        std::cerr << "gDepthSampler is not initialized!" << std::endl;
-        return false;
-    }
-
-    if(!texNoiseView.has_value()){
-        std::cerr << "texNoiseView is not initialized!" << std::endl;
-        return false;
-    }
-
-    if(!texNoiseSampler.has_value()){
-        std::cerr << "texNoiseSampler is not initialized!" << std::endl;
-        return false;
-    }
 
     if(!occlusionView.has_value()){
         std::cerr << "occlusionView is not initialized!" << std::endl;
         return false;
     }
-
-    if(!samples.has_value()){
-        std::cerr << "samples is not initialized!" << std::endl;
+    if(!occlusionSampler.has_value()){
+        std::cerr << "occlusionSampler is not initialized!" << std::endl;
         return false;
     }
+    if(!blurredOcclusionView.has_value()){
+        std::cerr << "blurredOcclusionView is not initialized!" << std::endl;
+        return false;
+    }
+
 
 
     return true;
 }
 
 
-void SSAOPass::createDescriptorPool() {
-    std::array<VkDescriptorPoolSize, 2> poolSizes{};
-    poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+void BlurPass::createDescriptorPool() {
+    std::array<VkDescriptorPoolSize, 1> poolSizes{};
+    poolSizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-
-    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 4;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -308,7 +257,7 @@ void SSAOPass::createDescriptorPool() {
     }
 }
 
-void SSAOPass::createDescriptorSets() {
+void BlurPass::createDescriptorSets() {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -322,116 +271,35 @@ void SSAOPass::createDescriptorSets() {
     }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = uniformBuffers[i];
-        bufferInfo.offset = 0;
-        bufferInfo.range = sizeof(UniformBufferObject);
 
-        VkDescriptorImageInfo viewPositionImageInfo{};
-        viewPositionImageInfo.imageView = gViewPositionView.value();
-        viewPositionImageInfo.sampler = gViewPositionSampler.value();
-        viewPositionImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        VkDescriptorImageInfo occlusionImageInfo{};
+        occlusionImageInfo.imageView = occlusionView.value();
+        occlusionImageInfo.sampler = occlusionSampler.value();
+        occlusionImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
-        VkDescriptorImageInfo depthImageInfo{};
-        depthImageInfo.imageView = gDepthView.value();
-        depthImageInfo.sampler = gDepthSampler.value();
-        depthImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-        VkDescriptorImageInfo viewNormalImageInfo{};
-        viewNormalImageInfo.imageView = gViewNormalView.value();
-        viewNormalImageInfo.sampler = gViewNormalSampler.value();
-        viewNormalImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-        VkDescriptorImageInfo texNoiseImageInfo{};
-        texNoiseImageInfo.imageView = texNoiseView.value();
-        texNoiseImageInfo.sampler = texNoiseSampler.value();
-        texNoiseImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-
-        std::array<VkWriteDescriptorSet, 5> descriptorWrites{};
-
+        std::array<VkWriteDescriptorSet, 1> descriptorWrites{};
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
         descriptorWrites[0].dstBinding = 0;
         descriptorWrites[0].dstArrayElement = 0;
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[0].descriptorCount = 1;
-        descriptorWrites[0].pImageInfo = &viewPositionImageInfo;
-
-        descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[1].dstSet = descriptorSets[i];
-        descriptorWrites[1].dstBinding = 1;
-        descriptorWrites[1].dstArrayElement = 0;
-        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        descriptorWrites[1].descriptorCount = 1;
-        descriptorWrites[1].pImageInfo = &depthImageInfo;
-
-        descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[2].dstSet = descriptorSets[i];
-        descriptorWrites[2].dstBinding = 2;
-        descriptorWrites[2].dstArrayElement = 0;
-        descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        descriptorWrites[2].descriptorCount = 1;
-        descriptorWrites[2].pImageInfo = &viewNormalImageInfo;
-
-        descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[3].dstSet = descriptorSets[i];
-        descriptorWrites[3].dstBinding = 3;
-        descriptorWrites[3].dstArrayElement = 0;
-        descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        descriptorWrites[3].descriptorCount = 1;
-        descriptorWrites[3].pImageInfo = &texNoiseImageInfo;
-
-        descriptorWrites[4].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[4].dstSet = descriptorSets[i];
-        descriptorWrites[4].dstBinding = 4;
-        descriptorWrites[4].dstArrayElement = 0;
-        descriptorWrites[4].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-        descriptorWrites[4].descriptorCount = 1;
-        descriptorWrites[4].pBufferInfo = &bufferInfo;
+        descriptorWrites[0].pImageInfo = &occlusionImageInfo;
 
         vkUpdateDescriptorSets(device.value(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
-void SSAOPass::createDescriptorSetLayout() {
-
-    VkDescriptorSetLayoutBinding viewPositionLayoutBinding{};
-    viewPositionLayoutBinding.binding = 0;
-    viewPositionLayoutBinding.descriptorCount = 1;
-    viewPositionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    viewPositionLayoutBinding.pImmutableSamplers = nullptr;
-    viewPositionLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutBinding depthLayoutBinding{};
-    depthLayoutBinding.binding = 1;
-    depthLayoutBinding.descriptorCount = 1;
-    depthLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    depthLayoutBinding.pImmutableSamplers = nullptr;
-    depthLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutBinding viewNormalLayoutBinding{};
-    viewNormalLayoutBinding.binding = 2;
-    viewNormalLayoutBinding.descriptorCount = 1;
-    viewNormalLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    viewNormalLayoutBinding.pImmutableSamplers = nullptr;
-    viewNormalLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutBinding texNoiseLayoutBinding{};
-    texNoiseLayoutBinding.binding = 3;
-    texNoiseLayoutBinding.descriptorCount = 1;
-    texNoiseLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    texNoiseLayoutBinding.pImmutableSamplers = nullptr;
-    texNoiseLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-
-    VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.binding = 4;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.pImmutableSamplers = nullptr;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+void BlurPass::createDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding occlusionLayoutBinding{};
+    occlusionLayoutBinding.binding = 0;
+    occlusionLayoutBinding.descriptorCount = 1;
+    occlusionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    occlusionLayoutBinding.pImmutableSamplers = nullptr;
+    occlusionLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 
-    std::array<VkDescriptorSetLayoutBinding, 5> bindings = {viewPositionLayoutBinding, depthLayoutBinding, viewNormalLayoutBinding, texNoiseLayoutBinding, uboLayoutBinding};
+    std::array<VkDescriptorSetLayoutBinding, 1> bindings = {occlusionLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -442,21 +310,8 @@ void SSAOPass::createDescriptorSetLayout() {
     }
 }
 
-void SSAOPass::updateUniformBuffer(uint32_t currentImage) {
-    // only updating on the first frame
-    UniformBufferObject ubo{};
 
-    ubo.projection = glm::perspective(glm::radians(45.0f), (float) swapChainExtent.value().width / (float) swapChainExtent.value().height, 0.1f, 100.0f);
-    ubo.projection[1][1] *= -1;
-
-    for(uint32_t i = 0; i < 64; ++i){
-        ubo.samples[i] = samples.value()[i];
-    }
-
-    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
-}
-
-void SSAOPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+void BlurPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -466,7 +321,7 @@ void SSAOPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
     renderPassInfo.renderArea.extent = swapChainExtent.value();
 
     std::array<VkClearValue, 2> clearValues{};
-    clearValues[0].color = {{0.0f}}; // occlusion
+    clearValues[0].color = {{1.0f}}; // occlusion
     clearValues[1].depthStencil = {1.0f, 0};
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
@@ -490,7 +345,6 @@ void SSAOPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
     scissor.extent = swapChainExtent.value();
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    updateUniformBuffer(currentFrame.value());
 
     VkBuffer vertexBuffers[] = {vertexBuffer.value()};
     VkDeviceSize offsets[] = {0};
@@ -504,29 +358,23 @@ void SSAOPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
     vkCmdEndRenderPass(commandBuffer);
 }
 
-void SSAOPass::cleanup() {
+void BlurPass::cleanup() {
     vkDestroyPipeline(device.value(), graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device.value(), pipelineLayout, nullptr);
     vkDestroyRenderPass(device.value(), renderPass, nullptr);
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroyBuffer(device.value(), uniformBuffers[i], nullptr);
-        vkFreeMemory(device.value(), uniformBuffersMemory[i], nullptr);
-    }
 
 
     vkDestroyDescriptorPool(device.value(), descriptorPool, nullptr);
     vkDestroyDescriptorSetLayout(device.value(), descriptorSetLayout, nullptr);
 }
 
-void SSAOPass::init()
+void BlurPass::init()
 {
     createRenderPass();
     createFramebuffers();
     createDescriptorSetLayout();
     createGraphicsPipeline();
     createDescriptorPool();
-    createUniformBuffers();
     createDescriptorSets();
 }
 

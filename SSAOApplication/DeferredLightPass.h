@@ -2,22 +2,15 @@
 // Created by Administrator on 2025/10/15.
 //
 
-#ifndef VKRENDERINGENGINE_BLINPHONGPASSSSAO_H
-#define VKRENDERINGENGINE_BLINPHONGPASSSSAO_H
+#ifndef VKRENDERINGENGINE_DEFERREDLIGHTPASS_H
+#define VKRENDERINGENGINE_DEFERREDLIGHTPASS_H
 #include "SSAOutils.h"
 
-class BlinPhongPassSSAO : public PresentPass{
+class DeferredLightPass : public PresentPass{
 public:
     struct alignas(16) UniformBufferObject{
-        glm::mat4 model;
-        glm::mat4 view;
-        glm::mat4 proj;
-        glm::mat4 modelInvTrans;
-    };
-
-    struct alignas(16) UniformBufferObject2{
         glm::vec3 cameraPos;
-        alignas(16) glm::vec3 lightDir;
+        alignas(16) glm::vec3 viewLightDir;
         alignas(16) glm::vec3 lightRadiance;
     };
 
@@ -27,12 +20,14 @@ public:
     std::vector<VkDeviceMemory> uniformBuffersMemory;
     std::vector<void*> uniformBuffersMapped;
 
-    std::vector<VkBuffer> uniformBuffers2;
-    std::vector<VkDeviceMemory> uniformBuffersMemory2;
-    std::vector<void*> uniformBuffersMapped2;
+    std::optional<VkImageView> gViewPositionView;
+    std::optional<VkSampler> gViewPositionSampler;
 
+    std::optional<VkImageView> gViewNormalView;
+    std::optional<VkSampler> gViewNormalSampler;
 
-    std::optional<glm::mat4> model;
+    std::optional<VkImageView> blurredOcclusionView;
+    std::optional<VkSampler> blurredOcclusionSampler;
 
     void init() override;
 
@@ -54,4 +49,4 @@ public:
     void updateUniformBuffer(uint32_t currentImage);
 
 };
-#endif //VKRENDERINGENGINE_BLINPHONGPASSSSAO_H
+#endif //VKRENDERINGENGINE_DEFERREDLIGHTPASS_H

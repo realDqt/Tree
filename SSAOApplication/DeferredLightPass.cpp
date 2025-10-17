@@ -1,31 +1,29 @@
 ﻿//
 // Created by Administrator on 2025/10/15.
 //
-#include "BlinPhongPassSSAO.h"
+#include "DeferredLightPass.h"
 
-void BlinPhongPassSSAO::createRenderPass() {
-    static bool first = true;
+void DeferredLightPass::createRenderPass() {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = swapChainImageFormat.value();
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment.loadOp = first ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
+    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment.initialLayout = first ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     colorAttachment.finalLayout =  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
     VkAttachmentDescription depthAttachment{};
     depthAttachment.format = findDepthFormat(physicalDevice.value());
     depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    depthAttachment.loadOp = first ? VK_ATTACHMENT_LOAD_OP_CLEAR : VK_ATTACHMENT_LOAD_OP_LOAD;
+    depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    depthAttachment.initialLayout = first ? VK_IMAGE_LAYOUT_UNDEFINED : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    first = false;
 
     VkAttachmentReference colorAttachmentRef{};
     colorAttachmentRef.attachment = 0;
@@ -65,9 +63,9 @@ void BlinPhongPassSSAO::createRenderPass() {
     }
 }
 
-void BlinPhongPassSSAO::createGraphicsPipeline() {
-    auto vertShaderCode = readFile("../shaders/SSAO/directLightVert.spv");
-    auto fragShaderCode = readFile("../shaders/SSAO/directLightFrag.spv");
+void DeferredLightPass::createGraphicsPipeline() {
+    auto vertShaderCode = readFile("../shaders/SSAO/deferredLightVert.spv");
+    auto fragShaderCode = readFile("../shaders/SSAO/deferredLightFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -99,7 +97,7 @@ void BlinPhongPassSSAO::createGraphicsPipeline() {
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     VkPipelineViewportStateCreateInfo viewportState{};
@@ -113,7 +111,7 @@ void BlinPhongPassSSAO::createGraphicsPipeline() {
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+    rasterizer.cullMode = VK_CULL_MODE_NONE;
     rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -188,7 +186,7 @@ void BlinPhongPassSSAO::createGraphicsPipeline() {
     vkDestroyShaderModule(device.value(), vertShaderModule, nullptr);
 }
 
-void BlinPhongPassSSAO::createFramebuffers() {
+void DeferredLightPass::createFramebuffers() {
     framebuffers.resize(swapChainImageViews.value().size());
 
     for (size_t i = 0; i < swapChainImageViews.value().size(); i++) {
@@ -212,32 +210,28 @@ void BlinPhongPassSSAO::createFramebuffers() {
     }
 }
 
-void BlinPhongPassSSAO::createUniformBuffers() {
+void DeferredLightPass::createUniformBuffers() {
     VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
     uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
     uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-    VkDeviceSize bufferSize2 = sizeof(UniformBufferObject2);
-    uniformBuffers2.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffersMemory2.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffersMapped2.resize(MAX_FRAMES_IN_FLIGHT);
 
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         createBuffer(physicalDevice.value(), device.value(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
-        createBuffer(physicalDevice.value(), device.value(), bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers2[i], uniformBuffersMemory2[i]);
-
         vkMapMemory(device.value(), uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
-        vkMapMemory(device.value(), uniformBuffersMemory2[i], 0, bufferSize2, 0, &uniformBuffersMapped2[i]);
     }
 }
 
-void BlinPhongPassSSAO::createDescriptorPool() {
-    std::array<VkDescriptorPoolSize, 1> poolSizes{};
+void DeferredLightPass::createDescriptorPool() {
+    std::array<VkDescriptorPoolSize, 2> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 2;
+    poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 3;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -250,7 +244,7 @@ void BlinPhongPassSSAO::createDescriptorPool() {
     }
 }
 
-void BlinPhongPassSSAO::createDescriptorSets() {
+void DeferredLightPass::createDescriptorSets() {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -264,62 +258,94 @@ void BlinPhongPassSSAO::createDescriptorSets() {
     }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+
+        VkDescriptorImageInfo blurredOcclusionImageInfo{};
+        blurredOcclusionImageInfo.sampler = blurredOcclusionSampler.value();
+        blurredOcclusionImageInfo.imageView = blurredOcclusionView.value();
+        blurredOcclusionImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        VkDescriptorImageInfo viewPositionImageInfo{};
+        viewPositionImageInfo.sampler = gViewPositionSampler.value();
+        viewPositionImageInfo.imageView = gViewPositionView.value();
+        viewPositionImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+        VkDescriptorImageInfo viewNormalImageInfo{};
+        viewNormalImageInfo.sampler = gViewNormalSampler.value();
+        viewNormalImageInfo.imageView = gViewNormalView.value();
+        viewNormalImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = uniformBuffers[i];
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
 
 
-        VkDescriptorBufferInfo bufferInfo2{};
-        bufferInfo2.buffer = uniformBuffers2[i];
-        bufferInfo2.offset = 0;
-        bufferInfo2.range = sizeof(UniformBufferObject2);
-
-
-        std::array<VkWriteDescriptorSet, 2> descriptorWrites{};
-
+        std::array<VkWriteDescriptorSet, 4> descriptorWrites{};
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
         descriptorWrites[0].dstBinding = 0;
         descriptorWrites[0].dstArrayElement = 0;
-        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[0].descriptorCount = 1;
-        descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-
+        descriptorWrites[0].pImageInfo = &viewPositionImageInfo;
 
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[1].dstSet = descriptorSets[i];
         descriptorWrites[1].dstBinding = 1;
         descriptorWrites[1].dstArrayElement = 0;
-        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[1].descriptorCount = 1;
-        descriptorWrites[1].pBufferInfo = &bufferInfo2;
+        descriptorWrites[1].pImageInfo = &viewNormalImageInfo;
+
+        descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[2].dstSet = descriptorSets[i];
+        descriptorWrites[2].dstBinding = 2;
+        descriptorWrites[2].dstArrayElement = 0;
+        descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptorWrites[2].descriptorCount = 1;
+        descriptorWrites[2].pImageInfo = &blurredOcclusionImageInfo;
+
+        descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[3].dstSet = descriptorSets[i];
+        descriptorWrites[3].dstBinding = 3;
+        descriptorWrites[3].dstArrayElement = 0;
+        descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[3].descriptorCount = 1;
+        descriptorWrites[3].pBufferInfo = &bufferInfo;
 
         vkUpdateDescriptorSets(device.value(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
-void BlinPhongPassSSAO::createDescriptorSetLayout() {
-    VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.binding = 0;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.pImmutableSamplers = nullptr;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+void DeferredLightPass::createDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding viewPositionLayoutBinding{};
+    viewPositionLayoutBinding.binding = 0;
+    viewPositionLayoutBinding.descriptorCount = 1;
+    viewPositionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    viewPositionLayoutBinding.pImmutableSamplers = nullptr;
+    viewPositionLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
+    VkDescriptorSetLayoutBinding viewNormalLayoutBinding{};
+    viewNormalLayoutBinding.binding = 1;
+    viewNormalLayoutBinding.descriptorCount = 1;
+    viewNormalLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    viewNormalLayoutBinding.pImmutableSamplers = nullptr;
+    viewNormalLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-
+    VkDescriptorSetLayoutBinding blurredOcclusionLayoutBinding{};
+    blurredOcclusionLayoutBinding.binding = 2;
+    blurredOcclusionLayoutBinding.descriptorCount = 1;
+    blurredOcclusionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    blurredOcclusionLayoutBinding.pImmutableSamplers = nullptr;
+    blurredOcclusionLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
     VkDescriptorSetLayoutBinding lightLayoutBinding{};
-    lightLayoutBinding.binding = 1;
+    lightLayoutBinding.binding = 3;
     lightLayoutBinding.descriptorCount = 1;
     lightLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     lightLayoutBinding.pImmutableSamplers = nullptr;
     lightLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-
-
-    std::array<VkDescriptorSetLayoutBinding, 2> bindings = {uboLayoutBinding, lightLayoutBinding};
+    std::array<VkDescriptorSetLayoutBinding, 4> bindings = {viewPositionLayoutBinding, viewNormalLayoutBinding, blurredOcclusionLayoutBinding, lightLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -331,37 +357,48 @@ void BlinPhongPassSSAO::createDescriptorSetLayout() {
 }
 
 
-void BlinPhongPassSSAO::updateUniformBuffer(uint32_t currentImage) {
-    //std::cout << camera.Up.x << " " << camera.Up.y << " " << camera.Up.z << std::endl;
-    UniformBufferObject ubo{};
-    ubo.model = model.value();
-    ubo.modelInvTrans = glm::transpose(glm::inverse(ubo.model));
-    ubo.view = camera.GetViewMatrix();
-    ubo.proj = glm::perspective(glm::radians(45.0f), (float) swapChainExtent.value().width / (float) swapChainExtent.value().height, 0.1f, 100.0f);
-    ubo.proj[1][1] *= -1;
-    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+void DeferredLightPass::updateUniformBuffer(uint32_t currentImage) {
 
-    UniformBufferObject2 ubo2{};
-    ubo2.cameraPos = camera.Position;
-    ubo2.lightDir = ssaoLight.lightDir;
-    ubo2.lightRadiance = ssaoLight.lightIntensity;
-    memcpy(uniformBuffersMapped2[currentImage], &ubo2, sizeof(ubo2));
+    UniformBufferObject ubo{};
+    ubo.cameraPos = camera.Position;
+    ubo.viewLightDir = camera.GetViewMatrix() * glm::vec4(ssaoLight.lightDir, 0.0);
+    ubo.lightRadiance = ssaoLight.lightIntensity;
+    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
 
-bool BlinPhongPassSSAO::IsValid() {
+bool DeferredLightPass::IsValid() {
     if(!PresentPass::IsValid()){
         return false;
     }
 
-    if(!model.has_value()){
-        std::cerr << "model is not initialized" << std::endl;
+    if(!gViewPositionView.has_value()){
+        std::cerr << "gViewPositionView is not initialized" << std::endl;
         return false;
     }
-
+    if(!gViewPositionSampler.has_value()){
+        std::cerr << "gViewPositionSampler is not initialized" << std::endl;
+        return false;
+    }
+    if(!gViewNormalView.has_value()){
+        std::cerr << "gViewNormalView is not initialized" << std::endl;
+        return false;
+    }
+    if(!gViewNormalSampler.has_value()){
+        std::cerr << "gViewNormalSampler is not initialized" << std::endl;
+        return false;
+    }
+    if(!blurredOcclusionView.has_value()){
+        std::cerr << "blurredOcclusionView is not initialized" << std::endl;
+        return false;
+    }
+    if(!blurredOcclusionSampler.has_value()){
+        std::cerr << "blurredOcclusionSampler is not initialized" << std::endl;
+        return false;
+    }
     return true;
 }
 
-void BlinPhongPassSSAO::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+void DeferredLightPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
 {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -401,16 +438,14 @@ void BlinPhongPassSSAO::recordCommandBuffer(VkCommandBuffer commandBuffer, uint3
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer.value(), 0, VK_INDEX_TYPE_UINT32);
-
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame.value()], 0, nullptr);
 
-    vkCmdDrawIndexed(commandBuffer, indicesCount.value(), 1, 0, 0, 0);
+    vkCmdDraw(commandBuffer, 4, 1, 0, 0);
 
     vkCmdEndRenderPass(commandBuffer);
 }
 
-void BlinPhongPassSSAO::cleanup() {
+void DeferredLightPass::cleanup() {
     vkDestroyPipeline(device.value(), graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device.value(), pipelineLayout, nullptr);
     vkDestroyRenderPass(device.value(), renderPass, nullptr);
@@ -418,9 +453,6 @@ void BlinPhongPassSSAO::cleanup() {
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroyBuffer(device.value(), uniformBuffers[i], nullptr);
         vkFreeMemory(device.value(), uniformBuffersMemory[i], nullptr);
-
-        vkDestroyBuffer(device.value(), uniformBuffers2[i], nullptr);
-        vkFreeMemory(device.value(), uniformBuffersMemory2[i], nullptr);
     }
 
 
@@ -428,7 +460,7 @@ void BlinPhongPassSSAO::cleanup() {
     vkDestroyDescriptorSetLayout(device.value(), descriptorSetLayout, nullptr);
 }
 
-void BlinPhongPassSSAO::init()
+void DeferredLightPass::init()
 {
     createRenderPass();
     createFramebuffers();

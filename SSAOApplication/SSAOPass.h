@@ -6,7 +6,7 @@
 #define VKRENDERINGENGINE_SSAOPASS_H
 #include "SSAOutils.h"
 
-class SSAOPass : public PresentPass{
+class SSAOPass : public RenderPass{
 public:
     struct UniformBufferObject {
         glm::mat4 projection;

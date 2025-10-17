@@ -2,7 +2,6 @@
 layout(location = 0) in vec2 TexCoords;
 
 layout(location = 0) out float Occlusion;
-layout(location = 1) out vec4 OutColor;
 
 layout(binding = 0) uniform sampler2D gViewPositionSampler;
 layout(binding = 1) uniform sampler2D gDepthSampler;
@@ -70,6 +69,4 @@ void main()
     occlusion = 1.0 - (occlusion / kernelSize);
 
     Occlusion = occlusion;
-    OutColor = vec4(occlusion, occlusion, occlusion, 1.0);
-    //OutColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
