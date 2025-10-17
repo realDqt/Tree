@@ -9,9 +9,10 @@
 class DeferredLightPass : public PresentPass{
 public:
     struct alignas(16) UniformBufferObject{
-        glm::vec3 cameraPos;
-        alignas(16) glm::vec3 viewLightDir;
+        glm::vec3 pointLightPos;
         alignas(16) glm::vec3 lightRadiance;
+        alignas(4) float linear;
+        alignas(4) float quadratic;
     };
 
 
@@ -19,6 +20,9 @@ public:
     std::vector<VkBuffer> uniformBuffers;
     std::vector<VkDeviceMemory> uniformBuffersMemory;
     std::vector<void*> uniformBuffersMapped;
+
+    std::optional<VkImageView> gAlbedoView;
+    std::optional<VkSampler> gAlbedoSampler;
 
     std::optional<VkImageView> gViewPositionView;
     std::optional<VkSampler> gViewPositionSampler;

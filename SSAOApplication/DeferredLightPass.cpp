@@ -87,8 +87,8 @@ void DeferredLightPass::createGraphicsPipeline() {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-    auto bindingDescription = VertexMarry::getBindingDescription();
-    auto attributeDescriptions = VertexMarry::getAttributeDescriptions();
+    auto bindingDescription = VertexQuad::getBindingDescription();
+    auto attributeDescriptions = VertexQuad::getAttributeDescriptions();
 
     vertexInputInfo.vertexBindingDescriptionCount = 1;
     vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -231,7 +231,7 @@ void DeferredLightPass::createDescriptorPool() {
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 3;
+    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 4;
 
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -259,6 +259,11 @@ void DeferredLightPass::createDescriptorSets() {
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 
+        VkDescriptorImageInfo albedoImageInfo{};
+        albedoImageInfo.sampler = gAlbedoSampler.value();
+        albedoImageInfo.imageView = gAlbedoView.value();
+        albedoImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
         VkDescriptorImageInfo blurredOcclusionImageInfo{};
         blurredOcclusionImageInfo.sampler = blurredOcclusionSampler.value();
         blurredOcclusionImageInfo.imageView = blurredOcclusionView.value();
@@ -280,14 +285,14 @@ void DeferredLightPass::createDescriptorSets() {
         bufferInfo.range = sizeof(UniformBufferObject);
 
 
-        std::array<VkWriteDescriptorSet, 4> descriptorWrites{};
+        std::array<VkWriteDescriptorSet, 5> descriptorWrites{};
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
         descriptorWrites[0].dstBinding = 0;
         descriptorWrites[0].dstArrayElement = 0;
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[0].descriptorCount = 1;
-        descriptorWrites[0].pImageInfo = &viewPositionImageInfo;
+        descriptorWrites[0].pImageInfo = &albedoImageInfo;
 
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[1].dstSet = descriptorSets[i];
@@ -295,7 +300,7 @@ void DeferredLightPass::createDescriptorSets() {
         descriptorWrites[1].dstArrayElement = 0;
         descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[1].descriptorCount = 1;
-        descriptorWrites[1].pImageInfo = &viewNormalImageInfo;
+        descriptorWrites[1].pImageInfo = &viewPositionImageInfo;
 
         descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[2].dstSet = descriptorSets[i];
@@ -303,49 +308,65 @@ void DeferredLightPass::createDescriptorSets() {
         descriptorWrites[2].dstArrayElement = 0;
         descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[2].descriptorCount = 1;
-        descriptorWrites[2].pImageInfo = &blurredOcclusionImageInfo;
+        descriptorWrites[2].pImageInfo = &viewNormalImageInfo;
 
         descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[3].dstSet = descriptorSets[i];
         descriptorWrites[3].dstBinding = 3;
         descriptorWrites[3].dstArrayElement = 0;
-        descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[3].descriptorCount = 1;
-        descriptorWrites[3].pBufferInfo = &bufferInfo;
+        descriptorWrites[3].pImageInfo = &blurredOcclusionImageInfo;
+
+        descriptorWrites[4].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[4].dstSet = descriptorSets[i];
+        descriptorWrites[4].dstBinding = 4;
+        descriptorWrites[4].dstArrayElement = 0;
+        descriptorWrites[4].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[4].descriptorCount = 1;
+        descriptorWrites[4].pBufferInfo = &bufferInfo;
 
         vkUpdateDescriptorSets(device.value(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
 
 void DeferredLightPass::createDescriptorSetLayout() {
+    VkDescriptorSetLayoutBinding albedoLayoutBinding{};
+    albedoLayoutBinding.binding = 0;
+    albedoLayoutBinding.descriptorCount = 1;
+    albedoLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    albedoLayoutBinding.pImmutableSamplers = nullptr;
+    albedoLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
     VkDescriptorSetLayoutBinding viewPositionLayoutBinding{};
-    viewPositionLayoutBinding.binding = 0;
+    viewPositionLayoutBinding.binding = 1;
     viewPositionLayoutBinding.descriptorCount = 1;
     viewPositionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     viewPositionLayoutBinding.pImmutableSamplers = nullptr;
     viewPositionLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding viewNormalLayoutBinding{};
-    viewNormalLayoutBinding.binding = 1;
+    viewNormalLayoutBinding.binding = 2;
     viewNormalLayoutBinding.descriptorCount = 1;
     viewNormalLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     viewNormalLayoutBinding.pImmutableSamplers = nullptr;
     viewNormalLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding blurredOcclusionLayoutBinding{};
-    blurredOcclusionLayoutBinding.binding = 2;
+    blurredOcclusionLayoutBinding.binding = 3;
     blurredOcclusionLayoutBinding.descriptorCount = 1;
     blurredOcclusionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     blurredOcclusionLayoutBinding.pImmutableSamplers = nullptr;
     blurredOcclusionLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
     VkDescriptorSetLayoutBinding lightLayoutBinding{};
-    lightLayoutBinding.binding = 3;
+    lightLayoutBinding.binding = 4;
     lightLayoutBinding.descriptorCount = 1;
     lightLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     lightLayoutBinding.pImmutableSamplers = nullptr;
     lightLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::array<VkDescriptorSetLayoutBinding, 4> bindings = {viewPositionLayoutBinding, viewNormalLayoutBinding, blurredOcclusionLayoutBinding, lightLayoutBinding};
+    std::array<VkDescriptorSetLayoutBinding, 5> bindings = {albedoLayoutBinding, viewPositionLayoutBinding, viewNormalLayoutBinding, blurredOcclusionLayoutBinding, lightLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -360,9 +381,10 @@ void DeferredLightPass::createDescriptorSetLayout() {
 void DeferredLightPass::updateUniformBuffer(uint32_t currentImage) {
 
     UniformBufferObject ubo{};
-    ubo.cameraPos = camera.Position;
-    ubo.viewLightDir = camera.GetViewMatrix() * glm::vec4(ssaoLight.lightDir, 0.0);
+    ubo.pointLightPos = camera.GetViewMatrix() * glm::vec4(ssaoLight.lightPos, 1.0);
     ubo.lightRadiance = ssaoLight.lightIntensity;
+    ubo.linear = ssaoLight.linear;
+    ubo.quadratic = ssaoLight.quadratic;
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
 
@@ -370,7 +392,14 @@ bool DeferredLightPass::IsValid() {
     if(!PresentPass::IsValid()){
         return false;
     }
-
+    if(!gAlbedoView.has_value()){
+        std::cerr << "gAlbedoView is not initialized" << std::endl;
+        return false;
+    }
+    if(!gAlbedoSampler.has_value()){
+        std::cerr << "gAlbedoSampler is not initialized" << std::endl;
+        return false;
+    }
     if(!gViewPositionView.has_value()){
         std::cerr << "gViewPositionView is not initialized" << std::endl;
         return false;

@@ -6,9 +6,11 @@
 const std::string ROBOT_PATH = "E:\\Proj\\ClionProj\\Tree\\models\\SSAOModel\\nanosuit.obj";
 const std::string MARRY_SSAO_PATH = "E:\\Proj\\ClionProj\\Tree\\models\\Marry.obj";
 
-DirectionalLight ssaoLight{
-        .lightDir = glm::vec3(-0.01f, -1.0f, 1.0f),
-        .lightIntensity = glm::vec3(0.2f)
+PointLight ssaoLight{
+        .lightIntensity = glm::vec3(0.1, 0.1, 0.5),
+        .lightPos = glm::vec3(2.0, 4.0, -2.0),
+        .linear = 0.09,
+        .quadratic = 0.032,
 };
 
 const VkFormat gAlbedoFormatSSAO = VK_FORMAT_R8G8B8A8_SRGB;

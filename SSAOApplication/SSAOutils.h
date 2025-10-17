@@ -17,7 +17,7 @@ struct NoiseTexture {
     VkSampler sampler;
 };
 
-extern DirectionalLight ssaoLight;
+extern PointLight ssaoLight;
 
 extern const std::string ROBOT_PATH;
 extern const std::string MARRY_SSAO_PATH;

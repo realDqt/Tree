@@ -240,6 +240,9 @@ public:
         deferredLightPass.gViewNormalView = gViewNormalView;
         deferredLightPass.gViewNormalSampler = gViewNormalSampler;
 
+        deferredLightPass.gAlbedoView = gAlbedoView;
+        deferredLightPass.gAlbedoSampler = gAlbedoSampler;
+
         deferredLightPass.currentFrame = currentFrame;
     }
 
