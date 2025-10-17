@@ -10,13 +10,9 @@ layout(location = 2) out vec4 gViewNormal;
 layout(location = 3) out float gDepth;
 
 
-layout(push_constant, std140) uniform PushConstants{
-    bool isFloor;
-} constants;
-
 
 void main() {
-    gAlbedo = vec4(1.0);
+    gAlbedo = vec4(1.0, 1.0, 1.0, 1.0);
     gViewPosition = vec4(viewPosition, 1.0);
     gViewNormal = vec4(normalize(viewNormal), 0.0);
     gDepth = clipPosition.w;

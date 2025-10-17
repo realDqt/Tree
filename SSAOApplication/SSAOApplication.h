@@ -87,6 +87,18 @@ public:
     VkSampler gDepthSampler;
 
     void prepareResources() override{
+
+        // calc model
+        robotModel = glm::mat4(1.0f);
+        robotModel = glm::translate(robotModel, glm::vec3(0.0f, 0.1f, 0.0));
+        robotModel = glm::rotate(robotModel, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+        robotModel = glm::scale(robotModel, glm::vec3(0.5f));
+
+        floorModel = glm::mat4(1.0f);
+        floorModel = glm::translate(floorModel, glm::vec3(0.0, -1.0f, 0.0f));
+        floorModel = glm::scale(floorModel, glm::vec3(20.0f, 1.0f, 20.0f));
+
+
         // GBuffer Passes
         gBufferPasses[0].device = device;
         gBufferPasses[0].physicalDevice = physicalDevice;
@@ -106,9 +118,29 @@ public:
         gBufferPasses[0].gDepthView = gDepthView;
 
         gBufferPasses[0].model = robotModel;
-        gBufferPasses[0].isFloor = false;
 
         gBufferPasses[0].currentFrame = currentFrame;
+
+        gBufferPasses[1].device = device;
+        gBufferPasses[1].physicalDevice = physicalDevice;
+
+        gBufferPasses[1].swapChainExtent = swapChainExtent;
+        gBufferPasses[1].swapChainImageViewCount = swapChainImageViews.size();
+
+        gBufferPasses[1].depthImageView = depthImageView;
+
+        gBufferPasses[1].vertexBuffer = vertexBuffer2;
+        gBufferPasses[1].indexBuffer = indexBuffer2;
+        gBufferPasses[1].indicesCount = indices2.size();
+
+        gBufferPasses[1].gAlbedoView = gAlbedoView;
+        gBufferPasses[1].gViewPositionView = gViewPositionView;
+        gBufferPasses[1].gViewNormalView = gViewNormalView;
+        gBufferPasses[1].gDepthView = gDepthView;
+
+        gBufferPasses[1].model = floorModel;
+
+        gBufferPasses[1].currentFrame = currentFrame;
 
         // SSAO Pass
         ssaoPass.device = device;
@@ -117,7 +149,6 @@ public:
         ssaoPass.swapChainExtent = swapChainExtent;
         ssaoPass.swapChainImageFormat = swapChainImageFormat;
         ssaoPass.swapChainImageViews = swapChainImageViews;
-        ssaoPass.swapChainImageViewCount = swapChainImageViews.size();
 
         ssaoPass.depthImageView = depthImageView;
 
@@ -141,6 +172,24 @@ public:
 
         ssaoPass.currentFrame = currentFrame;
 
+        std::vector<glm::vec4> samples(64);
+        std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
+        std::default_random_engine generator;
+        for (GLuint i = 0; i < 64; ++i)
+        {
+            glm::vec4 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator), 0.0);
+            sample = glm::normalize(sample);
+            sample *= randomFloats(generator);
+            GLfloat scale = GLfloat(i) / 64.0;
+
+            // Scale samples s.t. they're more aligned to center of kernel
+            scale = lerp(0.1f, 1.0f, scale * scale);
+            sample *= scale;
+            samples[i] = sample;
+        }
+        ssaoPass.samples = samples;
+
+
         // blin-phong pass for testing
         blinPhongPasses[0].device = device;
         blinPhongPasses[0].physicalDevice = physicalDevice;
@@ -157,10 +206,6 @@ public:
 
         blinPhongPasses[0].currentFrame = currentFrame;
 
-        robotModel = glm::mat4(1.0f);
-        robotModel = glm::translate(robotModel, glm::vec3(0.0f, 0.1f, 0.0));
-        robotModel = glm::rotate(robotModel, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
-        robotModel = glm::scale(robotModel, glm::vec3(0.5f));
         blinPhongPasses[0].model = robotModel;
 
         blinPhongPasses[1].device = device;
@@ -178,15 +223,13 @@ public:
 
         blinPhongPasses[1].currentFrame = currentFrame;
 
-        floorModel = glm::mat4(1.0f);
-        floorModel = glm::translate(floorModel, glm::vec3(0.0, -1.0f, 0.0f));
-        floorModel = glm::scale(floorModel, glm::vec3(20.0f, 1.0f, 20.0f));
         blinPhongPasses[1].model = floorModel;
     }
 
     void checkValid() override
     {
         assert(gBufferPasses[0].IsValid());
+        assert(gBufferPasses[1].IsValid());
         assert(ssaoPass.IsValid());
         assert(blinPhongPasses[0].IsValid());
         assert(blinPhongPasses[1].IsValid());
@@ -215,7 +258,7 @@ public:
 
         prepareResources();
         gBufferPasses[0].init();
-        //gBufferPasses[1].init();
+        gBufferPasses[1].init();
         ssaoPass.init();
         blinPhongPasses[0].init();
         blinPhongPasses[1].init();
@@ -240,9 +283,9 @@ public:
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
-        //for(auto& framebuffer : gBufferPasses[1].framebuffers){
-           //vkDestroyFramebuffer(device, framebuffer, nullptr);
-        //}
+        for(auto& framebuffer : gBufferPasses[1].framebuffers){
+           vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
 
         for(auto& framebuffer :ssaoPass.framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
@@ -267,7 +310,7 @@ public:
         cleanupSwapChain();
 
         gBufferPasses[0].cleanup();
-        //gBufferPasses[1].cleanup();
+        gBufferPasses[1].cleanup();
         ssaoPass.cleanup();
         blinPhongPasses[0].cleanup();
         blinPhongPasses[1].cleanup();
@@ -728,12 +771,12 @@ public:
             throw std::runtime_error("failed to begin recording command buffer!");
         }
 
-        //gBufferPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
-        //gBufferPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
+        gBufferPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
+        gBufferPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
-        //ssaoPass.recordCommandBuffer(commandBuffer, imageIndex);
-        blinPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
-        blinPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
+        ssaoPass.recordCommandBuffer(commandBuffer, imageIndex);
+        //blinPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
+        //blinPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
             throw std::runtime_error("failed to record command buffer!");
@@ -807,7 +850,7 @@ public:
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 
         gBufferPasses[0].currentFrame = currentFrame;
-        //gBufferPasses[1].currentFrame = currentFrame;
+        gBufferPasses[1].currentFrame = currentFrame;
         ssaoPass.currentFrame = currentFrame;
         blinPhongPasses[0].currentFrame = currentFrame;
         blinPhongPasses[1].currentFrame = currentFrame;

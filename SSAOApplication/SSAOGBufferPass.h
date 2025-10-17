@@ -47,8 +47,6 @@ public:
     std::optional<VkImageView> gDepthView{std::nullopt};
 
     std::optional<glm::mat4> model{std::nullopt};
-
-    std::optional<bool> isFloor{std::nullopt};
 };
 
 

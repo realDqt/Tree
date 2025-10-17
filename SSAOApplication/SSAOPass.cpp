@@ -20,7 +20,7 @@ void SSAOPass::createRenderPass() {
     colorAttachment1.format = swapChainImageFormat.value();
     colorAttachment1.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment1.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    colorAttachment1.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    colorAttachment1.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     colorAttachment1.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     colorAttachment1.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     colorAttachment1.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -205,9 +205,9 @@ void SSAOPass::createGraphicsPipeline() {
 }
 
 void SSAOPass::createFramebuffers() {
-    framebuffers.resize(swapChainImageViewCount.value());
+    framebuffers.resize(swapChainImageViews.value().size());
 
-    for (size_t i = 0; i < swapChainImageViewCount.value(); i++) {
+    for (size_t i = 0; i < swapChainImageViews.value().size(); i++) {
         std::array<VkImageView, 3> attachments = {
                 occlusionView.value(),
                 swapChainImageViews.value()[i],
@@ -288,6 +288,11 @@ bool SSAOPass::IsValid() {
 
     if(!occlusionView.has_value()){
         std::cerr << "occlusionView is not initialized!" << std::endl;
+        return false;
+    }
+
+    if(!samples.has_value()){
+        std::cerr << "samples is not initialized!" << std::endl;
         return false;
     }
 
@@ -451,27 +456,13 @@ void SSAOPass::createDescriptorSetLayout() {
 
 void SSAOPass::updateUniformBuffer(uint32_t currentImage) {
     // only updating on the first frame
-    static bool first = true;
-    if(!first)return;
-    first = false;
     UniformBufferObject ubo{};
 
     ubo.projection = glm::perspective(glm::radians(45.0f), (float) swapChainExtent.value().width / (float) swapChainExtent.value().height, 0.1f, 100.0f);
     ubo.projection[1][1] *= -1;
 
-    std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // generates random floats between 0.0 and 1.0
-    std::default_random_engine generator;
-    for (GLuint i = 0; i < 64; ++i)
-    {
-        glm::vec4 sample(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, randomFloats(generator), 0.0);
-        sample = glm::normalize(sample);
-        sample *= randomFloats(generator);
-        GLfloat scale = GLfloat(i) / 64.0;
-
-        // Scale samples s.t. they're more aligned to center of kernel
-        scale = lerp(0.1f, 1.0f, scale * scale);
-        sample *= scale;
-        ubo.samples[i] = sample;
+    for(uint32_t i = 0; i < 64; ++i){
+        ubo.samples[i] = samples.value()[i];
     }
 
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));

@@ -304,10 +304,6 @@ bool SSAOGBufferPass::IsValid() {
         return false;
     }
 
-    if(!isFloor.has_value()){
-        std::cerr << "isFloor is not initialized!" << std::endl;
-        return false;
-    }
 
     return true;
 }
@@ -419,9 +415,6 @@ void SSAOGBufferPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_
 
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-    PushConstants constants{};
-    constants.isFloor = isFloor.value();
-    vkCmdPushConstants(commandBuffer, pipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(PushConstants), &constants);
 
 
     VkViewport viewport{};

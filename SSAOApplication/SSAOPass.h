@@ -50,5 +50,7 @@ public:
 
     std::optional<VkImageView> occlusionView{std::nullopt};
 
+    std::optional<std::vector<glm::vec4>> samples;
+
 };
 #endif //VKRENDERINGENGINE_SSAOPASS_H
