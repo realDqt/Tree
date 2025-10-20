@@ -23,6 +23,7 @@ vec3 blinnPhong(){
             discard;
 
     float occlusion = texture(blurredOcclusionSampler, texCoords).r;
+    occlusion = occlusion * occlusion;
 
     vec3 ambient = vec3(occlusion * 0.3);
 
@@ -45,7 +46,7 @@ vec3 blinnPhong(){
     vec3 radiance = (ambient + diffuse + specular) * attenuation;
     //vec3 phongColor = pow(radiance, vec3(1.0 / 2.2));
 
-    return phongColor;
+    return radiance;
 }
 
 void main() {
