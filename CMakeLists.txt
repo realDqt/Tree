@@ -105,6 +105,8 @@ add_executable(vkRenderingEngine
         SSAOApplication/DeferredLightPass.cpp
         SSAOApplication/BlurPass.h
         SSAOApplication/BlurPass.cpp
+        SSRApplication/GenerateHizPass.cpp
+        SSRApplication/GenerateHizPass.h
 )
 
 # 分别指定 Debug 和 Release 模式下要链接的 Assimp 库

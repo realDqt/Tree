@@ -13,12 +13,14 @@
 #include "BlinPhongPassSSR.h"
 #include "SSRShadowmapPass.h"
 #include "GBufferPass.h"
+#include "GenerateHizPass.h"
 #include "SSRPass.h"
 
 class SSRApplication : public BaseApplication{
 public:
     SSRShadowmapPass shadowmapPass;
     GBufferPass gBufferPasses[2];
+    GenerateHizPass generateHizPass;
     SSRPass ssrPass;
     BlinPhongPassSSR blinnPhongPasses[2];
 
@@ -69,6 +71,7 @@ public:
 
 
     uint32_t mipLevels;
+    uint32_t hizMipLevels;
 
     // resources for gBuffer
     VkImage gAlbedo;
@@ -86,6 +89,7 @@ public:
     VkImage gDepth;
     VkDeviceMemory gDepthMemory;
     VkImageView gDepthView;
+    VkImageView gDepthViewMip0;
 
     VkSampler gAlbedoSampler;
     VkSampler gWorldPositionSampler;
@@ -181,7 +185,7 @@ public:
         gBufferPasses[0].gAlbedoView = gAlbedoView;
         gBufferPasses[0].gWorldPositionView = gWorldPositionView;
         gBufferPasses[0].gWorldNormalView = gWorldNormalView;
-        gBufferPasses[0].gDepthView = gDepthView;
+        gBufferPasses[0].gDepthView = gDepthViewMip0;
 
         gBufferPasses[0].model = cubeModel;
         gBufferPasses[0].isFloor = false;
@@ -205,11 +209,20 @@ public:
         gBufferPasses[1].gAlbedoView = gAlbedoView;
         gBufferPasses[1].gWorldPositionView = gWorldPositionView;
         gBufferPasses[1].gWorldNormalView = gWorldNormalView;
-        gBufferPasses[1].gDepthView = gDepthView;
+        gBufferPasses[1].gDepthView = gDepthViewMip0;
 
         gBufferPasses[1].model = floorModel;
         gBufferPasses[1].isFloor = true;
 
+        // generate hiz pass
+        generateHizPass.device = device;
+        generateHizPass.physicalDevice = physicalDevice;
+
+        generateHizPass.hizImage = gDepth;
+        generateHizPass.hizFormat = gDepthFormat;
+        generateHizPass.hizWidth = swapChainExtent.width;
+        generateHizPass.hizHeight = swapChainExtent.height;
+        generateHizPass.mipLevels = hizMipLevels;
 
         // ssr pass
         ssrPass.device = device;
@@ -271,6 +284,7 @@ public:
         blinnPhongPasses[1].init();
         gBufferPasses[0].init();
         gBufferPasses[1].init();
+        generateHizPass.init();
         ssrPass.init();
     }
 
@@ -326,6 +340,7 @@ public:
 
         gBufferPasses[0].cleanup();
         gBufferPasses[1].cleanup();
+        generateHizPass.cleanup();
 
         ssrPass.cleanup();
 
@@ -345,6 +360,7 @@ public:
         vkDestroySampler(device, gWorldNormalSampler, nullptr);
 
         vkDestroyImageView(device, gDepthView, nullptr);
+        vkDestroyImageView(device, gDepthViewMip0, nullptr);
         vkFreeMemory(device, gDepthMemory, nullptr);
         vkDestroyImage(device, gDepth, nullptr);
         vkDestroySampler(device, gDepthSampler, nullptr);
@@ -772,9 +788,13 @@ public:
         createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gWorldNormalFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, gWorldNormal, gWorldNormalMemory);
         gWorldNormalView = createImageView(gWorldNormal, gWorldNormalFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
-        createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, gDepthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, gDepth, gDepthMemory);
-        gDepthView = createImageView(gDepth, gDepthFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
+        hizMipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(swapChainExtent.width, swapChainExtent.height)))) + 1;
+        createImage(swapChainExtent.width, swapChainExtent.height, hizMipLevels, VK_SAMPLE_COUNT_1_BIT, gDepthFormat, VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, gDepth, gDepthMemory);
+        gDepthView = createImageView(gDepth, gDepthFormat, VK_IMAGE_ASPECT_COLOR_BIT, hizMipLevels);
+        gDepthViewMip0 = createImageView(gDepth, gDepthFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
     void createDepthResources() {
@@ -863,6 +883,38 @@ public:
         shadowmapPass.recordCommandBuffer(commandBuffer, imageIndex);
         gBufferPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         gBufferPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
+
+
+        if (hizMipLevels > 1) {
+            VkImageMemoryBarrier barrier{};
+            barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+            barrier.image = gDepth;
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+
+            barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
+
+            barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;;
+            barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            barrier.subresourceRange.baseMipLevel = 1;
+            barrier.subresourceRange.levelCount = hizMipLevels  - 1;
+            barrier.subresourceRange.baseArrayLayer = 0;
+            barrier.subresourceRange.layerCount = 1;
+
+            vkCmdPipelineBarrier(
+                    commandBuffer,
+                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                    VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
+                    0,
+                    0, nullptr,
+                    0, nullptr,
+                    1, &barrier
+            );
+        }
+
+        generateHizPass.recordCommandBuffer(commandBuffer);
 
         //blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         //blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
