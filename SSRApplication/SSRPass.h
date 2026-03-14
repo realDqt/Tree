@@ -9,12 +9,6 @@
 
 class SSRPass{
 public:
-    struct alignas(16) UniformBufferObject{
-        glm::mat4 model;
-        glm::mat4 view;
-        glm::mat4 proj;
-    };
-
     struct alignas(16) UniformBufferObject2{
         glm::vec3 cameraPos;
         alignas(16) glm::vec3 lightDir;
@@ -48,10 +42,6 @@ public:
     VkPipelineLayout pipelineLayout;
     VkPipeline graphicsPipeline;
 
-    std::vector<VkBuffer> uniformBuffers;
-    std::vector<VkDeviceMemory> uniformBuffersMemory;
-    std::vector<void*> uniformBuffersMapped;
-
     std::vector<VkBuffer> uniformBuffers2;
     std::vector<VkDeviceMemory> uniformBuffersMemory2;
     std::vector<void*> uniformBuffersMapped2;
@@ -65,8 +55,7 @@ public:
     VkImageView depthImageView;
 
     VkBuffer vertexBuffer;
-    VkBuffer indexBuffer;
-    uint32_t indicesCount;
+
 
 
     VkImageView gAlbedoImageView;
@@ -84,8 +73,6 @@ public:
     VkImageView smImageView;
     VkSampler smSampler;
 
-
-    glm::mat4 model;
     uint32_t currentFrame;
 
     void init();

@@ -66,8 +66,8 @@ void SSRPass::createRenderPass() {
 }
 
 void SSRPass::createGraphicsPipeline() {
-    auto vertShaderCode = readFile("../shaders/SSR/ssrVert.spv");
-    auto fragShaderCode = readFile("../shaders/SSR/ssrFrag.spv");
+    auto vertShaderCode = readFile("../shaders/SSR/ssrOptVert.spv");
+    auto fragShaderCode = readFile("../shaders/SSR/ssrOptFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
@@ -89,8 +89,8 @@ void SSRPass::createGraphicsPipeline() {
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
-    auto bindingDescription = VertexMarry::getBindingDescription();
-    auto attributeDescriptions = VertexMarry::getAttributeDescriptions();
+    auto bindingDescription = VertexQuad::getBindingDescription();
+    auto attributeDescriptions = VertexQuad::getAttributeDescriptions();
 
     vertexInputInfo.vertexBindingDescriptionCount = 1;
     vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -99,7 +99,7 @@ void SSRPass::createGraphicsPipeline() {
 
     VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
     inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+    inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
     inputAssembly.primitiveRestartEnable = VK_FALSE;
 
     VkPipelineViewportStateCreateInfo viewportState{};
@@ -113,7 +113,7 @@ void SSRPass::createGraphicsPipeline() {
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
     rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth = 1.0f;
-    rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+    rasterizer.cullMode = VK_CULL_MODE_NONE;
     rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
     rasterizer.depthBiasEnable = VK_FALSE;
 
@@ -124,8 +124,8 @@ void SSRPass::createGraphicsPipeline() {
 
     VkPipelineDepthStencilStateCreateInfo depthStencil{};
     depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-    depthStencil.depthTestEnable = VK_TRUE;
-    depthStencil.depthWriteEnable = VK_TRUE;
+    depthStencil.depthTestEnable = VK_FALSE;
+    depthStencil.depthWriteEnable = VK_FALSE;
     depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
     depthStencil.depthBoundsTestEnable = VK_FALSE;
     depthStencil.stencilTestEnable = VK_FALSE;
@@ -213,11 +213,7 @@ void SSRPass::createFramebuffers() {
 }
 
 void SSRPass::createUniformBuffers() {
-    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
-    uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffersMemory.resize(MAX_FRAMES_IN_FLIGHT);
-    uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
     VkDeviceSize bufferSize2 = sizeof(UniformBufferObject2);
     uniformBuffers2.resize(MAX_FRAMES_IN_FLIGHT);
@@ -226,22 +222,17 @@ void SSRPass::createUniformBuffers() {
 
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        createBuffer(physicalDevice, device, bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i]);
         createBuffer(physicalDevice, device, bufferSize2, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers2[i], uniformBuffersMemory2[i]);
-
-        vkMapMemory(device, uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
         vkMapMemory(device, uniformBuffersMemory2[i], 0, bufferSize2, 0, &uniformBuffersMapped2[i]);
     }
 }
 
 void SSRPass::createDescriptorPool() {
-    std::array<VkDescriptorPoolSize, 3> poolSizes{};
+    std::array<VkDescriptorPoolSize, 2> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-    poolSizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-    poolSizes[2].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[2].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 5;
+    poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 5;
 
 
     VkDescriptorPoolCreateInfo poolInfo{};
@@ -269,10 +260,6 @@ void SSRPass::createDescriptorSets() {
     }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = uniformBuffers[i];
-        bufferInfo.offset = 0;
-        bufferInfo.range = sizeof(UniformBufferObject);
 
         VkDescriptorBufferInfo bufferInfo2{};
         bufferInfo2.buffer = uniformBuffers2[i];
@@ -305,7 +292,7 @@ void SSRPass::createDescriptorSets() {
         smImageInfo.sampler = smSampler;
 
 
-        std::array<VkWriteDescriptorSet, 7> descriptorWrites{};
+        std::array<VkWriteDescriptorSet, 6> descriptorWrites{};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
@@ -313,15 +300,15 @@ void SSRPass::createDescriptorSets() {
         descriptorWrites[0].dstArrayElement = 0;
         descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         descriptorWrites[0].descriptorCount = 1;
-        descriptorWrites[0].pBufferInfo = &bufferInfo;
+        descriptorWrites[0].pBufferInfo = &bufferInfo2;
 
         descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[1].dstSet = descriptorSets[i];
         descriptorWrites[1].dstBinding = 1;
         descriptorWrites[1].dstArrayElement = 0;
-        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[1].descriptorCount = 1;
-        descriptorWrites[1].pBufferInfo = &bufferInfo2;
+        descriptorWrites[1].pImageInfo = &gAlbedoImageInfo;
 
         descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[2].dstSet = descriptorSets[i];
@@ -329,7 +316,7 @@ void SSRPass::createDescriptorSets() {
         descriptorWrites[2].dstArrayElement = 0;
         descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[2].descriptorCount = 1;
-        descriptorWrites[2].pImageInfo = &gAlbedoImageInfo;
+        descriptorWrites[2].pImageInfo = &gWorldPositionImageInfo;
 
         descriptorWrites[3].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[3].dstSet = descriptorSets[i];
@@ -337,7 +324,7 @@ void SSRPass::createDescriptorSets() {
         descriptorWrites[3].dstArrayElement = 0;
         descriptorWrites[3].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[3].descriptorCount = 1;
-        descriptorWrites[3].pImageInfo = &gWorldPositionImageInfo;
+        descriptorWrites[3].pImageInfo = &gWorldNormalImageInfo;
 
         descriptorWrites[4].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[4].dstSet = descriptorSets[i];
@@ -345,7 +332,7 @@ void SSRPass::createDescriptorSets() {
         descriptorWrites[4].dstArrayElement = 0;
         descriptorWrites[4].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[4].descriptorCount = 1;
-        descriptorWrites[4].pImageInfo = &gWorldNormalImageInfo;
+        descriptorWrites[4].pImageInfo = &gDepthImageInfo;
 
         descriptorWrites[5].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[5].dstSet = descriptorSets[i];
@@ -353,15 +340,7 @@ void SSRPass::createDescriptorSets() {
         descriptorWrites[5].dstArrayElement = 0;
         descriptorWrites[5].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         descriptorWrites[5].descriptorCount = 1;
-        descriptorWrites[5].pImageInfo = &gDepthImageInfo;
-
-        descriptorWrites[6].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrites[6].dstSet = descriptorSets[i];
-        descriptorWrites[6].dstBinding = 6;
-        descriptorWrites[6].dstArrayElement = 0;
-        descriptorWrites[6].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        descriptorWrites[6].descriptorCount = 1;
-        descriptorWrites[6].pImageInfo = &smImageInfo;
+        descriptorWrites[5].pImageInfo = &smImageInfo;
 
 
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
@@ -369,57 +348,50 @@ void SSRPass::createDescriptorSets() {
 }
 
 void SSRPass::createDescriptorSetLayout() {
-    VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.binding = 0;
-    uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.pImmutableSamplers = nullptr;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
     VkDescriptorSetLayoutBinding uboLayoutBinding2{};
-    uboLayoutBinding2.binding = 1;
+    uboLayoutBinding2.binding = 0;
     uboLayoutBinding2.descriptorCount = 1;
     uboLayoutBinding2.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     uboLayoutBinding2.pImmutableSamplers = nullptr;
     uboLayoutBinding2.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding gAlebdoLayoutBinding{};
-    gAlebdoLayoutBinding.binding = 2;
+    gAlebdoLayoutBinding.binding = 1;
     gAlebdoLayoutBinding.descriptorCount = 1;
     gAlebdoLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     gAlebdoLayoutBinding.pImmutableSamplers = nullptr;
     gAlebdoLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding gWorldPositionLayoutBinding{};
-    gWorldPositionLayoutBinding.binding = 3;
+    gWorldPositionLayoutBinding.binding = 2;
     gWorldPositionLayoutBinding.descriptorCount = 1;
     gWorldPositionLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     gWorldPositionLayoutBinding.pImmutableSamplers = nullptr;
     gWorldPositionLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding gWorldNormalLayoutBinding{};
-    gWorldNormalLayoutBinding.binding = 4;
+    gWorldNormalLayoutBinding.binding = 3;
     gWorldNormalLayoutBinding.descriptorCount = 1;
     gWorldNormalLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     gWorldNormalLayoutBinding.pImmutableSamplers = nullptr;
     gWorldNormalLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding gDepthLayoutBinding{};
-    gDepthLayoutBinding.binding = 5;
+    gDepthLayoutBinding.binding = 4;
     gDepthLayoutBinding.descriptorCount = 1;
     gDepthLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     gDepthLayoutBinding.pImmutableSamplers = nullptr;
     gDepthLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutBinding smLayoutBinding{};
-    smLayoutBinding.binding = 6;
+    smLayoutBinding.binding = 5;
     smLayoutBinding.descriptorCount = 1;
     smLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     smLayoutBinding.pImmutableSamplers = nullptr;
     smLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
 
-    std::array<VkDescriptorSetLayoutBinding, 7> bindings = {uboLayoutBinding, uboLayoutBinding2, gAlebdoLayoutBinding, gWorldPositionLayoutBinding, gWorldNormalLayoutBinding, gDepthLayoutBinding, smLayoutBinding};
+    std::array<VkDescriptorSetLayoutBinding, 6> bindings = {uboLayoutBinding2, gAlebdoLayoutBinding, gWorldPositionLayoutBinding, gWorldNormalLayoutBinding, gDepthLayoutBinding, smLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -446,12 +418,8 @@ VkShaderModule SSRPass::createShaderModule(const std::vector<char>& code) const 
 
 void SSRPass::updateUniformBuffer(uint32_t currentImage) {
     //std::cout << camera.Up.x << " " << camera.Up.y << " " << camera.Up.z << std::endl;
-    UniformBufferObject ubo{};
-    ubo.model = model;
-    ubo.view = camera.GetViewMatrix();
-    ubo.proj = glm::perspective(glm::radians(45.0f), (float) swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 100.0f);
-    ubo.proj[1][1] *= -1;
-    memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
+    auto proj = glm::perspective(glm::radians(45.0f), (float) swapChainExtent.width / (float) swapChainExtent.height, 0.1f, 100.0f);
+    proj[1][1] *= -1;
 
     UniformBufferObject2 ubo2{};
     ubo2.cameraPos = camera.Position;
@@ -462,7 +430,7 @@ void SSRPass::updateUniformBuffer(uint32_t currentImage) {
     glm::mat4 lightProj = glm::ortho(-SSROrthoRange, SSROrthoRange, -SSROrthoRange, SSROrthoRange, 1e-2f, 100.f);
     lightProj[1][1] *= -1;
     ubo2.lightVP = lightProj * lightView;
-    ubo2.world2clip = ubo.proj * ubo.view;
+    ubo2.world2clip = proj * camera.GetViewMatrix();
     memcpy(uniformBuffersMapped2[currentImage], &ubo2, sizeof(ubo2));
 }
 
@@ -506,11 +474,10 @@ void SSRPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageI
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
     vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 
-    vkCmdDrawIndexed(commandBuffer, indicesCount, 1, 0, 0, 0);
+    vkCmdDraw(commandBuffer, 4, 1, 0, 0);
 
     vkCmdEndRenderPass(commandBuffer);
 }
@@ -521,9 +488,6 @@ void SSRPass::cleanup() {
     vkDestroyRenderPass(device, renderPass, nullptr);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroyBuffer(device, uniformBuffers[i], nullptr);
-        vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
-
         vkDestroyBuffer(device, uniformBuffers2[i], nullptr);
         vkFreeMemory(device, uniformBuffersMemory2[i], nullptr);
     }

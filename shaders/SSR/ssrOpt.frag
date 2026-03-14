@@ -1,9 +1,10 @@
-#version 450
-layout(location = 0) in vec3 worldPosition;
+﻿#version 450
+
+layout(location = 0) in vec2 texCoords;
 
 layout(location = 0) out vec4 outColor;
 
-layout(binding = 1, std140) uniform UniformBufferObject2{
+layout(binding = 0, std140) uniform UniformBufferObject2{
     vec3 cameraPos;
     vec3 lightDir;
     vec3 lightRadiance;
@@ -18,11 +19,11 @@ layout(binding = 1, std140) uniform UniformBufferObject2{
 #define SAMPLE_NUM 10
 #define STEP_SIZE 0.2
 
-layout(binding = 2) uniform sampler2D gAlbedoSampler;
-layout(binding = 3) uniform sampler2D gWorldPositionSampler;
-layout(binding = 4) uniform sampler2D gWorldNormalSampler;
-layout(binding = 5) uniform sampler2D gDepthSampler;
-layout(binding = 6) uniform sampler2D smSampler;
+layout(binding = 1) uniform sampler2D gAlbedoSampler;
+layout(binding = 2) uniform sampler2D gWorldPositionSampler;
+layout(binding = 3) uniform sampler2D gWorldNormalSampler;
+layout(binding = 4) uniform sampler2D gDepthSampler;
+layout(binding = 5) uniform sampler2D smSampler;
 
 float Rand1(inout float p) {
     p = fract(p * .1031);
@@ -83,17 +84,13 @@ float GetDepth(vec3 posWorld) {
     return depth;
 }
 
-/*
- * Transform point from world space to screen space([0, 1] x [0, 1])
- *
- */
 vec2 GetScreenCoordinate(vec3 posWorld) {
     vec2 uv = Project(ubo2.world2clip * vec4(posWorld, 1.0)).xy * 0.5 + 0.5;
     return uv;
 }
 
 float GetGBufferDepth(vec2 uv) {
-    float depth = texture(gDepthSampler, uv).x;
+    float depth = textureLod(gDepthSampler, uv, 0).x;
     if (depth < 1e-2) {
         depth = 1000.0;
     }
@@ -116,13 +113,6 @@ vec3 GetGBufferAlbedo(vec2 uv) {
     return albedo;
 }
 
-/*
- * Evaluate diffuse bsdf value.
- *
- * wi, wo are all in world space.
- * uv is in screen space, [0, 1] x [0, 1].
- *
- */
 vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv) {
     vec3 normal = normalize(GetGBufferWorldNormal(uv));
     vec3 albedo = GetGBufferAlbedo(uv);
@@ -152,18 +142,76 @@ float GetVisibility(vec2 uv){
     NDC.xy = (NDC.xy + 1.0) * .5;
     float depth = unpack(texture(smSampler, NDC.xy));
     if(NDC.z <= depth + getBias(1.4, worldNormal))
-        return 1.0;
+    return 1.0;
     else
-        return 0.0;
+    return 0.0;
 }
 
-/*
- * Evaluate directional light with shadow map
- * uv is in screen space, [0, 1] x [0, 1].
- *
- */
 vec3 EvalDirectionalLight(vec2 uv) {
     return ubo2.lightRadiance * GetVisibility(uv);
+}
+
+
+#define MAX_MIP_LEVEL 4.0
+#define MAX_ITERATIONS 64
+#define SSR_THICKNESS 0.05
+
+bool RayMarchAcc(vec3 ori, vec3 dir, out vec3 hitPos) {
+    dir = normalize(dir);
+    vec4 p0_clip = ubo2.world2clip * vec4(ori, 1.0);
+    vec4 p1_clip = ubo2.world2clip * vec4(ori + dir * 100.0, 1.0);
+
+    if (p1_clip.w <= 0.0) return false;
+
+    vec3 p0_ndc = p0_clip.xyz / p0_clip.w;
+    vec3 p1_ndc = p1_clip.xyz / p1_clip.w;
+
+    vec3 p0 = vec3(p0_ndc.xy * 0.5 + 0.5, p0_ndc.z); // 0~1
+    vec3 p1 = vec3(p1_ndc.xy * 0.5 + 0.5, p1_ndc.z); // 0~1
+
+    // 计算屏幕空间的射线方向
+    vec3 rayDirScreen = normalize(p1 - p0);
+    vec2 texSize = vec2(textureSize(gDepthSampler, 0));
+    vec2 invTexSize = 1.0 / texSize;
+
+    // 避免自交
+    vec3 currentP = p0 + rayDirScreen * max(invTexSize.x, invTexSize.y) * 2.0;
+
+    float currentMip = 0.0;
+
+    for(int i = 0; i < MAX_ITERATIONS && currentMip >= 0.0; ++i) {
+        // 边界检查
+        if (any(lessThan(currentP.xy, vec2(0.0))) || any(greaterThan(currentP.xy, vec2(1.0)))) {
+            return false;
+        }
+
+        float cellDepth = textureLod(gDepthSampler, currentP.xy, currentMip).x;
+        bool isIntersect = currentP.z > cellDepth;
+
+        if (isIntersect) {
+            if (currentMip > 0.0) {
+                currentMip -= 1.0;
+            } else {
+                // 在Mip0发生碰撞，进行厚度测试
+                if (currentP.z - cellDepth < SSR_THICKNESS) {
+                    hitPos = texture(gWorldPositionSampler, currentP.xy).xyz;
+                    return true;
+                } else {
+                    // 深度差太大，说明穿透了物体内部到了背面。
+                    // 保持在Mip0，继续强行步进一个像素，寻找下一个表面。
+                    currentP += rayDirScreen * max(invTexSize.x, invTexSize.y);
+                }
+            }
+        } else {
+            // 当前单元格没有发生碰撞，说明这片区域是空的。
+            // 计算当前 Mip 层级下安全的步长
+            float stepSize = exp2(currentMip) * max(invTexSize.x, invTexSize.y);
+            currentP += rayDirScreen * stepSize;
+            currentMip = min(currentMip + 1.0, MAX_MIP_LEVEL);
+        }
+    }
+
+    return false;
 }
 
 bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
@@ -181,17 +229,22 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
     return false;
 }
 
-
 void main() {
     float s = InitRand(gl_FragCoord.xy);
-    vec2 uv = GetScreenCoordinate(worldPosition);
+    vec2 uv = texCoords;
+
+    float rawLinearDepth = textureLod(gDepthSampler, uv, 0).x;
+    if(rawLinearDepth >= 99.f){ // zFar == 100.f
+        outColor = vec4(0.f, 0.f, 0.f, 1.f);
+        return;
+    }
     vec3 L_indir = vec3(0.0);
     vec3 b1, b2, worldNormal;
     worldNormal = GetGBufferWorldNormal(uv);
     LocalBasis(worldNormal, b1, b2);
     mat3 tangent2world = mat3(worldNormal, b1, b2);
-    vec3 wo = normalize(ubo2.cameraPos - worldPosition);
     vec3 worldPos = GetGBufferWorldPosition(uv);
+    vec3 wo = normalize(ubo2.cameraPos - worldPos);
     int cnt = 0;
     for(int i = 0; i < SAMPLE_NUM; ++i){
         float pdf;
@@ -208,4 +261,5 @@ void main() {
     vec3 L_dir = EvalDiffuse(normalize(-ubo2.lightDir), wo, uv) * EvalDirectionalLight(uv);
     vec3 color = pow(clamp(L_dir + L_indir, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     outColor = vec4(color, 1.0);
+    //outColor = vec4(1.0, 0.0, 0.0, 1.0);
 }

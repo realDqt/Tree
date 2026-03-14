@@ -19,7 +19,7 @@ class SSRApplication : public BaseApplication{
 public:
     SSRShadowmapPass shadowmapPass;
     GBufferPass gBufferPasses[2];
-    SSRPass ssrPass[2];
+    SSRPass ssrPass;
     BlinPhongPassSSR blinnPhongPasses[2];
 
     // vb and ib for cube
@@ -39,6 +39,11 @@ public:
     VkBuffer indexBuffer2;
     VkDeviceMemory indexBufferMemory2;
     glm::mat4 floorModel;
+
+    // vb and ib for quad
+    std::vector<VertexQuad> vertices3;
+    VkBuffer vertexBuffer3;
+    VkDeviceMemory vertexBufferMemory3;
 
     VkImage textureImage;
     VkDeviceMemory textureImageMemory;
@@ -207,67 +212,34 @@ public:
 
 
         // ssr pass
-        ssrPass[0].device = device;
-        ssrPass[0].physicalDevice = physicalDevice;
+        ssrPass.device = device;
+        ssrPass.physicalDevice = physicalDevice;
 
-        ssrPass[0].swapChainExtent = swapChainExtent;
-        ssrPass[0].swapChainImageFormat = swapChainImageFormat;
-        ssrPass[0].swapChainImageViews = swapChainImageViews;
+        ssrPass.swapChainExtent = swapChainExtent;
+        ssrPass.swapChainImageFormat = swapChainImageFormat;
+        ssrPass.swapChainImageViews = swapChainImageViews;
 
-        ssrPass[0].depthImageView = depthImageView;
+        ssrPass.depthImageView = depthImageView;
 
-        ssrPass[0].vertexBuffer = vertexBuffer;
-        ssrPass[0].indexBuffer = indexBuffer;
-        ssrPass[0].indicesCount = indices.size();
+        ssrPass.vertexBuffer = vertexBuffer3;
 
-        ssrPass[0].gAlbedoImageView = gAlbedoView;
-        ssrPass[0].gAlbedoSampler = gAlbedoSampler;
+        ssrPass.gAlbedoImageView = gAlbedoView;
+        ssrPass.gAlbedoSampler = gAlbedoSampler;
 
-        ssrPass[0].gWorldPositionImageView = gWorldPositionView;
-        ssrPass[0].gWorldPositionSampler = gWorldPositionSampler;
+        ssrPass.gWorldPositionImageView = gWorldPositionView;
+        ssrPass.gWorldPositionSampler = gWorldPositionSampler;
 
-        ssrPass[0].gWorldNormalImageView = gWorldNormalView;
-        ssrPass[0].gWorldNormalSampler = gWorldNormalSampler;
+        ssrPass.gWorldNormalImageView = gWorldNormalView;
+        ssrPass.gWorldNormalSampler = gWorldNormalSampler;
 
-        ssrPass[0].gDepthImageView = gDepthView;
-        ssrPass[0].gDepthSampler = gDepthSampler;
+        ssrPass.gDepthImageView = gDepthView;
+        ssrPass.gDepthSampler = gDepthSampler;
 
-        ssrPass[0].smImageView = shadowmapView;
-        ssrPass[0].smSampler = shadowmapSampler;
+        ssrPass.smImageView = shadowmapView;
+        ssrPass.smSampler = shadowmapSampler;
 
-        ssrPass[0].model = cubeModel;
-        ssrPass[0].currentFrame = currentFrame; // test
+        ssrPass.currentFrame = currentFrame; // test
 
-        ssrPass[1].device = device;
-        ssrPass[1].physicalDevice = physicalDevice;
-
-        ssrPass[1].swapChainExtent = swapChainExtent;
-        ssrPass[1].swapChainImageFormat = swapChainImageFormat;
-        ssrPass[1].swapChainImageViews = swapChainImageViews;
-
-        ssrPass[1].depthImageView = depthImageView;
-
-        ssrPass[1].vertexBuffer = vertexBuffer2;
-        ssrPass[1].indexBuffer = indexBuffer2;
-        ssrPass[1].indicesCount = indices2.size();
-
-        ssrPass[1].gAlbedoImageView = gAlbedoView;
-        ssrPass[1].gAlbedoSampler = gAlbedoSampler;
-
-        ssrPass[1].gWorldPositionImageView = gWorldPositionView;
-        ssrPass[1].gWorldPositionSampler = gWorldPositionSampler;
-
-        ssrPass[1].gWorldNormalImageView = gWorldNormalView;
-        ssrPass[1].gWorldNormalSampler = gWorldNormalSampler;
-
-        ssrPass[1].gDepthImageView = gDepthView;
-        ssrPass[1].gDepthSampler = gDepthSampler;
-
-        ssrPass[1].smImageView = shadowmapView;
-        ssrPass[1].smSampler = shadowmapSampler;
-
-        ssrPass[1].model = floorModel;
-        ssrPass[1].currentFrame = currentFrame; // test
 
 
     }
@@ -299,8 +271,7 @@ public:
         blinnPhongPasses[1].init();
         gBufferPasses[0].init();
         gBufferPasses[1].init();
-        ssrPass[0].init();
-        ssrPass[1].init();
+        ssrPass.init();
     }
 
     void cleanupSwapChain() override{
@@ -337,14 +308,9 @@ public:
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
 
-        for(auto& framebuffer :ssrPass[0].framebuffers){
+        for(auto& framebuffer :ssrPass.framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
-
-        for(auto& framebuffer : ssrPass[1].framebuffers){
-            vkDestroyFramebuffer(device, framebuffer, nullptr);
-        }
-
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device, imageView, nullptr);
         }
@@ -361,8 +327,7 @@ public:
         gBufferPasses[0].cleanup();
         gBufferPasses[1].cleanup();
 
-        ssrPass[0].cleanup();
-        ssrPass[1].cleanup();
+        ssrPass.cleanup();
 
         vkDestroyImageView(device, gAlbedoView, nullptr);
         vkFreeMemory(device, gAlbedoMemory, nullptr);
@@ -406,6 +371,9 @@ public:
         vkDestroyBuffer(device, indexBuffer2, nullptr);
         vkFreeMemory(device, indexBufferMemory2, nullptr);
 
+        vkDestroyBuffer(device, vertexBuffer3, nullptr);
+        vkFreeMemory(device, vertexBufferMemory3, nullptr);
+
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
             vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
@@ -431,6 +399,7 @@ public:
     void createVertexBuffer(){
         createCubeVertexBuffer();
         createFloorVertexBuffer();
+        createQuadVertexBuffer();
     }
 
     void createIndexBuffer(){
@@ -475,6 +444,27 @@ public:
         createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer2, vertexBufferMemory2);
 
         copyBuffer(stagingBuffer, vertexBuffer2, bufferSize);
+
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingBufferMemory, nullptr);
+    }
+
+    void createQuadVertexBuffer()
+    {
+        VkDeviceSize bufferSize = sizeof(vertices3[0]) * vertices3.size();
+
+        VkBuffer stagingBuffer;
+        VkDeviceMemory stagingBufferMemory;
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+        void* data;
+        vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+        memcpy(data, vertices3.data(), (size_t) bufferSize);
+        vkUnmapMemory(device, stagingBufferMemory);
+
+        createBuffer(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, vertexBuffer3, vertexBufferMemory3);
+
+        copyBuffer(stagingBuffer, vertexBuffer3, bufferSize);
 
         vkDestroyBuffer(device, stagingBuffer, nullptr);
         vkFreeMemory(device, stagingBufferMemory, nullptr);
@@ -597,6 +587,33 @@ public:
     void loadModel(){
         loadCube();
         loadFloor();
+        loadQuadModel();
+    }
+
+
+    void loadQuadModel(){
+        float positions[] = {
+                -1.f, 1.f, 0.f,
+                -1.f, -1.f, 0.f,
+                1.f, 1.f, 0.f,
+                1.f, -1.f, 0.f
+        };
+
+        float texCoords[] = {
+                0.f, 1.f,
+                0.f, 0.f,
+                1.f, 1.f,
+                1.f, 0.f
+        };
+
+        vertices3.clear();
+        for(uint32_t i = 0; i < 4; ++i){
+            VertexQuad vertexQuad{};
+            vertexQuad.pos = glm::vec3(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+            vertexQuad.texCoord = glm::vec2(texCoords[i * 2], texCoords[i * 2 + 1]);
+
+            vertices3.push_back(vertexQuad);
+        }
     }
 
     void loadCube(){
@@ -849,8 +866,7 @@ public:
 
         //blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         //blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
-        ssrPass[0].recordCommandBuffer(commandBuffer, imageIndex);
-        ssrPass[1].recordCommandBuffer(commandBuffer, imageIndex);
+        ssrPass.recordCommandBuffer(commandBuffer, imageIndex);
 
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
@@ -928,8 +944,7 @@ public:
         shadowmapPass.currentFrame = currentFrame;
         gBufferPasses[0].currentFrame = currentFrame;
         gBufferPasses[1].currentFrame = currentFrame;
-        ssrPass[0].currentFrame = currentFrame;
-        ssrPass[1].currentFrame = currentFrame;
+        ssrPass.currentFrame = currentFrame;
     }
 };
 

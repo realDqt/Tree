@@ -405,7 +405,7 @@ void GBufferPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t im
     clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; // albedo
     clearValues[1].color = {{0.0f, 0.0f, 0.0f, 1.0f}}; // position
     clearValues[2].color = {{0.0f, 0.0f, 0.0f, 0.0f}}; // normal
-    clearValues[3].color = {{1.0f}};                                // depth
+    clearValues[3].color = {{100.0f}};                             // depth
     clearValues[4].depthStencil = {1.0f, 0};
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();

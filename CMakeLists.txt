@@ -3,6 +3,11 @@ project(vkRenderingEngine)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# 设置默认构建类型为 Release
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+endif()
+
 set(GLFW_PATH E:/glfw/glfw-3.4.bin.WIN64)
 set(VULKAN_PATH E:/Vulkan/VulkanSDK)
 set(STB_IMAGE_PATH E:/ImageProcess)
@@ -19,14 +24,12 @@ include_directories(${TINY_GLTF_LOADER_PATH})
 include_directories(${GLAD_PATH}/include)
 include_directories(${ASSIMP_PATH}/include)
 
-
 link_directories(${GLFW_PATH}/lib-vc2022)
 link_directories(${VULKAN_PATH}/Lib)
 link_directories(${ASSIMP_PATH}/build/lib/Debug)
+link_directories(${ASSIMP_PATH}/build/lib/Release)
 
 add_definitions(-DNOMINMAX)
-
-
 
 add_executable(vkRenderingEngine
         main.cpp
@@ -80,14 +83,10 @@ add_executable(vkRenderingEngine
         FFTBloomApplication/FBSkyboxPass.h
         FFTBloomApplication/FBSkyboxPass.cpp
         FFTBloomApplication/FBCubemapPass.h
-        FFTBloomApplication/FBCubemapPass.h
-        FFTBloomApplication/FBCubemapPass.h
         FFTBloomApplication/FBCubemapPass.cpp
         FFTBloomApplication/FFTBloomApplication.h
         FFTBloomApplication/FFTBloomUtils.cpp
         FFTBloomApplication/NativeBloomPass.h
-        FFTBloomApplication/NativeBloomPass.h
-        FFTBloomApplication/NativeBloomPass.cpp
         FFTBloomApplication/NativeBloomPass.cpp
         SSRApplication/SSRPass.h
         SSRApplication/SSRPass.cpp
@@ -108,5 +107,10 @@ add_executable(vkRenderingEngine
         SSAOApplication/BlurPass.cpp
 )
 
-target_link_libraries(vkRenderingEngine glfw3 vulkan-1 assimp-vc143-mtd)
-
+# 分别指定 Debug 和 Release 模式下要链接的 Assimp 库
+target_link_libraries(vkRenderingEngine
+        glfw3
+        vulkan-1
+        debug assimp-vc143-mtd       # Debug 模式使用带 'd' 的多线程调试库
+        optimized assimp-vc143-mt    # Release 模式使用不带 'd' 的多线程优化库
+)
