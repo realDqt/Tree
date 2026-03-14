@@ -15,7 +15,7 @@ a rendering engine based on vulkan
 
 ![IBL](./demos/IBL.png)
 
-### 3. SSR
+### 3. SSR+HiZ
 
 ![SSR](./demos/SSR.png)
 
