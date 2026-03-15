@@ -160,6 +160,7 @@ bool RayMarchAcc(vec3 ori, vec3 dir, out vec3 hitPos) {
     dir = normalize(dir);
 
     vec3 currentOri = ori + dir * ACC_STEP_SIZE * 2.0;
+    //vec3 currentOri = ori;
     float currentMip = 0.f;
 
     for(int i = 0; i < MAX_ITERATIONS && currentMip >= 0.0; ++i) {
@@ -172,7 +173,14 @@ bool RayMarchAcc(vec3 ori, vec3 dir, out vec3 hitPos) {
         float currentZ = currentClipPos.w;
         vec2 uv = currentClipPos.xy / currentClipPos.w;
         uv = (uv + vec2(1.f)) * vec2(.5f);
-        if(uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) return false;
+        if(uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+            if(currentMip > 0.0){
+                currentMip -= 1.0;
+                continue;
+            }else{
+                return false;
+            }
+        }
 
 
         float recordZ = textureLod(gDepthSampler, uv, currentMip).r;
@@ -224,7 +232,8 @@ void main() {
     vec3 b1, b2, worldNormal;
     worldNormal = GetGBufferWorldNormal(uv);
     LocalBasis(worldNormal, b1, b2);
-    mat3 tangent2world = mat3(worldNormal, b1, b2);
+    //mat3 tangent2world = mat3(worldNormal, b1, b2);
+    mat3 tangent2world = mat3(b1, b2, worldNormal);
     vec3 worldPos = GetGBufferWorldPosition(uv);
     vec3 wo = normalize(ubo2.cameraPos - worldPos);
     int cnt = 0;
@@ -232,7 +241,7 @@ void main() {
         float pdf;
         vec3 sampleDir = vec3(tangent2world * SampleHemisphereCos(s, pdf));
         vec3 hitPos;
-        if(dot(sampleDir, worldNormal) > 0.0 && RayMarch(worldPos, sampleDir, hitPos)){
+        if(dot(sampleDir, worldNormal) > 0.0 && RayMarchAcc(worldPos, sampleDir, hitPos)){
             vec3 wi = normalize(hitPos - worldPos);
             vec2 uvReflect = GetScreenCoordinate(hitPos);
             L_indir += (EvalDiffuse(wi, wo, uv) / pdf) * EvalDiffuse(normalize(-ubo2.lightDir), -wi, uvReflect) * EvalDirectionalLight(uvReflect);
@@ -241,8 +250,6 @@ void main() {
     }
     L_indir /= (float(cnt) + 1e-3);
     vec3 L_dir = EvalDiffuse(normalize(-ubo2.lightDir), wo, uv) * EvalDirectionalLight(uv);
-    //L_indir = vec3(0.f);
     vec3 color = pow(clamp(L_dir + L_indir, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
     outColor = vec4(color, 1.0);
-    //outColor = vec4(1.0, 0.0, 0.0, 1.0);
 }
