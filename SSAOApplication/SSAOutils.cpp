@@ -3,8 +3,8 @@
 //
 #include "SSAOutils.h"
 
-const std::string ROBOT_PATH = "E:\\Proj\\ClionProj\\Tree\\models\\SSAOModel\\nanosuit.obj";
-const std::string MARRY_SSAO_PATH = "E:\\Proj\\ClionProj\\Tree\\models\\Marry.obj";
+const std::string ROBOT_PATH = projectPath("models/SSAOModel/nanosuit.obj");
+const std::string MARRY_SSAO_PATH = projectPath("models/Marry.obj");
 
 PointLight ssaoLight{
         .lightIntensity = glm::vec3(0.1, 0.1, 0.5),

@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <chrono>
+#include <filesystem>
 #include <vector>
 #include <cstring>
 #include <cstdlib>
@@ -41,6 +42,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 std::vector<char> readFile(const std::string& filename);
+std::string projectPath(const std::string& relativePath);
+std::string resolveResourcePath(const std::string& path);
 
 VkFormat findDepthFormat(VkPhysicalDevice physicalDevice);
 uint32_t findMemoryType(VkPhysicalDevice physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties);

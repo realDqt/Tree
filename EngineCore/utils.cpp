@@ -4,7 +4,50 @@
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 #include "utils.h"
+#include <string_view>
+
 Camera camera(glm::vec3(1.0f, 2.0f, 3.0f));
+
+namespace {
+    namespace fs = std::filesystem;
+
+    bool hasProjectMarkers(const fs::path& path) {
+        return fs::exists(path / "CMakeLists.txt")
+               && fs::exists(path / "shaders")
+               && fs::exists(path / "models")
+               && fs::exists(path / "textures");
+    }
+
+    fs::path findProjectRoot() {
+        fs::path current = fs::current_path();
+        while (!current.empty()) {
+            if (hasProjectMarkers(current)) {
+                return current;
+            }
+
+            if (!current.has_parent_path() || current.parent_path() == current) {
+                break;
+            }
+            current = current.parent_path();
+        }
+
+        return fs::current_path();
+    }
+
+    std::string trimLeadingRelativeSegments(std::string path) {
+        auto trimPrefix = [&](std::string_view prefix) {
+            while (path.rfind(prefix.data(), 0) == 0) {
+                path.erase(0, prefix.size());
+            }
+        };
+
+        trimPrefix("../");
+        trimPrefix("..\\");
+        trimPrefix("./");
+        trimPrefix(".\\");
+        return path;
+    }
+}
 
 void processInput(GLFWwindow *window)
 {
@@ -57,10 +100,11 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 }
 
 std::vector<char> readFile(const std::string& filename) {
-    std::ifstream file(filename, std::ios::ate | std::ios::binary);
+    const auto resolvedPath = resolveResourcePath(filename);
+    std::ifstream file(resolvedPath, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {
-        throw std::runtime_error("failed to open file at " + filename);
+        throw std::runtime_error("failed to open file at " + resolvedPath);
     }
 
     size_t fileSize = (size_t) file.tellg();
@@ -72,6 +116,35 @@ std::vector<char> readFile(const std::string& filename) {
     file.close();
 
     return buffer;
+}
+
+std::string projectPath(const std::string& relativePath) {
+    const fs::path input(relativePath);
+    if (input.is_absolute()) {
+        return input.lexically_normal().string();
+    }
+
+    return (findProjectRoot() / input).lexically_normal().string();
+}
+
+std::string resolveResourcePath(const std::string& path) {
+    const fs::path input(path);
+    if (input.is_absolute()) {
+        return input.lexically_normal().string();
+    }
+
+    const fs::path cwdCandidate = fs::current_path() / input;
+    if (fs::exists(cwdCandidate)) {
+        return cwdCandidate.lexically_normal().string();
+    }
+
+    const fs::path strippedCandidate = findProjectRoot() / trimLeadingRelativeSegments(path);
+    if (fs::exists(strippedCandidate)) {
+        return strippedCandidate.lexically_normal().string();
+    }
+
+    const fs::path projectCandidate = findProjectRoot() / input;
+    return projectCandidate.lexically_normal().string();
 }
 
 void createBuffer(VkPhysicalDevice physicalDevice, VkDevice device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory){

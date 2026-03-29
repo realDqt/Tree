@@ -12,7 +12,7 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-const std::string TEXTURE_PATH = "../textures/viking_room.png";
+const std::string TEXTURE_PATH = projectPath("textures/viking_room.png");
 
 
 struct RoomUniformBufferObject{

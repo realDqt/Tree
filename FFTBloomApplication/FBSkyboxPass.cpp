@@ -104,8 +104,8 @@ void FBSkyboxPass::createDescriptorSetLayout()
 }
 
 void FBSkyboxPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/FFTBloom/skyboxVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/FFTBloom/skyboxFrag.spv");
+    auto vertShaderCode = readFile("shaders/FFTBloom/skyboxVert.spv");
+    auto fragShaderCode = readFile("shaders/FFTBloom/skyboxFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);

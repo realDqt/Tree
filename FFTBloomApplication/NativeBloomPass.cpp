@@ -178,7 +178,7 @@ void NativeBloomPass::updateUniformBuffer()
 
 void NativeBloomPass::createComputePipeline()
 {
-    auto computeShaderCode = readFile("E:/clion_proj/Tree/shaders/FFTBloom/bloomComp.spv");
+    auto computeShaderCode = readFile("shaders/FFTBloom/bloomComp.spv");
 
     VkShaderModule computeShaderModule = createShaderModule(computeShaderCode);
 

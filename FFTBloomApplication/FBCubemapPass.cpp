@@ -91,8 +91,8 @@ void FBCubemapPass::createDescriptorSetLayout()
 }
 
 void FBCubemapPass::createGraphicsPipeline(){
-    auto vertShaderCode = readFile("E:/clion_proj/Tree/shaders/FFTBloom/renderBoxVert.spv");
-    auto fragShaderCode = readFile("E:/clion_proj/Tree/shaders/FFTBloom/renderBoxFrag.spv");
+    auto vertShaderCode = readFile("shaders/FFTBloom/renderBoxVert.spv");
+    auto fragShaderCode = readFile("shaders/FFTBloom/renderBoxFrag.spv");
 
     VkShaderModule vertShaderModule = createShaderModule(vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(fragShaderCode);
