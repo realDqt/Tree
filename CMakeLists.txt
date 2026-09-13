@@ -9,41 +9,75 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
 endif()
 
-set(GLFW_PATH E:/glfw/glfw-3.4.bin.WIN64)
-set(VULKAN_PATH E:/Vulkan/VulkanSDK)
-set(STB_IMAGE_PATH E:/ImageProcess)
-set(TINY_OBJ_LOADER_PATH E:/ObjLoader)
-set(GLAD_PATH E:/glad)
-set(TINY_GLTF_LOADER_PATH E:/GLTFLoader)
-set(ASSIMP_PATH E:/assimp/assimp-master)
+set(TREE_THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party" CACHE PATH
+        "Directory containing Tree's third-party dependencies")
 
-find_path(STB_IMAGE_WRITE_INCLUDE_DIR
-        NAMES stb_image_write.h
-        HINTS
-        ${STB_IMAGE_PATH}
-        E:/Proj/SlnProj/nvpro_core2/third_party/stb
+set(GLFW_PATH "${TREE_THIRD_PARTY_DIR}/glfw")
+set(VULKAN_PATH "${TREE_THIRD_PARTY_DIR}/VulkanSDK")
+set(STB_IMAGE_PATH "${TREE_THIRD_PARTY_DIR}/stb")
+set(TINY_OBJ_LOADER_PATH "${TREE_THIRD_PARTY_DIR}/tinyobjloader")
+set(GLM_PATH "${TREE_THIRD_PARTY_DIR}/glm")
+set(ASSIMP_PATH "${TREE_THIRD_PARTY_DIR}/assimp")
+
+set(TREE_REQUIRED_DEPENDENCY_FILES
+        "${GLFW_PATH}/CMakeLists.txt"
+        "${VULKAN_PATH}/Include/vulkan/vulkan.h"
+        "${VULKAN_PATH}/Lib/vulkan-1.lib"
+        "${VULKAN_PATH}/Bin/glslangValidator.exe"
+        "${VULKAN_PATH}/Bin/VkLayer_khronos_validation.json"
+        "${VULKAN_PATH}/Bin/VkLayer_khronos_validation.dll"
+        "${STB_IMAGE_PATH}/stb_image.h"
+        "${STB_IMAGE_PATH}/stb_image_write.h"
+        "${TINY_OBJ_LOADER_PATH}/tiny_obj_loader.h"
+        "${GLM_PATH}/glm/glm.hpp"
+        "${ASSIMP_PATH}/CMakeLists.txt"
 )
+
+foreach(dependency_file IN LISTS TREE_REQUIRED_DEPENDENCY_FILES)
+    if(NOT EXISTS "${dependency_file}")
+        message(FATAL_ERROR
+                "Missing dependency file: ${dependency_file}\n"
+                "Run scripts/setup_dependencies.ps1 before configuring the project.")
+    endif()
+endforeach()
+
+# Build the source dependencies as part of this project. Keeping these as CMake
+# targets avoids hard-coding compiler-specific library names and Debug/Release
+# output directories.
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static third-party libraries" FORCE)
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
+add_subdirectory("${GLFW_PATH}" "${CMAKE_BINARY_DIR}/third_party/glfw" EXCLUDE_FROM_ALL)
+
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+set(ASSIMP_NO_EXPORT ON CACHE BOOL "" FORCE)
+set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL_PDB OFF CACHE BOOL "" FORCE)
+if(POLICY CMP0175)
+    # Assimp 5.4.3 relies on the pre-CMake-3.31 add_custom_command behavior.
+    set(CMAKE_POLICY_DEFAULT_CMP0175 OLD)
+endif()
+add_subdirectory("${ASSIMP_PATH}" "${CMAKE_BINARY_DIR}/third_party/assimp" EXCLUDE_FROM_ALL)
+unset(CMAKE_POLICY_DEFAULT_CMP0175)
+
+add_library(TreeVulkan INTERFACE)
+add_library(Vulkan::Vulkan ALIAS TreeVulkan)
+target_include_directories(TreeVulkan SYSTEM INTERFACE "${VULKAN_PATH}/Include")
+target_link_libraries(TreeVulkan INTERFACE "${VULKAN_PATH}/Lib/vulkan-1.lib")
 
 set(TREE_THIRD_PARTY_INCLUDE_DIRS
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${GLFW_PATH}/include
-        ${VULKAN_PATH}/include
         ${STB_IMAGE_PATH}
         ${TINY_OBJ_LOADER_PATH}
-        ${TINY_GLTF_LOADER_PATH}
-        ${GLAD_PATH}/include
-        ${ASSIMP_PATH}/include
+        ${GLM_PATH}
 )
-
-set(TREE_THIRD_PARTY_LINK_DIRS
-        ${GLFW_PATH}/lib-vc2022
-        ${VULKAN_PATH}/Lib
-        ${ASSIMP_PATH}/build/lib/Debug
-        ${ASSIMP_PATH}/build/lib/Release
-)
-
-set(ASSIMP_DEBUG_DLL ${ASSIMP_PATH}/build/bin/Debug/assimp-vc143-mtd.dll)
-set(ASSIMP_RELEASE_DLL ${ASSIMP_PATH}/build/bin/Release/assimp-vc143-mt.dll)
 
 add_library(TreeCommon STATIC
         BaseApplication/BaseApplication.cpp
@@ -63,14 +97,12 @@ add_library(TreeCommon STATIC
 )
 
 target_include_directories(TreeCommon PUBLIC ${TREE_THIRD_PARTY_INCLUDE_DIRS})
-target_link_directories(TreeCommon PUBLIC ${TREE_THIRD_PARTY_LINK_DIRS})
 target_compile_definitions(TreeCommon PUBLIC NOMINMAX)
 target_link_libraries(TreeCommon
         PUBLIC
-        glfw3
-        vulkan-1
-        debug assimp-vc143-mtd
-        optimized assimp-vc143-mt
+        glfw
+        Vulkan::Vulkan
+        assimp::assimp
 )
 
 function(add_tree_application target)
@@ -78,25 +110,8 @@ function(add_tree_application target)
     target_link_libraries(${target} PRIVATE TreeCommon)
     set_target_properties(${target} PROPERTIES
             VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            VS_DEBUGGER_ENVIRONMENT "VK_ADD_LAYER_PATH=${VULKAN_PATH}/Bin"
     )
-
-    if(EXISTS ${ASSIMP_DEBUG_DLL})
-        add_custom_command(TARGET ${target} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${ASSIMP_DEBUG_DLL}
-                $<TARGET_FILE_DIR:${target}>
-                COMMAND_EXPAND_LISTS
-        )
-    endif()
-
-    if(EXISTS ${ASSIMP_RELEASE_DLL})
-        add_custom_command(TARGET ${target} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${ASSIMP_RELEASE_DLL}
-                $<TARGET_FILE_DIR:${target}>
-                COMMAND_EXPAND_LISTS
-        )
-    endif()
 endfunction()
 
 add_tree_application(HelloBoxApplication
@@ -153,6 +168,8 @@ add_tree_application(SSRApplication
         SSRApplication/GenerateHizPass.cpp
         SSRApplication/SSRPass.h
         SSRApplication/SSRPass.cpp
+        SSRApplication/FXAAPass.h
+        SSRApplication/FXAAPass.cpp
 )
 
 add_tree_application(FFTBloomApplication
@@ -167,10 +184,6 @@ add_tree_application(FFTBloomApplication
         FFTBloomApplication/NativeBloomPass.h
         FFTBloomApplication/NativeBloomPass.cpp
 )
-
-if(STB_IMAGE_WRITE_INCLUDE_DIR)
-    target_include_directories(FFTBloomApplication PRIVATE ${STB_IMAGE_WRITE_INCLUDE_DIR})
-endif()
 
 add_tree_application(SSAOApplication
         targets/SSAOApplicationMain.cpp

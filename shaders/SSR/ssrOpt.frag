@@ -3,6 +3,7 @@
 layout(location = 0) in vec2 texCoords;
 
 layout(location = 0) out vec4 outColor;
+layout(location = 1) out vec4 outHistory;
 
 layout(binding = 0, std140) uniform UniformBufferObject2{
     vec3 cameraPos;
@@ -10,6 +11,8 @@ layout(binding = 0, std140) uniform UniformBufferObject2{
     vec3 lightRadiance;
     mat4 world2clip;
     mat4 lightVP;
+    uint temporalFrameIndex;
+    float historyWeight;
 } ubo2;
 
 #define M_PI 3.1415926535897932384626433832795
@@ -25,6 +28,7 @@ layout(binding = 2) uniform sampler2D gWorldPositionSampler;
 layout(binding = 3) uniform sampler2D gWorldNormalSampler;
 layout(binding = 4) uniform sampler2D gDepthSampler;
 layout(binding = 5) uniform sampler2D smSampler;
+layout(binding = 6) uniform sampler2D historySampler;
 
 float Rand1(inout float p) {
     p = fract(p * .1031);
@@ -220,12 +224,14 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
 }
 
 void main() {
-    float s = InitRand(gl_FragCoord.xy);
+    float s = InitRand(gl_FragCoord.xy + vec2(0.754877666, 0.569840296) * float(ubo2.temporalFrameIndex));
     vec2 uv = texCoords;
 
     float rawLinearDepth = textureLod(gDepthSampler, uv, 0).x;
     if(rawLinearDepth >= 99.f){ // zFar == 100.f
-        outColor = vec4(0.f, 0.f, 0.f, 1.f);
+        vec4 background = vec4(0.f, 0.f, 0.f, 1.f);
+        outColor = background;
+        outHistory = background;
         return;
     }
     vec3 L_indir = vec3(0.0);
@@ -251,5 +257,10 @@ void main() {
     L_indir /= (float(cnt) + 1e-3);
     vec3 L_dir = EvalDiffuse(normalize(-ubo2.lightDir), wo, uv) * EvalDirectionalLight(uv);
     vec3 color = pow(clamp(L_dir + L_indir, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-    outColor = vec4(color, 1.0);
+    if (ubo2.historyWeight > 0.0) {
+        color = mix(color, texture(historySampler, uv).rgb, ubo2.historyWeight);
+    }
+    vec4 result = vec4(color, 1.0);
+    outColor = result;
+    outHistory = result;
 }

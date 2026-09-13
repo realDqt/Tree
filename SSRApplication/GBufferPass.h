@@ -67,6 +67,7 @@ public:
     glm::mat4 model;
     uint32_t currentFrame;
     bool isFloor;
+    bool clearAttachments;
 
     void init();
 

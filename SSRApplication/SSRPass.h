@@ -15,6 +15,8 @@ public:
         alignas(16) glm::vec3 lightRadiance;
         alignas(16) glm::mat4 world2clip;
         glm::mat4 lightVP;
+        alignas(16) uint32_t temporalFrameIndex;
+        float historyWeight;
     };
 
     /*
@@ -72,6 +74,15 @@ public:
 
     VkImageView smImageView;
     VkSampler smSampler;
+
+    std::vector<VkImageView> historyImageViews;
+    VkSampler historySampler;
+
+    glm::vec3 previousCameraPosition{};
+    glm::vec3 previousCameraFront{};
+    float previousCameraZoom = 0.0f;
+    bool historyValid = false;
+    uint32_t temporalFrameIndex = 0;
 
     uint32_t currentFrame;
 

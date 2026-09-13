@@ -15,6 +15,7 @@
 #include "GBufferPass.h"
 #include "GenerateHizPass.h"
 #include "SSRPass.h"
+#include "FXAAPass.h"
 
 class SSRApplication : public BaseApplication{
 public:
@@ -22,6 +23,7 @@ public:
     GBufferPass gBufferPasses[2];
     GenerateHizPass generateHizPass;
     SSRPass ssrPass;
+    FXAAPass fxaaPass;
     BlinPhongPassSSR blinnPhongPasses[2];
 
     // vb and ib for cube
@@ -72,6 +74,7 @@ public:
 
     uint32_t mipLevels;
     uint32_t hizMipLevels;
+    bool hizInitialized = false;
 
     // resources for gBuffer
     VkImage gAlbedo;
@@ -95,6 +98,11 @@ public:
     VkSampler gWorldPositionSampler;
     VkSampler gWorldNormalSampler;
     VkSampler gDepthSampler;
+
+    std::vector<VkImage> historyImages;
+    std::vector<VkDeviceMemory> historyImageMemories;
+    std::vector<VkImageView> historyImageViews;
+    VkSampler historySampler;
 
 
 
@@ -120,6 +128,8 @@ public:
 
         blinnPhongPasses[0].model = cubeModel;
         blinnPhongPasses[0].isFloor = false;
+        blinnPhongPasses[0].clearAttachments = true;
+        blinnPhongPasses[0].currentFrame = currentFrame;
         blinnPhongPasses[0].shadowmapView = shadowmapView;
         blinnPhongPasses[0].smSampler = shadowmapSampler;
 
@@ -143,6 +153,8 @@ public:
 
         blinnPhongPasses[1].model = floorModel;
         blinnPhongPasses[1].isFloor = true;
+        blinnPhongPasses[1].clearAttachments = false;
+        blinnPhongPasses[1].currentFrame = currentFrame;
         blinnPhongPasses[1].shadowmapView = shadowmapView;
         blinnPhongPasses[1].smSampler = shadowmapSampler;
 
@@ -165,6 +177,7 @@ public:
         shadowmapPass.swapChainImagesCount = swapChainImageViews.size();
         shadowmapPass.cubeModel = cubeModel;
         shadowmapPass.floorModel = floorModel;
+        shadowmapPass.currentFrame = currentFrame;
 
         // GBuffer Passes
         gBufferPasses[0].device = device;
@@ -189,6 +202,8 @@ public:
 
         gBufferPasses[0].model = cubeModel;
         gBufferPasses[0].isFloor = false;
+        gBufferPasses[0].clearAttachments = true;
+        gBufferPasses[0].currentFrame = currentFrame;
 
 
         gBufferPasses[1].device = device;
@@ -213,6 +228,8 @@ public:
 
         gBufferPasses[1].model = floorModel;
         gBufferPasses[1].isFloor = true;
+        gBufferPasses[1].clearAttachments = false;
+        gBufferPasses[1].currentFrame = currentFrame;
 
         // generate hiz pass
         generateHizPass.device = device;
@@ -251,8 +268,17 @@ public:
         ssrPass.smImageView = shadowmapView;
         ssrPass.smSampler = shadowmapSampler;
 
+        ssrPass.historyImageViews = historyImageViews;
+        ssrPass.historySampler = historySampler;
+
         ssrPass.currentFrame = currentFrame; // test
 
+        fxaaPass.device = device;
+        fxaaPass.swapChainExtent = swapChainExtent;
+        fxaaPass.swapChainImageFormat = swapChainImageFormat;
+        fxaaPass.swapChainImageViews = swapChainImageViews;
+        fxaaPass.vertexBuffer = vertexBuffer3;
+        fxaaPass.currentFrame = currentFrame;
 
 
     }
@@ -262,6 +288,7 @@ public:
         createColorResources();
         createDepthResources();
         createGBufferResources();
+        createHistoryResources();
 
         createTextureImage();
         createTextureImageView();
@@ -279,101 +306,78 @@ public:
         createIndexBuffer();
 
         prepareResources();
-        shadowmapPass.init();
-        blinnPhongPasses[0].init();
-        blinnPhongPasses[1].init();
-        gBufferPasses[0].init();
-        gBufferPasses[1].init();
-        generateHizPass.init();
-        ssrPass.init();
+        initPasses();
     }
 
     void cleanupSwapChain() override{
-
-        vkDestroyImageView(device, colorImageView, nullptr);
-        vkFreeMemory(device, colorImageMemory, nullptr);
-        vkDestroyImage(device, colorImage, nullptr);
-
-        vkDestroyImageView(device, depthImageView, nullptr);
-        vkFreeMemory(device, depthImageMemory, nullptr);
-        vkDestroyImage(device, depthImage, nullptr);
-
-        vkDestroyImageView(device, depthImageView2, nullptr);
-        vkFreeMemory(device, depthImageMemory2, nullptr);
-        vkDestroyImage(device, depthImage2, nullptr);
-
         for(auto& framebuffer : shadowmapPass.framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+        shadowmapPass.framebuffers.clear();
 
         for(auto& framebuffer : blinnPhongPasses[0].framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+        blinnPhongPasses[0].framebuffers.clear();
 
         for(auto& framebuffer : blinnPhongPasses[1].framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+        blinnPhongPasses[1].framebuffers.clear();
 
         for(auto& framebuffer :gBufferPasses[0].framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+        gBufferPasses[0].framebuffers.clear();
 
         for(auto& framebuffer : gBufferPasses[1].framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+        gBufferPasses[1].framebuffers.clear();
 
         for(auto& framebuffer :ssrPass.framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
+        ssrPass.framebuffers.clear();
+
+        for(auto& framebuffer : fxaaPass.framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+        fxaaPass.framebuffers.clear();
+
+        vkDestroyImageView(device, colorImageView, nullptr);
+        vkDestroyImage(device, colorImage, nullptr);
+        vkFreeMemory(device, colorImageMemory, nullptr);
+
+        vkDestroyImageView(device, depthImageView, nullptr);
+        vkDestroyImage(device, depthImage, nullptr);
+        vkFreeMemory(device, depthImageMemory, nullptr);
+
+        vkDestroyImageView(device, depthImageView2, nullptr);
+        vkDestroyImage(device, depthImage2, nullptr);
+        vkFreeMemory(device, depthImageMemory2, nullptr);
+
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device, imageView, nullptr);
         }
+        swapChainImageViews.clear();
+        swapChainImages.clear();
 
         vkDestroySwapchainKHR(device, swapChain, nullptr);
     }
 
     void cleanup() override{
+        destroySyncResources();
         cleanupSwapChain();
-        shadowmapPass.cleanup();
-        blinnPhongPasses[0].cleanup();
-        blinnPhongPasses[1].cleanup();
-
-        gBufferPasses[0].cleanup();
-        gBufferPasses[1].cleanup();
-        generateHizPass.cleanup();
-
-        ssrPass.cleanup();
-
-        vkDestroyImageView(device, gAlbedoView, nullptr);
-        vkFreeMemory(device, gAlbedoMemory, nullptr);
-        vkDestroyImage(device, gAlbedo, nullptr);
-        vkDestroySampler(device, gAlbedoSampler, nullptr);
-
-        vkDestroyImageView(device, gWorldPositionView, nullptr);
-        vkFreeMemory(device, gWorldPositionMemory, nullptr);
-        vkDestroyImage(device, gWorldPosition, nullptr);
-        vkDestroySampler(device, gWorldPositionSampler, nullptr);
-
-        vkDestroyImageView(device, gWorldNormalView, nullptr);
-        vkFreeMemory(device, gWorldNormalMemory, nullptr);
-        vkDestroyImage(device, gWorldNormal, nullptr);
-        vkDestroySampler(device, gWorldNormalSampler, nullptr);
-
-        vkDestroyImageView(device, gDepthView, nullptr);
-        vkDestroyImageView(device, gDepthViewMip0, nullptr);
-        vkFreeMemory(device, gDepthMemory, nullptr);
-        vkDestroyImage(device, gDepth, nullptr);
-        vkDestroySampler(device, gDepthSampler, nullptr);
-
-        vkDestroyImageView(device, shadowmapView, nullptr);
-        vkFreeMemory(device, shadowmapMemory, nullptr);
-        vkDestroyImage(device, shadowmap, nullptr);
-        vkDestroySampler(device, shadowmapSampler, nullptr);
+        cleanupPasses();
+        destroyHistoryResources();
+        destroyGBufferResources();
+        destroyShadowmapResources();
 
         vkDestroyImageView(device, textureImageView, nullptr);
-        vkFreeMemory(device, textureImageMemory, nullptr);
-        vkDestroyImage(device, textureImage, nullptr);
         vkDestroySampler(device, textureSampler, nullptr);
+        vkDestroyImage(device, textureImage, nullptr);
+        vkFreeMemory(device, textureImageMemory, nullptr);
 
         vkDestroyBuffer(device, vertexBuffer, nullptr);
         vkFreeMemory(device, vertexBufferMemory, nullptr);
@@ -390,12 +394,6 @@ public:
         vkDestroyBuffer(device, vertexBuffer3, nullptr);
         vkFreeMemory(device, vertexBufferMemory3, nullptr);
 
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
-            vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
-            vkDestroyFence(device, inFlightFences[i], nullptr);
-        }
-
         vkDestroyCommandPool(device, commandPool, nullptr);
 
         vkDestroyDevice(device, nullptr);
@@ -410,6 +408,91 @@ public:
         glfwDestroyWindow(window);
 
         glfwTerminate();
+    }
+
+    void initPasses() {
+        shadowmapPass.init();
+        blinnPhongPasses[0].init();
+        blinnPhongPasses[1].init();
+        gBufferPasses[0].init();
+        gBufferPasses[1].init();
+        generateHizPass.init();
+        ssrPass.init();
+        fxaaPass.inputImageViews = historyImageViews;
+        fxaaPass.inputSampler = historySampler;
+        fxaaPass.init();
+    }
+
+    void cleanupPasses() {
+        shadowmapPass.cleanup();
+        blinnPhongPasses[0].cleanup();
+        blinnPhongPasses[1].cleanup();
+        gBufferPasses[0].cleanup();
+        gBufferPasses[1].cleanup();
+        generateHizPass.cleanup();
+        fxaaPass.cleanup();
+        ssrPass.cleanup();
+    }
+
+    void destroyHistoryResources() {
+        vkDestroySampler(device, historySampler, nullptr);
+        for (size_t i = 0; i < historyImages.size(); i++) {
+            vkDestroyImageView(device, historyImageViews[i], nullptr);
+            vkDestroyImage(device, historyImages[i], nullptr);
+            vkFreeMemory(device, historyImageMemories[i], nullptr);
+        }
+        historyImageViews.clear();
+        historyImages.clear();
+        historyImageMemories.clear();
+    }
+
+    void destroyGBufferResources() {
+        vkDestroyImageView(device, gAlbedoView, nullptr);
+        vkDestroyImage(device, gAlbedo, nullptr);
+        vkFreeMemory(device, gAlbedoMemory, nullptr);
+        vkDestroySampler(device, gAlbedoSampler, nullptr);
+
+        vkDestroyImageView(device, gWorldPositionView, nullptr);
+        vkDestroyImage(device, gWorldPosition, nullptr);
+        vkFreeMemory(device, gWorldPositionMemory, nullptr);
+        vkDestroySampler(device, gWorldPositionSampler, nullptr);
+
+        vkDestroyImageView(device, gWorldNormalView, nullptr);
+        vkDestroyImage(device, gWorldNormal, nullptr);
+        vkFreeMemory(device, gWorldNormalMemory, nullptr);
+        vkDestroySampler(device, gWorldNormalSampler, nullptr);
+
+        vkDestroyImageView(device, gDepthView, nullptr);
+        vkDestroyImageView(device, gDepthViewMip0, nullptr);
+        vkDestroyImage(device, gDepth, nullptr);
+        vkFreeMemory(device, gDepthMemory, nullptr);
+        vkDestroySampler(device, gDepthSampler, nullptr);
+    }
+
+    void destroyShadowmapResources() {
+        vkDestroyImageView(device, shadowmapView, nullptr);
+        vkDestroyImage(device, shadowmap, nullptr);
+        vkFreeMemory(device, shadowmapMemory, nullptr);
+        vkDestroySampler(device, shadowmapSampler, nullptr);
+    }
+
+    void destroySyncResources() {
+        for (auto semaphore : renderFinishedSemaphores) {
+            vkDestroySemaphore(device, semaphore, nullptr);
+        }
+        for (auto semaphore : imageAvailableSemaphores) {
+            vkDestroySemaphore(device, semaphore, nullptr);
+        }
+        for (auto fence : inFlightFences) {
+            vkDestroyFence(device, fence, nullptr);
+        }
+        if (!commandBuffers.empty()) {
+            vkFreeCommandBuffers(device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
+        }
+        renderFinishedSemaphores.clear();
+        imageAvailableSemaphores.clear();
+        inFlightFences.clear();
+        commandBuffers.clear();
     }
 
     void createVertexBuffer(){
@@ -529,25 +612,22 @@ public:
     }
 
     void createShadowmapSampler() {
-        VkPhysicalDeviceProperties properties{};
-        vkGetPhysicalDeviceProperties(physicalDevice, &properties);
-
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter = VK_FILTER_LINEAR;  // 使用线性过滤
-        samplerInfo.minFilter = VK_FILTER_LINEAR;  // 使用线性过滤
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;  // 边界模式
+        samplerInfo.magFilter = VK_FILTER_NEAREST;
+        samplerInfo.minFilter = VK_FILTER_NEAREST;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
-        samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;  // 边界颜色为白色
-        samplerInfo.anisotropyEnable = VK_FALSE;  // 关闭各向异性过滤
-        samplerInfo.maxAnisotropy = 1.0f;  // 设置为 1.0（无效，但需要初始化）
-        samplerInfo.unnormalizedCoordinates = VK_FALSE;  // 使用标准化坐标
-        samplerInfo.compareEnable = VK_TRUE;  // 启用深度比较
-        samplerInfo.compareOp = VK_COMPARE_OP_LESS;  // 深度比较操作
-        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;  // 禁用 Mipmap
+        samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+        samplerInfo.anisotropyEnable = VK_FALSE;
+        samplerInfo.maxAnisotropy = 1.0f;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
         samplerInfo.minLod = 0.0f;
-        samplerInfo.maxLod = 0.0f;  // 禁用 Mipmap
+        samplerInfo.maxLod = 0.0f;
         samplerInfo.mipLodBias = 0.0f;
 
         if (vkCreateSampler(device, &samplerInfo, nullptr, &shadowmapSampler) != VK_SUCCESS) {
@@ -585,6 +665,8 @@ public:
 
 
     void recreateSwapChain() {
+        framebufferResized = false;
+
         int width = 0, height = 0;
         glfwGetFramebufferSize(window, &width, &height);
         while (width == 0 || height == 0) {
@@ -594,10 +676,33 @@ public:
 
         vkDeviceWaitIdle(device);
 
+        destroySyncResources();
         cleanupSwapChain();
+        cleanupPasses();
+        destroyHistoryResources();
+        destroyGBufferResources();
+        destroyShadowmapResources();
 
+        currentFrame = 0;
         createSwapChain();
         createImageViews();
+        createCommandBuffers();
+        createSyncObjects();
+        createColorResources();
+        createDepthResources();
+        createGBufferResources();
+        createHistoryResources();
+        createShadowmapSampler();
+        createGSampler(gAlbedoSampler);
+        createGSampler(gWorldPositionSampler);
+        createGSampler(gWorldNormalSampler);
+        createGSampler(gDepthSampler);
+        prepareResources();
+        initPasses();
+
+        hizInitialized = false;
+        ssrPass.historyValid = false;
+        ssrPass.temporalFrameIndex = 0;
     }
 
     void loadModel(){
@@ -797,6 +902,52 @@ public:
         gDepthViewMip0 = createImageView(gDepth, gDepthFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
+    void createHistoryResources() {
+        historyImages.resize(MAX_FRAMES_IN_FLIGHT);
+        historyImageMemories.resize(MAX_FRAMES_IN_FLIGHT);
+        historyImageViews.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (size_t i = 0; i < historyImages.size(); i++) {
+            createImage(
+                    swapChainExtent.width,
+                    swapChainExtent.height,
+                    1,
+                    VK_SAMPLE_COUNT_1_BIT,
+                    swapChainImageFormat,
+                    VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                    historyImages[i],
+                    historyImageMemories[i]
+            );
+            historyImageViews[i] = createImageView(historyImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+            transitionImageLayout(historyImages[i], swapChainImageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+            transitionImageLayout(historyImages[i], swapChainImageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+        }
+
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_NEAREST;
+        samplerInfo.minFilter = VK_FILTER_NEAREST;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.anisotropyEnable = VK_FALSE;
+        samplerInfo.maxAnisotropy = 1.0f;
+        samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = 0.0f;
+        samplerInfo.mipLodBias = 0.0f;
+
+        if (vkCreateSampler(device, &samplerInfo, nullptr, &historySampler) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create history sampler!");
+        }
+    }
+
     void createDepthResources() {
         VkFormat depthFormat = findDepthFormat();
 
@@ -892,10 +1043,10 @@ public:
             barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
             barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
 
-            barrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+            barrier.srcAccessMask = hizInitialized ? VK_ACCESS_SHADER_READ_BIT : 0;
             barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_SHADER_WRITE_BIT;
 
-            barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;;
+            barrier.oldLayout = hizInitialized ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_UNDEFINED;
             barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
             barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
             barrier.subresourceRange.baseMipLevel = 1;
@@ -905,7 +1056,7 @@ public:
 
             vkCmdPipelineBarrier(
                     commandBuffer,
-                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+                    hizInitialized ? VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT : VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
                     VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
                     0,
                     0, nullptr,
@@ -915,10 +1066,12 @@ public:
         }
 
         generateHizPass.recordCommandBuffer(commandBuffer);
+        hizInitialized = true;
 
         //blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         //blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
         ssrPass.recordCommandBuffer(commandBuffer, imageIndex);
+        fxaaPass.recordCommandBuffer(commandBuffer, imageIndex);
 
 
         if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
@@ -986,6 +1139,7 @@ public:
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
             framebufferResized = false;
             recreateSwapChain();
+            return;
         } else if (result != VK_SUCCESS) {
             throw std::runtime_error("failed to present swap chain image!");
         }
@@ -997,6 +1151,7 @@ public:
         gBufferPasses[0].currentFrame = currentFrame;
         gBufferPasses[1].currentFrame = currentFrame;
         ssrPass.currentFrame = currentFrame;
+        fxaaPass.currentFrame = currentFrame;
     }
 };
 
