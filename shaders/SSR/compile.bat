@@ -54,6 +54,11 @@ if errorlevel 1 (
     set "COMPILE_EXIT_CODE=%ERRORLEVEL%"
     goto :compile_failed
 )
+"%GLSLANG_VALIDATOR%" -V -R denoise.frag -o denoiseFrag.spv
+if errorlevel 1 (
+    set "COMPILE_EXIT_CODE=%ERRORLEVEL%"
+    goto :compile_failed
+)
 "%GLSLANG_VALIDATOR%" -V -R fxaa.frag -o fxaaFrag.spv
 if errorlevel 1 (
     set "COMPILE_EXIT_CODE=%ERRORLEVEL%"

@@ -15,6 +15,7 @@
 #include "GBufferPass.h"
 #include "GenerateHizPass.h"
 #include "SSRPass.h"
+#include "DenoisePass.h"
 #include "FXAAPass.h"
 
 class SSRApplication : public BaseApplication{
@@ -23,6 +24,7 @@ public:
     GBufferPass gBufferPasses[2];
     GenerateHizPass generateHizPass;
     SSRPass ssrPass;
+    DenoisePass denoisePass;
     FXAAPass fxaaPass;
     BlinPhongPassSSR blinnPhongPasses[2];
 
@@ -107,6 +109,14 @@ public:
     std::vector<VkImage> momentsImages;
     std::vector<VkDeviceMemory> momentsImageMemories;
     std::vector<VkImageView> momentsImageViews;
+
+    std::vector<VkImage> directLightImages;
+    std::vector<VkDeviceMemory> directLightImageMemories;
+    std::vector<VkImageView> directLightImageViews;
+
+    std::vector<VkImage> resolvedImages;
+    std::vector<VkDeviceMemory> resolvedImageMemories;
+    std::vector<VkImageView> resolvedImageViews;
 
 
 
@@ -276,8 +286,32 @@ public:
         ssrPass.historySampler = historySampler;
 
         ssrPass.momentsImageViews = momentsImageViews;
+        ssrPass.directLightImageViews = directLightImageViews;
 
         ssrPass.currentFrame = currentFrame; // test
+
+        // denoise pass
+        denoisePass.device = device;
+        denoisePass.swapChainExtent = swapChainExtent;
+        denoisePass.vertexBuffer = vertexBuffer3;
+
+        denoisePass.indirectImageViews = historyImageViews;
+        denoisePass.momentsImageViews = momentsImageViews;
+        denoisePass.directLightImageViews = directLightImageViews;
+        denoisePass.resolvedImageViews = resolvedImageViews;
+        denoisePass.accumulationSampler = historySampler;
+
+        denoisePass.gWorldPositionImageView = gWorldPositionView;
+        denoisePass.gWorldPositionSampler = gWorldPositionSampler;
+        denoisePass.gWorldNormalImageView = gWorldNormalView;
+        denoisePass.gWorldNormalSampler = gWorldNormalSampler;
+        denoisePass.gDepthImageView = gDepthView;
+        denoisePass.gDepthSampler = gDepthSampler;
+        denoisePass.gAlbedoImageView = gAlbedoView;
+        denoisePass.gAlbedoSampler = gAlbedoSampler;
+
+        denoisePass.maxAccumFrames = ssrPass.maxAccumFrames;
+        denoisePass.currentFrame = currentFrame;
 
         fxaaPass.device = device;
         fxaaPass.swapChainExtent = swapChainExtent;
@@ -345,6 +379,11 @@ public:
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
         ssrPass.framebuffers.clear();
+
+        for(auto& framebuffer : denoisePass.framebuffers){
+            vkDestroyFramebuffer(device, framebuffer, nullptr);
+        }
+        denoisePass.framebuffers.clear();
 
         for(auto& framebuffer : fxaaPass.framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
@@ -424,7 +463,8 @@ public:
         gBufferPasses[1].init();
         generateHizPass.init();
         ssrPass.init();
-        fxaaPass.inputImageViews = historyImageViews;
+        denoisePass.init();
+        fxaaPass.inputImageViews = resolvedImageViews;
         fxaaPass.inputSampler = historySampler;
         fxaaPass.init();
     }
@@ -437,28 +477,16 @@ public:
         gBufferPasses[1].cleanup();
         generateHizPass.cleanup();
         fxaaPass.cleanup();
+        denoisePass.cleanup();
         ssrPass.cleanup();
     }
 
     void destroyHistoryResources() {
         vkDestroySampler(device, historySampler, nullptr);
-        for (size_t i = 0; i < historyImages.size(); i++) {
-            vkDestroyImageView(device, historyImageViews[i], nullptr);
-            vkDestroyImage(device, historyImages[i], nullptr);
-            vkFreeMemory(device, historyImageMemories[i], nullptr);
-        }
-        historyImageViews.clear();
-        historyImages.clear();
-        historyImageMemories.clear();
-
-        for (size_t i = 0; i < momentsImages.size(); i++) {
-            vkDestroyImageView(device, momentsImageViews[i], nullptr);
-            vkDestroyImage(device, momentsImages[i], nullptr);
-            vkFreeMemory(device, momentsImageMemories[i], nullptr);
-        }
-        momentsImageViews.clear();
-        momentsImages.clear();
-        momentsImageMemories.clear();
+        destroyRingImages(historyImages, historyImageMemories, historyImageViews);
+        destroyRingImages(momentsImages, momentsImageMemories, momentsImageViews);
+        destroyRingImages(directLightImages, directLightImageMemories, directLightImageViews);
+        destroyRingImages(resolvedImages, resolvedImageMemories, resolvedImageViews);
     }
 
     void destroyGBufferResources() {
@@ -920,50 +948,53 @@ public:
         gDepthViewMip0 = createImageView(gDepth, gDepthFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
 
+    // One full screen target per frame in flight, left in SHADER_READ_ONLY_OPTIMAL so the
+    // render passes that produce them can declare it as both initial and final layout.
+    void createRingImages(VkFormat format,
+                          std::vector<VkImage>& images,
+                          std::vector<VkDeviceMemory>& memories,
+                          std::vector<VkImageView>& views) {
+        images.resize(MAX_FRAMES_IN_FLIGHT);
+        memories.resize(MAX_FRAMES_IN_FLIGHT);
+        views.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (size_t i = 0; i < images.size(); i++) {
+            createImage(
+                    swapChainExtent.width,
+                    swapChainExtent.height,
+                    1,
+                    VK_SAMPLE_COUNT_1_BIT,
+                    format,
+                    VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                    images[i],
+                    memories[i]
+            );
+            views[i] = createImageView(images[i], format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+            transitionImageLayout(images[i], format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+            transitionImageLayout(images[i], format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+        }
+    }
+
+    void destroyRingImages(std::vector<VkImage>& images,
+                           std::vector<VkDeviceMemory>& memories,
+                           std::vector<VkImageView>& views) {
+        for (size_t i = 0; i < images.size(); i++) {
+            vkDestroyImageView(device, views[i], nullptr);
+            vkDestroyImage(device, images[i], nullptr);
+            vkFreeMemory(device, memories[i], nullptr);
+        }
+        views.clear();
+        images.clear();
+        memories.clear();
+    }
+
     void createHistoryResources() {
-        historyImages.resize(MAX_FRAMES_IN_FLIGHT);
-        historyImageMemories.resize(MAX_FRAMES_IN_FLIGHT);
-        historyImageViews.resize(MAX_FRAMES_IN_FLIGHT);
-
-        for (size_t i = 0; i < historyImages.size(); i++) {
-            createImage(
-                    swapChainExtent.width,
-                    swapChainExtent.height,
-                    1,
-                    VK_SAMPLE_COUNT_1_BIT,
-                    historyFormat,
-                    VK_IMAGE_TILING_OPTIMAL,
-                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                    historyImages[i],
-                    historyImageMemories[i]
-            );
-            historyImageViews[i] = createImageView(historyImages[i], historyFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-            transitionImageLayout(historyImages[i], historyFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
-            transitionImageLayout(historyImages[i], historyFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
-        }
-
-        momentsImages.resize(MAX_FRAMES_IN_FLIGHT);
-        momentsImageMemories.resize(MAX_FRAMES_IN_FLIGHT);
-        momentsImageViews.resize(MAX_FRAMES_IN_FLIGHT);
-
-        for (size_t i = 0; i < momentsImages.size(); i++) {
-            createImage(
-                    swapChainExtent.width,
-                    swapChainExtent.height,
-                    1,
-                    VK_SAMPLE_COUNT_1_BIT,
-                    momentsFormat,
-                    VK_IMAGE_TILING_OPTIMAL,
-                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
-                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                    momentsImages[i],
-                    momentsImageMemories[i]
-            );
-            momentsImageViews[i] = createImageView(momentsImages[i], momentsFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-            transitionImageLayout(momentsImages[i], momentsFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
-            transitionImageLayout(momentsImages[i], momentsFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
-        }
+        createRingImages(historyFormat, historyImages, historyImageMemories, historyImageViews);
+        createRingImages(momentsFormat, momentsImages, momentsImageMemories, momentsImageViews);
+        createRingImages(directLightFormat, directLightImages, directLightImageMemories, directLightImageViews);
+        createRingImages(resolvedFormat, resolvedImages, resolvedImageMemories, resolvedImageViews);
 
         // SSR reads the history at exact texel centres, but FXAA samples it at fractional offsets.
         VkSamplerCreateInfo samplerInfo{};
@@ -1112,6 +1143,7 @@ public:
         //blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         //blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
         ssrPass.recordCommandBuffer(commandBuffer, imageIndex);
+        denoisePass.recordCommandBuffer(commandBuffer);
         fxaaPass.recordCommandBuffer(commandBuffer, imageIndex);
 
 
@@ -1192,6 +1224,7 @@ public:
         gBufferPasses[0].currentFrame = currentFrame;
         gBufferPasses[1].currentFrame = currentFrame;
         ssrPass.currentFrame = currentFrame;
+        denoisePass.currentFrame = currentFrame;
         fxaaPass.currentFrame = currentFrame;
     }
 };

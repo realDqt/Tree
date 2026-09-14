@@ -34,6 +34,16 @@ void SSRPass::createRenderPass() {
     momentsAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     momentsAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
+    VkAttachmentDescription directLightAttachment{};
+    directLightAttachment.format = directLightFormat;
+    directLightAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    directLightAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    directLightAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    directLightAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    directLightAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    directLightAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    directLightAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
     VkAttachmentDescription depthAttachment{};
     depthAttachment.format = findDepthFormat(physicalDevice);
     depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -49,7 +59,7 @@ void SSRPass::createRenderPass() {
     colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference depthAttachmentRef{};
-    depthAttachmentRef.attachment = 3;
+    depthAttachmentRef.attachment = 4;
     depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference historyAttachmentRef{};
@@ -60,9 +70,13 @@ void SSRPass::createRenderPass() {
     momentsAttachmentRef.attachment = 2;
     momentsAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
+    VkAttachmentReference directLightAttachmentRef{};
+    directLightAttachmentRef.attachment = 3;
+    directLightAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
     VkSubpassDescription subpass{};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    std::array<VkAttachmentReference, 3> colorAttachmentRefs = {colorAttachmentRef, historyAttachmentRef, momentsAttachmentRef};
+    std::array<VkAttachmentReference, 4> colorAttachmentRefs = {colorAttachmentRef, historyAttachmentRef, momentsAttachmentRef, directLightAttachmentRef};
     subpass.colorAttachmentCount = static_cast<uint32_t>(colorAttachmentRefs.size());
     subpass.pColorAttachments = colorAttachmentRefs.data();
     subpass.pDepthStencilAttachment = &depthAttachmentRef;
@@ -82,7 +96,7 @@ void SSRPass::createRenderPass() {
     dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-    std::array<VkAttachmentDescription, 4> attachments = {colorAttachment, historyAttachment, momentsAttachment, depthAttachment};
+    std::array<VkAttachmentDescription, 5> attachments = {colorAttachment, historyAttachment, momentsAttachment, directLightAttachment, depthAttachment};
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -166,7 +180,8 @@ void SSRPass::createGraphicsPipeline() {
     colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_FALSE;
 
-    std::array<VkPipelineColorBlendAttachmentState, 3> colorBlendAttachments = {
+    std::array<VkPipelineColorBlendAttachmentState, 4> colorBlendAttachments = {
+            colorBlendAttachment,
             colorBlendAttachment,
             colorBlendAttachment,
             colorBlendAttachment
@@ -231,10 +246,11 @@ void SSRPass::createFramebuffers() {
 
     for (size_t frameIndex = 0; frameIndex < historyImageViews.size(); frameIndex++) {
         for (size_t imageIndex = 0; imageIndex < swapChainImageViews.size(); imageIndex++) {
-            std::array<VkImageView, 4> attachments = {
+            std::array<VkImageView, 5> attachments = {
                     swapChainImageViews[imageIndex],
                     historyImageViews[frameIndex],
                     momentsImageViews[frameIndex],
+                    directLightImageViews[frameIndex],
                     depthImageView
             };
 
@@ -533,11 +549,12 @@ void SSRPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageI
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = swapChainExtent;
 
-    std::array<VkClearValue, 4> clearValues{};
+    std::array<VkClearValue, 5> clearValues{};
     clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
     clearValues[1].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
     clearValues[2].color = {{0.0f, 0.0f, 0.0f, 0.0f}};
-    clearValues[3].depthStencil = {1.0f, 0};
+    clearValues[3].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+    clearValues[4].depthStencil = {1.0f, 0};
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
 

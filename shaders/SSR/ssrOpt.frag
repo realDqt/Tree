@@ -5,6 +5,7 @@ layout(location = 0) in vec2 texCoords;
 layout(location = 0) out vec4 outColor;
 layout(location = 1) out vec4 outHistory;
 layout(location = 2) out vec2 outMoments;
+layout(location = 3) out vec4 outDirectLight;
 
 layout(binding = 0, std140) uniform UniformBufferObject2{
     vec3 cameraPos;
@@ -134,6 +135,14 @@ vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv) {
     return bsdf;
 }
 
+// Albedo of the shaded pixel is a constant factor of the whole indirect estimate, so it is
+// left out here and multiplied back after denoising. Filtering the demodulated signal keeps
+// surface detail perfectly sharp no matter how wide the spatial kernel gets.
+float EvalDiffuseNoAlbedo(vec3 wi, vec2 uv) {
+    vec3 normal = GetGBufferWorldNormal(uv);
+    return max(dot(normal, wi), 0.0) * INV_PI;
+}
+
 float getBias(float ctrl, vec3 worldNormal)
 {
     float m = 10.0 / 2048.0 / 2.0;
@@ -242,6 +251,7 @@ void main() {
         outColor = background;
         outHistory = background;
         outMoments = vec2(rawLinearDepth, 1.0);
+        outDirectLight = background;
         return;
     }
     vec3 L_indir = vec3(0.0);
@@ -259,14 +269,15 @@ void main() {
         if(dot(sampleDir, worldNormal) > 0.0 && RayMarchAcc(worldPos, sampleDir, hitPos)){
             vec3 wi = normalize(hitPos - worldPos);
             vec2 uvReflect = GetScreenCoordinate(hitPos);
-            L_indir += (EvalDiffuse(wi, wo, uv) / pdf) * EvalDiffuse(normalize(-ubo2.lightDir), -wi, uvReflect) * EvalDirectionalLight(uvReflect);
+            L_indir += (EvalDiffuseNoAlbedo(wi, uv) / pdf) * EvalDiffuse(normalize(-ubo2.lightDir), -wi, uvReflect) * EvalDirectionalLight(uvReflect);
         }
     }
     // Rays that found no hit contribute zero, they must not be excluded from the average.
     L_indir /= float(SAMPLE_NUM);
     vec3 L_dir = EvalDiffuse(normalize(-ubo2.lightDir), wo, uv) * EvalDirectionalLight(uv);
-    // Accumulate in linear space, the swap chain attachment applies the transfer curve on write.
-    vec3 color = clamp(L_dir + L_indir, vec3(0.0), vec3(1.0));
+    // Only the demodulated indirect term is noisy, so it is the only thing that gets
+    // accumulated and later denoised. Everything stays linear until the swap chain write.
+    vec3 indirect = clamp(L_indir, vec3(0.0), vec3(1.0));
 
     // The scene is static and the shading is view independent, so a world position that was
     // visible last frame carries a history sample that is still valid for this frame.
@@ -281,13 +292,14 @@ void main() {
             if (abs(prevMoments.x - prevClip.w) <= HISTORY_DEPTH_TOLERANCE * prevClip.w) {
                 sampleCount = min(prevMoments.y + 1.0, ubo2.maxAccumFrames);
                 // 1/n running average that decays into a fixed exponential blend once capped.
-                color = mix(color, texture(historySampler, prevUv).rgb, 1.0 - 1.0 / sampleCount);
+                indirect = mix(indirect, texture(historySampler, prevUv).rgb, 1.0 - 1.0 / sampleCount);
             }
         }
     }
 
-    vec4 result = vec4(color, 1.0);
-    outColor = result;
-    outHistory = result;
+    // Undenoised composite, only kept so the swap chain attachment holds something meaningful.
+    outColor = vec4(clamp(L_dir + GetGBufferAlbedo(uv) * indirect, vec3(0.0), vec3(1.0)), 1.0);
+    outHistory = vec4(indirect, 1.0);
     outMoments = vec2((ubo2.world2clip * vec4(worldPos, 1.0)).w, sampleCount);
+    outDirectLight = vec4(L_dir, 1.0);
 }

@@ -20,6 +20,8 @@ extern const VkFormat gDepthFormat;
 extern const VkFormat shadowmapFormat;
 extern const VkFormat historyFormat;
 extern const VkFormat momentsFormat;
+extern const VkFormat directLightFormat;
+extern const VkFormat resolvedFormat;
 
 constexpr int SM_RESOLUTION = 2048;
 constexpr float SSROrthoRange = 10.0f;

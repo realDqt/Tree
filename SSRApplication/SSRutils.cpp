@@ -24,3 +24,7 @@ const VkFormat historyFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
 // Per pixel reprojection state: view depth at the time of the write, and accumulated sample count.
 // Half floats are enough because the depth tolerance is relative, and they guarantee linear filtering.
 const VkFormat momentsFormat = VK_FORMAT_R16G16_SFLOAT;
+// Direct lighting is noise free and bypasses the denoiser, so it is kept out of the history.
+const VkFormat directLightFormat = VK_FORMAT_R16G16B16A16_SFLOAT;
+// Denoised and recomposited image, still linear because FXAA runs after it.
+const VkFormat resolvedFormat = VK_FORMAT_R16G16B16A16_SFLOAT;

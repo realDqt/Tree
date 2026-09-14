@@ -83,6 +83,9 @@ public:
     // Reprojection state: previous frame view depth and sample count, sampled with historySampler.
     std::vector<VkImageView> momentsImageViews;
 
+    // Noise free direct lighting, handed to the denoiser so it never passes through the filter.
+    std::vector<VkImageView> directLightImageViews;
+
     glm::mat4 previousWorld2Clip{1.0f};
     bool historyValid = false;
     uint32_t temporalFrameIndex = 0;

@@ -168,6 +168,8 @@ add_tree_application(SSRApplication
         SSRApplication/GenerateHizPass.cpp
         SSRApplication/SSRPass.h
         SSRApplication/SSRPass.cpp
+        SSRApplication/DenoisePass.h
+        SSRApplication/DenoisePass.cpp
         SSRApplication/FXAAPass.h
         SSRApplication/FXAAPass.cpp
 )
