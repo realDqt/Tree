@@ -10,7 +10,7 @@
 #include <stb_image.h>
 
 #include "SSRutils.h"
-#include "SSRShadowmapPass.h"
+#include "ShadowmapPass.h"
 #include "GBufferPass.h"
 #include "GenerateHizPass.h"
 #include "SSRPass.h"
@@ -19,7 +19,7 @@
 
 class SSRApplication : public BaseApplication{
 public:
-    SSRShadowmapPass shadowmapPass;
+    ShadowmapPass shadowmapPass;
     GBufferPass gBufferPasses[2];
     GenerateHizPass generateHizPass;
     SSRPass ssrPass;

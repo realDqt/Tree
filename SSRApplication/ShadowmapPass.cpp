@@ -1,9 +1,9 @@
 //
 // Created by 22473 on 2025-03-07.
 //
-#include "SSRShadowmapPass.h"
+#include "ShadowmapPass.h"
 
-void SSRShadowmapPass::createRenderPass(){
+void ShadowmapPass::createRenderPass(){
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = shadowmapFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -69,7 +69,7 @@ void SSRShadowmapPass::createRenderPass(){
     }
 }
 
-void SSRShadowmapPass::createFramebuffers() {
+void ShadowmapPass::createFramebuffers() {
     framebuffers.resize(swapChainImagesCount);
 
     for (size_t i = 0; i < swapChainImagesCount; i++) {
@@ -93,7 +93,7 @@ void SSRShadowmapPass::createFramebuffers() {
     }
 }
 
-void SSRShadowmapPass::createGraphicsPipeline(){
+void ShadowmapPass::createGraphicsPipeline(){
     auto vertShaderCode = readFile("../shaders/SSR/shadowVert.spv");
     auto fragShaderCode = readFile("../shaders/SSR/shadowFrag.spv");
 
@@ -224,7 +224,7 @@ void SSRShadowmapPass::createGraphicsPipeline(){
     vkDestroyShaderModule(device, vertShaderModule, nullptr);
 }
 
-void SSRShadowmapPass::createUniformBuffers(){
+void ShadowmapPass::createUniformBuffers(){
     VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
     uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -238,7 +238,7 @@ void SSRShadowmapPass::createUniformBuffers(){
     }
 }
 
-void SSRShadowmapPass::createDescriptorPool() {
+void ShadowmapPass::createDescriptorPool() {
     std::array<VkDescriptorPoolSize, 1> poolSizes{};
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
@@ -254,7 +254,7 @@ void SSRShadowmapPass::createDescriptorPool() {
     }
 }
 
-void SSRShadowmapPass::createDescriptorSetLayout()
+void ShadowmapPass::createDescriptorSetLayout()
 {
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding = 0;
@@ -274,7 +274,7 @@ void SSRShadowmapPass::createDescriptorSetLayout()
     }
 }
 
-void SSRShadowmapPass::createDescriptorSets() {
+void ShadowmapPass::createDescriptorSets() {
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -307,7 +307,7 @@ void SSRShadowmapPass::createDescriptorSets() {
     }
 }
 
-void SSRShadowmapPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
+void ShadowmapPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
@@ -376,7 +376,7 @@ void SSRShadowmapPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     vkCmdEndRenderPass(commandBuffer);
 }
 
-void SSRShadowmapPass::updateUniformBuffer(uint32_t currentImage){
+void ShadowmapPass::updateUniformBuffer(uint32_t currentImage){
     UniformBufferObject ubo{};
     glm::mat4 view = glm::lookAt(ssrLightPos, ssrLightPos + ssrLight.lightDir, ssrLightUp);
     glm::mat4 proj = glm::ortho(-SSROrthoRange, SSROrthoRange, -SSROrthoRange, SSROrthoRange, 1e-2f, 100.f);
@@ -390,7 +390,7 @@ void SSRShadowmapPass::updateUniformBuffer(uint32_t currentImage){
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
 
-VkShaderModule SSRShadowmapPass::createShaderModule(const std::vector<char>& code) const {
+VkShaderModule ShadowmapPass::createShaderModule(const std::vector<char>& code) const {
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = code.size();
@@ -404,7 +404,7 @@ VkShaderModule SSRShadowmapPass::createShaderModule(const std::vector<char>& cod
     return shaderModule;
 }
 
-void SSRShadowmapPass::init()
+void ShadowmapPass::init()
 {
     createRenderPass();
     createFramebuffers();
@@ -415,7 +415,7 @@ void SSRShadowmapPass::init()
     createDescriptorSets();
 }
 
-void SSRShadowmapPass::cleanup() {
+void ShadowmapPass::cleanup() {
     vkDestroyPipeline(device, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
     vkDestroyRenderPass(device, renderPass, nullptr);

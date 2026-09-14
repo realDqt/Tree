@@ -2,12 +2,12 @@
 // Created by 22473 on 2025-03-07.
 //
 
-#ifndef VKRENDERINGENGINE_SSRSHADOWMAPPASS_H
-#define VKRENDERINGENGINE_SSRSHADOWMAPPASS_H
+#ifndef VKRENDERINGENGINE_SSR_SHADOWMAPPASS_H
+#define VKRENDERINGENGINE_SSR_SHADOWMAPPASS_H
 #include "SSRutils.h"
 #include "../EngineCore/Vertex.h"
 
-class SSRShadowmapPass{
+class ShadowmapPass{
 public:
     struct alignas(16) UniformBufferObject{
         glm::mat4 cubeModel;
@@ -86,4 +86,4 @@ public:
     void updateUniformBuffer(uint32_t currentImage);
 
 };
-#endif //VKRENDERINGENGINE_SSRSHADOWMAPPASS_H
+#endif //VKRENDERINGENGINE_SSR_SHADOWMAPPASS_H

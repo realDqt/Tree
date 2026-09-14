@@ -158,10 +158,8 @@ add_tree_application(SSRApplication
         SSRApplication/SSRApplication.h
         SSRApplication/SSRutils.h
         SSRApplication/SSRutils.cpp
-        SSRApplication/BlinPhongPassSSR.h
-        SSRApplication/BlinPhongPassSSR.cpp
-        SSRApplication/SSRShadowmapPass.h
-        SSRApplication/SSRShadowmapPass.cpp
+        SSRApplication/ShadowmapPass.h
+        SSRApplication/ShadowmapPass.cpp
         SSRApplication/GBufferPass.h
         SSRApplication/GBufferPass.cpp
         SSRApplication/GenerateHizPass.h
