@@ -14,8 +14,8 @@ layout(binding = 6) uniform sampler2D directLightSampler;
 
 layout(push_constant, std140) uniform PushConstants {
     float maxAccumFrames;
-    float phiNormal;   // exponent of the normal alignment weight, higher keeps creases sharper
-    float phiPlane;    // distance from the centre tangent plane, in world units, that halves the weight
+    float phiNormal;   
+    float phiPlane;   
 } pc;
 
 #define FILTER_RADIUS 2
@@ -56,10 +56,7 @@ void main() {
 
             vec3 samplePos = texture(gWorldPositionSampler, sampleUv).xyz;
             vec3 sampleNormal = normalize(texture(gWorldNormalSampler, sampleUv).xyz);
-
-            // Distance to the tangent plane of the centre pixel rather than a plain depth
-            // difference: coplanar neighbours stay at full weight even at grazing angles,
-            // while anything on another surface falls off immediately.
+            
             float planeDistance = abs(dot(samplePos - centerPos, centerNormal));
             float weightPlane = exp(-planeDistance / pc.phiPlane);
             float weightNormal = pow(max(dot(centerNormal, sampleNormal), 0.0), pc.phiNormal);
@@ -70,12 +67,9 @@ void main() {
             weightSum += weight;
         }
     }
-
-    // The centre tap always survives both edge stopping terms, so weightSum is never zero.
+    
     vec3 indirect = sum / weightSum;
-
-    // Albedo comes back only now, and direct lighting never entered the filter at all, which
-    // is what keeps texture detail and shadow boundaries exactly as sharp as they were.
+    
     vec3 albedo = texture(gAlbedoSampler, uv).rgb;
     vec3 directLight = texture(directLightSampler, uv).rgb;
     outColor = vec4(clamp(directLight + albedo * indirect, vec3(0.0), vec3(1.0)), 1.0);

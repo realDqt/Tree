@@ -165,9 +165,9 @@ float GetVisibility(vec2 uv){
     NDC.xy = (NDC.xy + 1.0) * .5;
     float depth = unpack(texture(smSampler, NDC.xy));
     if(NDC.z <= depth + getBias(1.4, worldNormal))
-    return 1.0;
+        return 1.0;
     else
-    return 0.0;
+        return 0.0;
 }
 
 vec3 EvalDirectionalLight(vec2 uv) {
@@ -196,6 +196,7 @@ bool RayMarchAcc(vec3 ori, vec3 dir, out vec3 hitPos) {
         vec2 uv = currentClipPos.xy / currentClipPos.w;
         uv = (uv + vec2(1.f)) * vec2(.5f);
         if(uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+            // out of screen
             if(currentMip > 0.0){
                 currentMip -= 1.0;
                 continue;
@@ -272,15 +273,10 @@ void main() {
             L_indir += (EvalDiffuseNoAlbedo(wi, uv) / pdf) * EvalDiffuse(normalize(-ubo2.lightDir), -wi, uvReflect) * EvalDirectionalLight(uvReflect);
         }
     }
-    // Rays that found no hit contribute zero, they must not be excluded from the average.
     L_indir /= float(SAMPLE_NUM);
     vec3 L_dir = EvalDiffuse(normalize(-ubo2.lightDir), wo, uv) * EvalDirectionalLight(uv);
-    // Only the demodulated indirect term is noisy, so it is the only thing that gets
-    // accumulated and later denoised. Everything stays linear until the swap chain write.
     vec3 indirect = clamp(L_indir, vec3(0.0), vec3(1.0));
-
-    // The scene is static and the shading is view independent, so a world position that was
-    // visible last frame carries a history sample that is still valid for this frame.
+    
     float sampleCount = 1.0;
     vec4 prevClip = ubo2.prevWorld2Clip * vec4(worldPos, 1.0);
     if (ubo2.historyValid > 0.0 && prevClip.w > 0.0) {

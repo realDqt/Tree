@@ -10,7 +10,6 @@
 #include <stb_image.h>
 
 #include "SSRutils.h"
-#include "BlinPhongPassSSR.h"
 #include "SSRShadowmapPass.h"
 #include "GBufferPass.h"
 #include "GenerateHizPass.h"
@@ -26,7 +25,6 @@ public:
     SSRPass ssrPass;
     DenoisePass denoisePass;
     FXAAPass fxaaPass;
-    BlinPhongPassSSR blinnPhongPasses[2];
 
     // vb and ib for cube
     std::vector<VertexMarry> vertices;
@@ -122,56 +120,6 @@ public:
 
     void prepareResources() override
     {
-        // blinn-phong pass
-        // draw cube
-        blinnPhongPasses[0].device = device;
-        blinnPhongPasses[0].physicalDevice = physicalDevice;
-
-        blinnPhongPasses[0].depthImageView = depthImageView;
-
-        blinnPhongPasses[0].vertexBuffer = vertexBuffer;
-        blinnPhongPasses[0].indexBuffer = indexBuffer;
-        blinnPhongPasses[0].indicesCount = indices.size();
-
-        blinnPhongPasses[0].swapChainExtent = swapChainExtent;
-        blinnPhongPasses[0].swapChainImageFormat = swapChainImageFormat;
-        blinnPhongPasses[0].swapChainImageViews = swapChainImageViews;
-
-        blinnPhongPasses[0].textureImageView = textureImageView;
-        blinnPhongPasses[0].textureSampler = textureSampler;
-
-        blinnPhongPasses[0].model = cubeModel;
-        blinnPhongPasses[0].isFloor = false;
-        blinnPhongPasses[0].clearAttachments = true;
-        blinnPhongPasses[0].currentFrame = currentFrame;
-        blinnPhongPasses[0].shadowmapView = shadowmapView;
-        blinnPhongPasses[0].smSampler = shadowmapSampler;
-
-
-        // draw floor
-        blinnPhongPasses[1].device = device;
-        blinnPhongPasses[1].physicalDevice = physicalDevice;
-
-        blinnPhongPasses[1].depthImageView = depthImageView;
-
-        blinnPhongPasses[1].vertexBuffer = vertexBuffer2;
-        blinnPhongPasses[1].indexBuffer = indexBuffer2;
-        blinnPhongPasses[1].indicesCount = indices2.size();
-
-        blinnPhongPasses[1].swapChainExtent = swapChainExtent;
-        blinnPhongPasses[1].swapChainImageFormat = swapChainImageFormat;
-        blinnPhongPasses[1].swapChainImageViews = swapChainImageViews;
-
-        blinnPhongPasses[1].textureImageView = textureImageView;
-        blinnPhongPasses[1].textureSampler = textureSampler;
-
-        blinnPhongPasses[1].model = floorModel;
-        blinnPhongPasses[1].isFloor = true;
-        blinnPhongPasses[1].clearAttachments = false;
-        blinnPhongPasses[1].currentFrame = currentFrame;
-        blinnPhongPasses[1].shadowmapView = shadowmapView;
-        blinnPhongPasses[1].smSampler = shadowmapSampler;
-
 
         // shadowmap pass
         shadowmapPass.device = device;
@@ -355,16 +303,6 @@ public:
         }
         shadowmapPass.framebuffers.clear();
 
-        for(auto& framebuffer : blinnPhongPasses[0].framebuffers){
-            vkDestroyFramebuffer(device, framebuffer, nullptr);
-        }
-        blinnPhongPasses[0].framebuffers.clear();
-
-        for(auto& framebuffer : blinnPhongPasses[1].framebuffers){
-            vkDestroyFramebuffer(device, framebuffer, nullptr);
-        }
-        blinnPhongPasses[1].framebuffers.clear();
-
         for(auto& framebuffer :gBufferPasses[0].framebuffers){
             vkDestroyFramebuffer(device, framebuffer, nullptr);
         }
@@ -457,8 +395,6 @@ public:
 
     void initPasses() {
         shadowmapPass.init();
-        blinnPhongPasses[0].init();
-        blinnPhongPasses[1].init();
         gBufferPasses[0].init();
         gBufferPasses[1].init();
         generateHizPass.init();
@@ -471,8 +407,6 @@ public:
 
     void cleanupPasses() {
         shadowmapPass.cleanup();
-        blinnPhongPasses[0].cleanup();
-        blinnPhongPasses[1].cleanup();
         gBufferPasses[0].cleanup();
         gBufferPasses[1].cleanup();
         generateHizPass.cleanup();
@@ -1218,8 +1152,6 @@ public:
         }
 
         currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-        blinnPhongPasses[0].currentFrame = currentFrame;
-        blinnPhongPasses[1].currentFrame = currentFrame;
         shadowmapPass.currentFrame = currentFrame;
         gBufferPasses[0].currentFrame = currentFrame;
         gBufferPasses[1].currentFrame = currentFrame;
