@@ -15,8 +15,10 @@ public:
         alignas(16) glm::vec3 lightRadiance;
         alignas(16) glm::mat4 world2clip;
         glm::mat4 lightVP;
+        glm::mat4 prevWorld2Clip;
         alignas(16) uint32_t temporalFrameIndex;
-        float historyWeight;
+        float historyValid;
+        float maxAccumFrames;
     };
 
     /*
@@ -78,11 +80,15 @@ public:
     std::vector<VkImageView> historyImageViews;
     VkSampler historySampler;
 
-    glm::vec3 previousCameraPosition{};
-    glm::vec3 previousCameraFront{};
-    float previousCameraZoom = 0.0f;
+    // Reprojection state: previous frame view depth and sample count, sampled with historySampler.
+    std::vector<VkImageView> momentsImageViews;
+
+    glm::mat4 previousWorld2Clip{1.0f};
     bool historyValid = false;
     uint32_t temporalFrameIndex = 0;
+
+    // Caps the exponential moving average once the ramp 1/n reaches 1/maxAccumFrames.
+    float maxAccumFrames = 32.0f;
 
     uint32_t currentFrame;
 

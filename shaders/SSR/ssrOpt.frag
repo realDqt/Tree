@@ -4,6 +4,7 @@ layout(location = 0) in vec2 texCoords;
 
 layout(location = 0) out vec4 outColor;
 layout(location = 1) out vec4 outHistory;
+layout(location = 2) out vec2 outMoments;
 
 layout(binding = 0, std140) uniform UniformBufferObject2{
     vec3 cameraPos;
@@ -11,8 +12,10 @@ layout(binding = 0, std140) uniform UniformBufferObject2{
     vec3 lightRadiance;
     mat4 world2clip;
     mat4 lightVP;
+    mat4 prevWorld2Clip;
     uint temporalFrameIndex;
-    float historyWeight;
+    float historyValid;
+    float maxAccumFrames;
 } ubo2;
 
 #define M_PI 3.1415926535897932384626433832795
@@ -29,6 +32,11 @@ layout(binding = 3) uniform sampler2D gWorldNormalSampler;
 layout(binding = 4) uniform sampler2D gDepthSampler;
 layout(binding = 5) uniform sampler2D smSampler;
 layout(binding = 6) uniform sampler2D historySampler;
+layout(binding = 7) uniform sampler2D momentsSampler;
+
+// A reprojected sample is accepted while the depth it was written with still matches the
+// surface we are shading, expressed as a fraction of that depth.
+#define HISTORY_DEPTH_TOLERANCE 0.05
 
 float Rand1(inout float p) {
     p = fract(p * .1031);
@@ -103,7 +111,8 @@ float GetGBufferDepth(vec2 uv) {
 }
 
 vec3 GetGBufferWorldNormal(vec2 uv) {
-    vec3 normal = texture(gWorldNormalSampler, uv).xyz;
+    // Stored as R8G8B8A8_SNORM, so quantisation leaves it slightly off unit length.
+    vec3 normal = normalize(texture(gWorldNormalSampler, uv).xyz);
     return normal;
 }
 
@@ -113,13 +122,13 @@ vec3 GetGBufferWorldPosition(vec2 uv) {
 }
 
 vec3 GetGBufferAlbedo(vec2 uv) {
+    // gAlbedo is an sRGB format, the sampler already returns linear values.
     vec3 albedo = texture(gAlbedoSampler, uv).xyz;
-    albedo = pow(albedo, vec3(2.2));
     return albedo;
 }
 
 vec3 EvalDiffuse(vec3 wi, vec3 wo, vec2 uv) {
-    vec3 normal = normalize(GetGBufferWorldNormal(uv));
+    vec3 normal = GetGBufferWorldNormal(uv);
     vec3 albedo = GetGBufferAlbedo(uv);
     vec3 bsdf = albedo / M_PI * max(dot(normal, wi), 0.0);
     return bsdf;
@@ -232,6 +241,7 @@ void main() {
         vec4 background = vec4(0.f, 0.f, 0.f, 1.f);
         outColor = background;
         outHistory = background;
+        outMoments = vec2(rawLinearDepth, 1.0);
         return;
     }
     vec3 L_indir = vec3(0.0);
@@ -242,7 +252,6 @@ void main() {
     mat3 tangent2world = mat3(b1, b2, worldNormal);
     vec3 worldPos = GetGBufferWorldPosition(uv);
     vec3 wo = normalize(ubo2.cameraPos - worldPos);
-    int cnt = 0;
     for(int i = 0; i < SAMPLE_NUM; ++i){
         float pdf;
         vec3 sampleDir = vec3(tangent2world * SampleHemisphereCos(s, pdf));
@@ -251,16 +260,34 @@ void main() {
             vec3 wi = normalize(hitPos - worldPos);
             vec2 uvReflect = GetScreenCoordinate(hitPos);
             L_indir += (EvalDiffuse(wi, wo, uv) / pdf) * EvalDiffuse(normalize(-ubo2.lightDir), -wi, uvReflect) * EvalDirectionalLight(uvReflect);
-            ++cnt;
         }
     }
-    L_indir /= (float(cnt) + 1e-3);
+    // Rays that found no hit contribute zero, they must not be excluded from the average.
+    L_indir /= float(SAMPLE_NUM);
     vec3 L_dir = EvalDiffuse(normalize(-ubo2.lightDir), wo, uv) * EvalDirectionalLight(uv);
-    vec3 color = pow(clamp(L_dir + L_indir, vec3(0.0), vec3(1.0)), vec3(1.0 / 2.2));
-    if (ubo2.historyWeight > 0.0) {
-        color = mix(color, texture(historySampler, uv).rgb, ubo2.historyWeight);
+    // Accumulate in linear space, the swap chain attachment applies the transfer curve on write.
+    vec3 color = clamp(L_dir + L_indir, vec3(0.0), vec3(1.0));
+
+    // The scene is static and the shading is view independent, so a world position that was
+    // visible last frame carries a history sample that is still valid for this frame.
+    float sampleCount = 1.0;
+    vec4 prevClip = ubo2.prevWorld2Clip * vec4(worldPos, 1.0);
+    if (ubo2.historyValid > 0.0 && prevClip.w > 0.0) {
+        vec2 prevUv = (prevClip.xy / prevClip.w) * 0.5 + 0.5;
+        if (all(greaterThanEqual(prevUv, vec2(0.0))) && all(lessThanEqual(prevUv, vec2(1.0)))) {
+            // A depth mismatch means something else occupied that pixel last frame, so this
+            // surface was disoccluded and its history has to be dropped.
+            vec2 prevMoments = texture(momentsSampler, prevUv).xy;
+            if (abs(prevMoments.x - prevClip.w) <= HISTORY_DEPTH_TOLERANCE * prevClip.w) {
+                sampleCount = min(prevMoments.y + 1.0, ubo2.maxAccumFrames);
+                // 1/n running average that decays into a fixed exponential blend once capped.
+                color = mix(color, texture(historySampler, prevUv).rgb, 1.0 - 1.0 / sampleCount);
+            }
+        }
     }
+
     vec4 result = vec4(color, 1.0);
     outColor = result;
     outHistory = result;
+    outMoments = vec2((ubo2.world2clip * vec4(worldPos, 1.0)).w, sampleCount);
 }

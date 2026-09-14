@@ -17,6 +17,9 @@ extern const VkFormat gAlbedoFormat;
 extern const VkFormat gWorldPositionFormat;
 extern const VkFormat gWorldNormalFormat;
 extern const VkFormat gDepthFormat;
+extern const VkFormat shadowmapFormat;
+extern const VkFormat historyFormat;
+extern const VkFormat momentsFormat;
 
 constexpr int SM_RESOLUTION = 2048;
 constexpr float SSROrthoRange = 10.0f;

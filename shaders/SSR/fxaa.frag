@@ -15,8 +15,15 @@ vec2 ClampUv(vec2 uv, vec2 texelSize) {
     return clamp(uv, texelSize * 0.5, vec2(1.0) - texelSize * 0.5);
 }
 
+// The input is linear, but the FXAA thresholds below are tuned for perceptual values,
+// so edge detection and blending run in gamma space and the result is converted back.
 vec3 SampleColor(vec2 uv, vec2 texelSize) {
-    return textureLod(inputSampler, ClampUv(uv, texelSize), 0.0).rgb;
+    vec3 linearColor = textureLod(inputSampler, ClampUv(uv, texelSize), 0.0).rgb;
+    return pow(max(linearColor, vec3(0.0)), vec3(1.0 / 2.2));
+}
+
+vec3 ToLinear(vec3 gammaColor) {
+    return pow(max(gammaColor, vec3(0.0)), vec3(2.2));
 }
 
 float Luma(vec3 color) {
@@ -41,7 +48,7 @@ void main() {
     float lumaRange = lumaMax - lumaMin;
 
     if (lumaRange < max(EDGE_THRESHOLD_MIN, lumaMax * EDGE_THRESHOLD_MAX)) {
-        outColor = vec4(rgbCenter, 1.0);
+        outColor = vec4(ToLinear(rgbCenter), 1.0);
         return;
     }
 
@@ -63,5 +70,5 @@ void main() {
     );
     float lumaB = Luma(rgbB);
     vec3 result = lumaB < lumaMin || lumaB > lumaMax ? rgbA : rgbB;
-    outColor = vec4(result, 1.0);
+    outColor = vec4(ToLinear(result), 1.0);
 }

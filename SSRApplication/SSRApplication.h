@@ -104,6 +104,10 @@ public:
     std::vector<VkImageView> historyImageViews;
     VkSampler historySampler;
 
+    std::vector<VkImage> momentsImages;
+    std::vector<VkDeviceMemory> momentsImageMemories;
+    std::vector<VkImageView> momentsImageViews;
+
 
 
     void prepareResources() override
@@ -271,6 +275,8 @@ public:
         ssrPass.historyImageViews = historyImageViews;
         ssrPass.historySampler = historySampler;
 
+        ssrPass.momentsImageViews = momentsImageViews;
+
         ssrPass.currentFrame = currentFrame; // test
 
         fxaaPass.device = device;
@@ -296,9 +302,9 @@ public:
 
         createShadowmapSampler();
         createGSampler(gAlbedoSampler);
-        createGSampler(gWorldPositionSampler);
-        createGSampler(gWorldNormalSampler);
-        createGSampler(gDepthSampler);
+        createGSampler(gWorldPositionSampler, VK_FILTER_NEAREST);
+        createGSampler(gWorldNormalSampler, VK_FILTER_NEAREST);
+        createGSampler(gDepthSampler, VK_FILTER_NEAREST, hizMipLevels);
 
 
         loadModel();
@@ -444,6 +450,15 @@ public:
         historyImageViews.clear();
         historyImages.clear();
         historyImageMemories.clear();
+
+        for (size_t i = 0; i < momentsImages.size(); i++) {
+            vkDestroyImageView(device, momentsImageViews[i], nullptr);
+            vkDestroyImage(device, momentsImages[i], nullptr);
+            vkFreeMemory(device, momentsImageMemories[i], nullptr);
+        }
+        momentsImageViews.clear();
+        momentsImages.clear();
+        momentsImageMemories.clear();
     }
 
     void destroyGBufferResources() {
@@ -635,14 +650,17 @@ public:
         }
     }
 
-    void createGSampler(VkSampler& gSampler) {
+    // The G-Buffer is read through plain sampler2D, so compare sampling must stay off.
+    // Attributes that must not be interpolated across depth discontinuities (world position,
+    // world normal, Hi-Z depth) pass VK_FILTER_NEAREST; only albedo is filtered linearly.
+    void createGSampler(VkSampler& gSampler, VkFilter filter = VK_FILTER_LINEAR, uint32_t samplerMipLevels = 1) {
         VkPhysicalDeviceProperties properties{};
         vkGetPhysicalDeviceProperties(physicalDevice, &properties);
 
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter = VK_FILTER_LINEAR;  // 使用线性过滤
-        samplerInfo.minFilter = VK_FILTER_LINEAR;  // 使用线性过滤
+        samplerInfo.magFilter = filter;
+        samplerInfo.minFilter = filter;
         samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;  // 边界模式
         samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER;
@@ -650,11 +668,11 @@ public:
         samplerInfo.anisotropyEnable = VK_FALSE;  // 关闭各向异性过滤
         samplerInfo.maxAnisotropy = 1.0f;  // 设置为 1.0（无效，但需要初始化）
         samplerInfo.unnormalizedCoordinates = VK_FALSE;  // 使用标准化坐标
-        samplerInfo.compareEnable = VK_TRUE;  // 启用深度比较
-        samplerInfo.compareOp = VK_COMPARE_OP_LESS;  // 深度比较操作
-        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;  // 禁用 Mipmap
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
         samplerInfo.minLod = 0.0f;
-        samplerInfo.maxLod = 0.0f;  // 禁用 Mipmap
+        samplerInfo.maxLod = static_cast<float>(samplerMipLevels - 1);
         samplerInfo.mipLodBias = 0.0f;
 
         if (vkCreateSampler(device, &samplerInfo, nullptr, &gSampler) != VK_SUCCESS) {
@@ -694,9 +712,9 @@ public:
         createHistoryResources();
         createShadowmapSampler();
         createGSampler(gAlbedoSampler);
-        createGSampler(gWorldPositionSampler);
-        createGSampler(gWorldNormalSampler);
-        createGSampler(gDepthSampler);
+        createGSampler(gWorldPositionSampler, VK_FILTER_NEAREST);
+        createGSampler(gWorldNormalSampler, VK_FILTER_NEAREST);
+        createGSampler(gDepthSampler, VK_FILTER_NEAREST, hizMipLevels);
         prepareResources();
         initPasses();
 
@@ -878,7 +896,7 @@ public:
         createImage(swapChainExtent.width, swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, colorImage, colorImageMemory);
         colorImageView = createImageView(colorImage, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 
-        colorFormat = VK_FORMAT_R8G8B8A8_SRGB;
+        colorFormat = shadowmapFormat;
         createImage(SM_RESOLUTION, SM_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, colorFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,  shadowmap, shadowmapMemory);
         shadowmapView = createImageView(shadowmap, colorFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     }
@@ -913,22 +931,45 @@ public:
                     swapChainExtent.height,
                     1,
                     VK_SAMPLE_COUNT_1_BIT,
-                    swapChainImageFormat,
+                    historyFormat,
                     VK_IMAGE_TILING_OPTIMAL,
                     VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
                     VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                     historyImages[i],
                     historyImageMemories[i]
             );
-            historyImageViews[i] = createImageView(historyImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-            transitionImageLayout(historyImages[i], swapChainImageFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
-            transitionImageLayout(historyImages[i], swapChainImageFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+            historyImageViews[i] = createImageView(historyImages[i], historyFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+            transitionImageLayout(historyImages[i], historyFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+            transitionImageLayout(historyImages[i], historyFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
         }
 
+        momentsImages.resize(MAX_FRAMES_IN_FLIGHT);
+        momentsImageMemories.resize(MAX_FRAMES_IN_FLIGHT);
+        momentsImageViews.resize(MAX_FRAMES_IN_FLIGHT);
+
+        for (size_t i = 0; i < momentsImages.size(); i++) {
+            createImage(
+                    swapChainExtent.width,
+                    swapChainExtent.height,
+                    1,
+                    VK_SAMPLE_COUNT_1_BIT,
+                    momentsFormat,
+                    VK_IMAGE_TILING_OPTIMAL,
+                    VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+                    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                    momentsImages[i],
+                    momentsImageMemories[i]
+            );
+            momentsImageViews[i] = createImageView(momentsImages[i], momentsFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+            transitionImageLayout(momentsImages[i], momentsFormat, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+            transitionImageLayout(momentsImages[i], momentsFormat, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+        }
+
+        // SSR reads the history at exact texel centres, but FXAA samples it at fractional offsets.
         VkSamplerCreateInfo samplerInfo{};
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-        samplerInfo.magFilter = VK_FILTER_NEAREST;
-        samplerInfo.minFilter = VK_FILTER_NEAREST;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
         samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;

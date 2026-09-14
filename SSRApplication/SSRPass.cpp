@@ -15,7 +15,7 @@ void SSRPass::createRenderPass() {
     colorAttachment.finalLayout =  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
     VkAttachmentDescription historyAttachment{};
-    historyAttachment.format = swapChainImageFormat;
+    historyAttachment.format = historyFormat;
     historyAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     historyAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     historyAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -23,6 +23,16 @@ void SSRPass::createRenderPass() {
     historyAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     historyAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     historyAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
+    VkAttachmentDescription momentsAttachment{};
+    momentsAttachment.format = momentsFormat;
+    momentsAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+    momentsAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    momentsAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+    momentsAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    momentsAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    momentsAttachment.initialLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    momentsAttachment.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 
     VkAttachmentDescription depthAttachment{};
     depthAttachment.format = findDepthFormat(physicalDevice);
@@ -39,16 +49,20 @@ void SSRPass::createRenderPass() {
     colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference depthAttachmentRef{};
-    depthAttachmentRef.attachment = 2;
+    depthAttachmentRef.attachment = 3;
     depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference historyAttachmentRef{};
     historyAttachmentRef.attachment = 1;
     historyAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
+    VkAttachmentReference momentsAttachmentRef{};
+    momentsAttachmentRef.attachment = 2;
+    momentsAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
     VkSubpassDescription subpass{};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    std::array<VkAttachmentReference, 2> colorAttachmentRefs = {colorAttachmentRef, historyAttachmentRef};
+    std::array<VkAttachmentReference, 3> colorAttachmentRefs = {colorAttachmentRef, historyAttachmentRef, momentsAttachmentRef};
     subpass.colorAttachmentCount = static_cast<uint32_t>(colorAttachmentRefs.size());
     subpass.pColorAttachments = colorAttachmentRefs.data();
     subpass.pDepthStencilAttachment = &depthAttachmentRef;
@@ -68,7 +82,7 @@ void SSRPass::createRenderPass() {
     dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-    std::array<VkAttachmentDescription, 3> attachments = {colorAttachment, historyAttachment, depthAttachment};
+    std::array<VkAttachmentDescription, 4> attachments = {colorAttachment, historyAttachment, momentsAttachment, depthAttachment};
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -152,7 +166,8 @@ void SSRPass::createGraphicsPipeline() {
     colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_FALSE;
 
-    std::array<VkPipelineColorBlendAttachmentState, 2> colorBlendAttachments = {
+    std::array<VkPipelineColorBlendAttachmentState, 3> colorBlendAttachments = {
+            colorBlendAttachment,
             colorBlendAttachment,
             colorBlendAttachment
     };
@@ -216,9 +231,10 @@ void SSRPass::createFramebuffers() {
 
     for (size_t frameIndex = 0; frameIndex < historyImageViews.size(); frameIndex++) {
         for (size_t imageIndex = 0; imageIndex < swapChainImageViews.size(); imageIndex++) {
-            std::array<VkImageView, 3> attachments = {
+            std::array<VkImageView, 4> attachments = {
                     swapChainImageViews[imageIndex],
                     historyImageViews[frameIndex],
+                    momentsImageViews[frameIndex],
                     depthImageView
             };
 
@@ -259,7 +275,7 @@ void SSRPass::createDescriptorPool() {
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 6;
+    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 7;
 
 
     VkDescriptorPoolCreateInfo poolInfo{};
@@ -323,7 +339,12 @@ void SSRPass::createDescriptorSets() {
         historyImageInfo.imageView = historyImageViews[(i + historyImageViews.size() - 1) % historyImageViews.size()];
         historyImageInfo.sampler = historySampler;
 
-        std::array<VkWriteDescriptorSet, 7> descriptorWrites{};
+        VkDescriptorImageInfo momentsImageInfo{};
+        momentsImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        momentsImageInfo.imageView = momentsImageViews[(i + momentsImageViews.size() - 1) % momentsImageViews.size()];
+        momentsImageInfo.sampler = historySampler;
+
+        std::array<VkWriteDescriptorSet, 8> descriptorWrites{};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
@@ -381,6 +402,14 @@ void SSRPass::createDescriptorSets() {
         descriptorWrites[6].descriptorCount = 1;
         descriptorWrites[6].pImageInfo = &historyImageInfo;
 
+        descriptorWrites[7].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[7].dstSet = descriptorSets[i];
+        descriptorWrites[7].dstBinding = 7;
+        descriptorWrites[7].dstArrayElement = 0;
+        descriptorWrites[7].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptorWrites[7].descriptorCount = 1;
+        descriptorWrites[7].pImageInfo = &momentsImageInfo;
+
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
@@ -435,7 +464,14 @@ void SSRPass::createDescriptorSetLayout() {
     historyLayoutBinding.pImmutableSamplers = nullptr;
     historyLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::array<VkDescriptorSetLayoutBinding, 7> bindings = {uboLayoutBinding2, gAlebdoLayoutBinding, gWorldPositionLayoutBinding, gWorldNormalLayoutBinding, gDepthLayoutBinding, smLayoutBinding, historyLayoutBinding};
+    VkDescriptorSetLayoutBinding momentsLayoutBinding{};
+    momentsLayoutBinding.binding = 7;
+    momentsLayoutBinding.descriptorCount = 1;
+    momentsLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    momentsLayoutBinding.pImmutableSamplers = nullptr;
+    momentsLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 8> bindings = {uboLayoutBinding2, gAlebdoLayoutBinding, gWorldPositionLayoutBinding, gWorldNormalLayoutBinding, gDepthLayoutBinding, smLayoutBinding, historyLayoutBinding, momentsLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -475,19 +511,15 @@ void SSRPass::updateUniformBuffer(uint32_t currentImage) {
     lightProj[1][1] *= -1;
     ubo2.lightVP = lightProj * lightView;
     ubo2.world2clip = proj * camera.GetViewMatrix();
-    const bool cameraMoved = historyValid && (
-            camera.Position != previousCameraPosition ||
-            camera.Front != previousCameraFront ||
-            camera.Zoom != previousCameraZoom
-    );
-    const float historyWeight = historyValid && !cameraMoved ? 0.9f : 0.0f;
+    // The shader reprojects through this and rejects per pixel, so camera motion no longer
+    // invalidates the whole history buffer.
+    ubo2.prevWorld2Clip = previousWorld2Clip;
     ubo2.temporalFrameIndex = temporalFrameIndex;
-    ubo2.historyWeight = historyWeight;
+    ubo2.historyValid = historyValid ? 1.0f : 0.0f;
+    ubo2.maxAccumFrames = maxAccumFrames;
     memcpy(uniformBuffersMapped2[currentImage], &ubo2, sizeof(ubo2));
 
-    previousCameraPosition = camera.Position;
-    previousCameraFront = camera.Front;
-    previousCameraZoom = camera.Zoom;
+    previousWorld2Clip = ubo2.world2clip;
     historyValid = true;
     temporalFrameIndex++;
 }
@@ -501,10 +533,11 @@ void SSRPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageI
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = swapChainExtent;
 
-    std::array<VkClearValue, 3> clearValues{};
+    std::array<VkClearValue, 4> clearValues{};
     clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
     clearValues[1].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-    clearValues[2].depthStencil = {1.0f, 0};
+    clearValues[2].color = {{0.0f, 0.0f, 0.0f, 0.0f}};
+    clearValues[3].depthStencil = {1.0f, 0};
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
 
