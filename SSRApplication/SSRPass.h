@@ -25,7 +25,7 @@ public:
     * device, physicalDevice
     * depthImageView
     * vertexBuffer, indexBuffer, indicesCount
-    * currentFrame, swapChainImageViews, swapChainExtent, swapChainImageFormat
+    * currentFrame, swapChainExtent
     * gAlbedoImageView, gAlbedoSampler
     * gWorldPositionImageView, gWorldPositionSampler
     * gWorldNormalImageView, gWorldNormalSampler
@@ -51,10 +51,7 @@ public:
     std::vector<void*> uniformBuffersMapped2;
 
     std::vector<VkFramebuffer> framebuffers;
-    std::vector<VkImageView> swapChainImageViews;
     VkExtent2D swapChainExtent;
-
-    VkFormat swapChainImageFormat;
 
     VkImageView depthImageView;
 
@@ -107,7 +104,7 @@ public:
     void createDescriptorPool();
     void createDescriptorSets();
 
-    void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+    void recordCommandBuffer(VkCommandBuffer commandBuffer);
 
     [[nodiscard]] VkShaderModule createShaderModule(const std::vector<char>& code)const;
 

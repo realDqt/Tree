@@ -4,16 +4,6 @@
 #include "SSRPass.h"
 
 void SSRPass::createRenderPass() {
-    VkAttachmentDescription colorAttachment{};
-    colorAttachment.format = swapChainImageFormat;
-    colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-    colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-    colorAttachment.finalLayout =  VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
     VkAttachmentDescription historyAttachment{};
     historyAttachment.format = historyFormat;
     historyAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -54,29 +44,25 @@ void SSRPass::createRenderPass() {
     depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    VkAttachmentReference colorAttachmentRef{};
-    colorAttachmentRef.attachment = 0;
-    colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
     VkAttachmentReference depthAttachmentRef{};
-    depthAttachmentRef.attachment = 4;
+    depthAttachmentRef.attachment = 3;
     depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference historyAttachmentRef{};
-    historyAttachmentRef.attachment = 1;
+    historyAttachmentRef.attachment = 0;
     historyAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference momentsAttachmentRef{};
-    momentsAttachmentRef.attachment = 2;
+    momentsAttachmentRef.attachment = 1;
     momentsAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentReference directLightAttachmentRef{};
-    directLightAttachmentRef.attachment = 3;
+    directLightAttachmentRef.attachment = 2;
     directLightAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkSubpassDescription subpass{};
     subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    std::array<VkAttachmentReference, 4> colorAttachmentRefs = {colorAttachmentRef, historyAttachmentRef, momentsAttachmentRef, directLightAttachmentRef};
+    std::array<VkAttachmentReference, 3> colorAttachmentRefs = {historyAttachmentRef, momentsAttachmentRef, directLightAttachmentRef};
     subpass.colorAttachmentCount = static_cast<uint32_t>(colorAttachmentRefs.size());
     subpass.pColorAttachments = colorAttachmentRefs.data();
     subpass.pDepthStencilAttachment = &depthAttachmentRef;
@@ -96,7 +82,7 @@ void SSRPass::createRenderPass() {
     dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
     dependencies[1].dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-    std::array<VkAttachmentDescription, 5> attachments = {colorAttachment, historyAttachment, momentsAttachment, directLightAttachment, depthAttachment};
+    std::array<VkAttachmentDescription, 4> attachments = {historyAttachment, momentsAttachment, directLightAttachment, depthAttachment};
     VkRenderPassCreateInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
@@ -180,8 +166,7 @@ void SSRPass::createGraphicsPipeline() {
     colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
     colorBlendAttachment.blendEnable = VK_FALSE;
 
-    std::array<VkPipelineColorBlendAttachmentState, 4> colorBlendAttachments = {
-            colorBlendAttachment,
+    std::array<VkPipelineColorBlendAttachmentState, 3> colorBlendAttachments = {
             colorBlendAttachment,
             colorBlendAttachment,
             colorBlendAttachment
@@ -242,31 +227,28 @@ void SSRPass::createGraphicsPipeline() {
 }
 
 void SSRPass::createFramebuffers() {
-    framebuffers.resize(swapChainImageViews.size() * historyImageViews.size());
+    // Nothing here touches the swap chain, so one framebuffer per frame in flight is enough.
+    framebuffers.resize(historyImageViews.size());
 
     for (size_t frameIndex = 0; frameIndex < historyImageViews.size(); frameIndex++) {
-        for (size_t imageIndex = 0; imageIndex < swapChainImageViews.size(); imageIndex++) {
-            std::array<VkImageView, 5> attachments = {
-                    swapChainImageViews[imageIndex],
-                    historyImageViews[frameIndex],
-                    momentsImageViews[frameIndex],
-                    directLightImageViews[frameIndex],
-                    depthImageView
-            };
+        std::array<VkImageView, 4> attachments = {
+                historyImageViews[frameIndex],
+                momentsImageViews[frameIndex],
+                directLightImageViews[frameIndex],
+                depthImageView
+        };
 
-            VkFramebufferCreateInfo framebufferInfo{};
-            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            framebufferInfo.renderPass = renderPass;
-            framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-            framebufferInfo.pAttachments = attachments.data();
-            framebufferInfo.width = swapChainExtent.width;
-            framebufferInfo.height = swapChainExtent.height;
-            framebufferInfo.layers = 1;
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass = renderPass;
+        framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+        framebufferInfo.pAttachments = attachments.data();
+        framebufferInfo.width = swapChainExtent.width;
+        framebufferInfo.height = swapChainExtent.height;
+        framebufferInfo.layers = 1;
 
-            size_t framebufferIndex = frameIndex * swapChainImageViews.size() + imageIndex;
-            if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[framebufferIndex]) != VK_SUCCESS) {
-                throw std::runtime_error("failed to create framebuffer!");
-            }
+        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &framebuffers[frameIndex]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create framebuffer!");
         }
     }
 }
@@ -540,21 +522,20 @@ void SSRPass::updateUniformBuffer(uint32_t currentImage) {
     temporalFrameIndex++;
 }
 
-void SSRPass::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex)
+void SSRPass::recordCommandBuffer(VkCommandBuffer commandBuffer)
 {
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
-    renderPassInfo.framebuffer = framebuffers[currentFrame * swapChainImageViews.size() + imageIndex];
+    renderPassInfo.framebuffer = framebuffers[currentFrame];
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = swapChainExtent;
 
-    std::array<VkClearValue, 5> clearValues{};
+    std::array<VkClearValue, 4> clearValues{};
     clearValues[0].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-    clearValues[1].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-    clearValues[2].color = {{0.0f, 0.0f, 0.0f, 0.0f}};
-    clearValues[3].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
-    clearValues[4].depthStencil = {1.0f, 0};
+    clearValues[1].color = {{0.0f, 0.0f, 0.0f, 0.0f}};
+    clearValues[2].color = {{0.0f, 0.0f, 0.0f, 1.0f}};
+    clearValues[3].depthStencil = {1.0f, 0};
     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
     renderPassInfo.pClearValues = clearValues.data();
 

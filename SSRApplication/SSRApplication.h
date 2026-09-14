@@ -208,8 +208,6 @@ public:
         ssrPass.physicalDevice = physicalDevice;
 
         ssrPass.swapChainExtent = swapChainExtent;
-        ssrPass.swapChainImageFormat = swapChainImageFormat;
-        ssrPass.swapChainImageViews = swapChainImageViews;
 
         ssrPass.depthImageView = depthImageView;
 
@@ -1076,7 +1074,7 @@ public:
 
         //blinnPhongPasses[0].recordCommandBuffer(commandBuffer, imageIndex);
         //blinnPhongPasses[1].recordCommandBuffer(commandBuffer, imageIndex);
-        ssrPass.recordCommandBuffer(commandBuffer, imageIndex);
+        ssrPass.recordCommandBuffer(commandBuffer);
         denoisePass.recordCommandBuffer(commandBuffer);
         fxaaPass.recordCommandBuffer(commandBuffer, imageIndex);
 

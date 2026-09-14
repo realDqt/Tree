@@ -2,10 +2,9 @@
 
 layout(location = 0) in vec2 texCoords;
 
-layout(location = 0) out vec4 outColor;
-layout(location = 1) out vec4 outHistory;
-layout(location = 2) out vec2 outMoments;
-layout(location = 3) out vec4 outDirectLight;
+layout(location = 0) out vec4 outHistory;
+layout(location = 1) out vec2 outMoments;
+layout(location = 2) out vec4 outDirectLight;
 
 layout(binding = 0, std140) uniform UniformBufferObject2{
     vec3 cameraPos;
@@ -249,7 +248,6 @@ void main() {
     float rawLinearDepth = textureLod(gDepthSampler, uv, 0).x;
     if(rawLinearDepth >= 99.f){ // zFar == 100.f
         vec4 background = vec4(0.f, 0.f, 0.f, 1.f);
-        outColor = background;
         outHistory = background;
         outMoments = vec2(rawLinearDepth, 1.0);
         outDirectLight = background;
@@ -293,8 +291,6 @@ void main() {
         }
     }
 
-    // Undenoised composite, only kept so the swap chain attachment holds something meaningful.
-    outColor = vec4(clamp(L_dir + GetGBufferAlbedo(uv) * indirect, vec3(0.0), vec3(1.0)), 1.0);
     outHistory = vec4(indirect, 1.0);
     outMoments = vec2((ubo2.world2clip * vec4(worldPos, 1.0)).w, sampleCount);
     outDirectLight = vec4(L_dir, 1.0);
