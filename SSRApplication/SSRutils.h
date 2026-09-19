@@ -8,6 +8,7 @@
 #include "../EngineCore/Light.h"
 extern const std::string CUBE_PATH;
 extern const std::string CUBE_TEXTURE_PATH;
+extern const std::string SSR_SKYBOX_TEXTURE_PATH;
 
 extern DirectionalLight ssrLight;
 extern glm::vec3 ssrLightPos;

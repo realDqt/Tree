@@ -14,16 +14,6 @@ if errorlevel 1 (
     exit /b 1
 )
 
-"%GLSLANG_VALIDATOR%" -V -R directLight.vert -o directLightVert.spv
-if errorlevel 1 (
-    set "COMPILE_EXIT_CODE=%ERRORLEVEL%"
-    goto :compile_failed
-)
-"%GLSLANG_VALIDATOR%" -V -R directLight.frag -o directLightFrag.spv
-if errorlevel 1 (
-    set "COMPILE_EXIT_CODE=%ERRORLEVEL%"
-    goto :compile_failed
-)
 "%GLSLANG_VALIDATOR%" -V -R shadowShader.vert -o shadowVert.spv
 if errorlevel 1 (
     set "COMPILE_EXIT_CODE=%ERRORLEVEL%"

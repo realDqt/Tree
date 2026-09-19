@@ -5,6 +5,7 @@
 
 const std::string CUBE_PATH = projectPath("models/SSRModel/cube2.gltf");
 const std::string CUBE_TEXTURE_PATH = projectPath("models/SSRModel/checker.png");
+const std::string SSR_SKYBOX_TEXTURE_PATH = projectPath("models/SkyBox/cloudy_sky.jpg");
 
 DirectionalLight ssrLight{
         .lightDir = glm::vec3(-0.01f, -1.0f, 1.0f),

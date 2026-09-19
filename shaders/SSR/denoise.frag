@@ -28,7 +28,8 @@ void main() {
     vec2 uv = texCoords;
     float centerDepth = textureLod(gDepthSampler, uv, 0.0).x;
     if (centerDepth >= BACKGROUND_DEPTH) {
-        outColor = vec4(0.0, 0.0, 0.0, 1.0);
+        // Sky is evaluated for the current view and bypasses temporal/spatial filtering.
+        outColor = vec4(texture(directLightSampler, uv).rgb, 1.0);
         return;
     }
 

@@ -273,7 +273,7 @@ void SSRPass::createDescriptorPool() {
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 7;
+    poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 8;
 
 
     VkDescriptorPoolCreateInfo poolInfo{};
@@ -342,7 +342,12 @@ void SSRPass::createDescriptorSets() {
         momentsImageInfo.imageView = momentsImageViews[(i + momentsImageViews.size() - 1) % momentsImageViews.size()];
         momentsImageInfo.sampler = historySampler;
 
-        std::array<VkWriteDescriptorSet, 8> descriptorWrites{};
+        VkDescriptorImageInfo skyboxImageInfo{};
+        skyboxImageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        skyboxImageInfo.imageView = skyboxImageView;
+        skyboxImageInfo.sampler = skyboxSampler;
+
+        std::array<VkWriteDescriptorSet, 9> descriptorWrites{};
 
         descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
         descriptorWrites[0].dstSet = descriptorSets[i];
@@ -408,6 +413,13 @@ void SSRPass::createDescriptorSets() {
         descriptorWrites[7].descriptorCount = 1;
         descriptorWrites[7].pImageInfo = &momentsImageInfo;
 
+        descriptorWrites[8].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrites[8].dstSet = descriptorSets[i];
+        descriptorWrites[8].dstBinding = 8;
+        descriptorWrites[8].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        descriptorWrites[8].descriptorCount = 1;
+        descriptorWrites[8].pImageInfo = &skyboxImageInfo;
+
         vkUpdateDescriptorSets(device, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 }
@@ -469,7 +481,13 @@ void SSRPass::createDescriptorSetLayout() {
     momentsLayoutBinding.pImmutableSamplers = nullptr;
     momentsLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 
-    std::array<VkDescriptorSetLayoutBinding, 8> bindings = {uboLayoutBinding2, gAlebdoLayoutBinding, gWorldPositionLayoutBinding, gWorldNormalLayoutBinding, gDepthLayoutBinding, smLayoutBinding, historyLayoutBinding, momentsLayoutBinding};
+    VkDescriptorSetLayoutBinding skyboxLayoutBinding{};
+    skyboxLayoutBinding.binding = 8;
+    skyboxLayoutBinding.descriptorCount = 1;
+    skyboxLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    skyboxLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+
+    std::array<VkDescriptorSetLayoutBinding, 9> bindings = {uboLayoutBinding2, gAlebdoLayoutBinding, gWorldPositionLayoutBinding, gWorldNormalLayoutBinding, gDepthLayoutBinding, smLayoutBinding, historyLayoutBinding, momentsLayoutBinding, skyboxLayoutBinding};
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -509,6 +527,8 @@ void SSRPass::updateUniformBuffer(uint32_t currentImage) {
     lightProj[1][1] *= -1;
     ubo2.lightVP = lightProj * lightView;
     ubo2.world2clip = proj * camera.GetViewMatrix();
+    // Remove translation so the environment stays at infinity as the camera moves.
+    ubo2.skyClipToWorld = glm::inverse(proj * glm::mat4(glm::mat3(camera.GetViewMatrix())));
     // The shader reprojects through this and rejects per pixel, so camera motion no longer
     // invalidates the whole history buffer.
     ubo2.prevWorld2Clip = previousWorld2Clip;

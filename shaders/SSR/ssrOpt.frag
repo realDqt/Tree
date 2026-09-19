@@ -16,6 +16,7 @@ layout(binding = 0, std140) uniform UniformBufferObject2{
     uint temporalFrameIndex;
     float historyValid;
     float maxAccumFrames;
+    mat4 skyClipToWorld;
 } ubo2;
 
 #define M_PI 3.1415926535897932384626433832795
@@ -33,6 +34,7 @@ layout(binding = 4) uniform sampler2D gDepthSampler;
 layout(binding = 5) uniform sampler2D smSampler;
 layout(binding = 6) uniform sampler2D historySampler;
 layout(binding = 7) uniform sampler2D momentsSampler;
+layout(binding = 8) uniform sampler2D skyboxSampler;
 
 // A reprojected sample is accepted while the depth it was written with still matches the
 // surface we are shading, expressed as a fraction of that depth.
@@ -241,16 +243,25 @@ bool RayMarch(vec3 ori, vec3 dir, out vec3 hitPos) {
     return false;
 }
 
+vec3 SampleSkybox(vec2 uv) {
+    vec4 worldRay = ubo2.skyClipToWorld * vec4(uv * 2.0 - 1.0, 1.0, 1.0);
+    vec3 direction = normalize(worldRay.xyz);
+    // The JPEG is equirectangular, with the north pole in its first row.
+    vec2 skyUv = vec2(atan(direction.z, direction.x) * INV_TWO_PI + 0.5,
+                      0.5 - asin(clamp(direction.y, -1.0, 1.0)) * INV_PI);
+    // Explicit LOD avoids derivative discontinuities at the panorama seam and silhouettes.
+    return textureLod(skyboxSampler, skyUv, 0.0).rgb;
+}
+
 void main() {
     float s = InitRand(gl_FragCoord.xy + vec2(0.754877666, 0.569840296) * float(ubo2.temporalFrameIndex));
     vec2 uv = texCoords;
 
     float rawLinearDepth = textureLod(gDepthSampler, uv, 0).x;
     if(rawLinearDepth >= 99.f){ // zFar == 100.f
-        vec4 background = vec4(0.f, 0.f, 0.f, 1.f);
-        outHistory = background;
+        outHistory = vec4(0.0, 0.0, 0.0, 1.0);
         outMoments = vec2(rawLinearDepth, 1.0);
-        outDirectLight = background;
+        outDirectLight = vec4(SampleSkybox(uv), 1.0);
         return;
     }
     vec3 L_indir = vec3(0.0);

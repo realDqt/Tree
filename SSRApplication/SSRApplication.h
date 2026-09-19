@@ -54,6 +54,12 @@ public:
     VkImageView textureImageView;
     VkSampler textureSampler;
 
+    // Static panorama, retained across swapchain recreation.
+    VkImage skyboxImage = VK_NULL_HANDLE;
+    VkDeviceMemory skyboxImageMemory = VK_NULL_HANDLE;
+    VkImageView skyboxImageView = VK_NULL_HANDLE;
+    VkSampler skyboxSampler = VK_NULL_HANDLE;
+
     VkImage colorImage;
     VkDeviceMemory colorImageMemory;
     VkImageView colorImageView;
@@ -228,6 +234,9 @@ public:
         ssrPass.smImageView = shadowmapView;
         ssrPass.smSampler = shadowmapSampler;
 
+        ssrPass.skyboxImageView = skyboxImageView;
+        ssrPass.skyboxSampler = skyboxSampler;
+
         ssrPass.historyImageViews = historyImageViews;
         ssrPass.historySampler = historySampler;
 
@@ -279,6 +288,7 @@ public:
         createTextureImage();
         createTextureImageView();
         createTextureSampler();
+        createSkyboxResources();
 
         createShadowmapSampler();
         createGSampler(gAlbedoSampler);
@@ -354,6 +364,11 @@ public:
         destroyHistoryResources();
         destroyGBufferResources();
         destroyShadowmapResources();
+
+        vkDestroySampler(device, skyboxSampler, nullptr);
+        vkDestroyImageView(device, skyboxImageView, nullptr);
+        vkDestroyImage(device, skyboxImage, nullptr);
+        vkFreeMemory(device, skyboxImageMemory, nullptr);
 
         vkDestroyImageView(device, textureImageView, nullptr);
         vkDestroySampler(device, textureSampler, nullptr);
@@ -960,6 +975,63 @@ public:
 
         createImage(SM_RESOLUTION, SM_RESOLUTION, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage2, depthImageMemory2);
         depthImageView2 = createImageView(depthImage2, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+    }
+
+    void createSkyboxResources() {
+        int width = 0, height = 0, channels = 0;
+        stbi_uc* pixels = stbi_load(SSR_SKYBOX_TEXTURE_PATH.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+        if (!pixels) {
+            throw std::runtime_error("failed to load skybox texture: " + SSR_SKYBOX_TEXTURE_PATH);
+        }
+        const VkDeviceSize imageSize = static_cast<VkDeviceSize>(width) * height * 4;
+        VkBuffer stagingBuffer = VK_NULL_HANDLE;
+        VkDeviceMemory stagingMemory = VK_NULL_HANDLE;
+        try {
+            createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                         stagingBuffer, stagingMemory);
+            void* data = nullptr;
+            if (vkMapMemory(device, stagingMemory, 0, imageSize, 0, &data) != VK_SUCCESS) {
+                throw std::runtime_error("failed to map skybox staging memory!");
+            }
+            memcpy(data, pixels, static_cast<size_t>(imageSize));
+            vkUnmapMemory(device, stagingMemory);
+            stbi_image_free(pixels);
+            pixels = nullptr;
+
+            // Decode the JPEG's sRGB values when sampling into the linear lighting buffers.
+            constexpr VkFormat format = VK_FORMAT_R8G8B8A8_SRGB;
+            createImage(width, height, 1, VK_SAMPLE_COUNT_1_BIT, format, VK_IMAGE_TILING_OPTIMAL,
+                        VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, skyboxImage, skyboxImageMemory);
+            transitionImageLayout(skyboxImage, format, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);
+            copyBufferToImage(stagingBuffer, skyboxImage, width, height);
+            transitionImageLayout(skyboxImage, format, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1);
+            skyboxImageView = createImageView(skyboxImage, format, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
+            VkSamplerCreateInfo samplerInfo{};
+            samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+            samplerInfo.magFilter = VK_FILTER_LINEAR;
+            samplerInfo.minFilter = VK_FILTER_LINEAR;
+            samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+            samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+            if (vkCreateSampler(device, &samplerInfo, nullptr, &skyboxSampler) != VK_SUCCESS) {
+                throw std::runtime_error("failed to create skybox sampler!");
+            }
+        } catch (...) {
+            stbi_image_free(pixels);
+            vkDestroyBuffer(device, stagingBuffer, nullptr);
+            vkFreeMemory(device, stagingMemory, nullptr);
+            vkDestroySampler(device, skyboxSampler, nullptr);
+            vkDestroyImageView(device, skyboxImageView, nullptr);
+            vkDestroyImage(device, skyboxImage, nullptr);
+            vkFreeMemory(device, skyboxImageMemory, nullptr);
+            throw;
+        }
+        vkDestroyBuffer(device, stagingBuffer, nullptr);
+        vkFreeMemory(device, stagingMemory, nullptr);
     }
 
     void createTextureImage() {

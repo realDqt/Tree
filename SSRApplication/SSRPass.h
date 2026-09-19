@@ -19,6 +19,7 @@ public:
         alignas(16) uint32_t temporalFrameIndex;
         float historyValid;
         float maxAccumFrames;
+        alignas(16) glm::mat4 skyClipToWorld;
     };
 
     /*
@@ -73,6 +74,9 @@ public:
 
     VkImageView smImageView;
     VkSampler smSampler;
+
+    VkImageView skyboxImageView;
+    VkSampler skyboxSampler;
 
     std::vector<VkImageView> historyImageViews;
     VkSampler historySampler;
